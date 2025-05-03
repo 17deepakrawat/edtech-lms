@@ -1,0 +1,20 @@
+.swiper-button-prev,
+.swiper-button-next {
+    color: #3b82f6; /* Tailwind blue-500 */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.dept-swiper-next,
+.dept-swiper-prev,
+.program-swiper-prev,
+.program-swiper-next,
+.swiper-prev,
+.swiper-next {
+    border: solid 1px #e7e2e2 !important;
+    padding: 0px 11px !important;
+    border-radius: 50% !important;
+    background: white !important;
+    color: black !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
+}
