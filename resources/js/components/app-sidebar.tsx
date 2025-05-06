@@ -1,12 +1,12 @@
 import { NavFooter } from '@/components/nav-footer';
+import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { PageProps } from '@inertiajs/core';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, FileText, Folder, GraduationCap, LayoutGrid } from 'lucide-react';
-import { useState } from 'react';
+import { BookOpen, Folder, LayoutGrid, Users, GraduationCap, Settings, FileText } from 'lucide-react';
 import AppLogo from './app-logo';
+import { PageProps } from '@inertiajs/core';
 
 interface AppPageProps extends PageProps {
     auth: {
@@ -28,26 +28,16 @@ const adminNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'Web',
-        icon: Folder,
-        children: [
-            {
-                title: 'Home Components',
-                href: '/home-components',
-                icon: LayoutGrid,
-            },
-            {
-                title: 'Menus',
-                href: '/web/menus',
-                icon: LayoutGrid,
-            },
-            {
-                title: 'Sections',
-                href: '/web/sections',
-                icon: LayoutGrid,
-            },
-        ],
+        title: 'Home Banner',
+        href: '/banner',
+        icon: Users,
     },
+    {
+        title: 'Feedback',
+        href: '/feedback',
+        icon: Users,
+    },
+   
 ];
 
 const mentorNavItems: NavItem[] = [
@@ -97,7 +87,8 @@ const footerNavItems: NavItem[] = [
 export function AppSidebar() {
     const { auth } = usePage<AppPageProps>().props;
     const userRoles = auth.roles || [];
-    const [openAccordion, setOpenAccordion] = useState<number | null>(null);
+
+    console.log('User roles:', userRoles);
 
     const getNavItems = () => {
         if (userRoles.includes('admin')) {
@@ -107,10 +98,6 @@ export function AppSidebar() {
         } else {
             return studentNavItems;
         }
-    };
-
-    const toggleAccordion = (index: number) => {
-        setOpenAccordion(openAccordion === index ? null : index);
     };
 
     return (
@@ -128,44 +115,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <SidebarMenu>
-                    {getNavItems().map((item, index) => {
-                        if (item.title === 'Web' && item.children) {
-                            return (
-                                <SidebarMenuItem key={index}>
-                                    <SidebarMenuButton onClick={() => toggleAccordion(index)} className="group relative flex items-center">
-                                        {item.icon && <item.icon className="mr-2 h-4 w-4" />}
-                                        {item.title}
-                                    </SidebarMenuButton>
-
-                                    {openAccordion === index && (
-                                        <div className="accordion ms-4 mt-2 space-y-1">
-                                            {item.children.map((child, i) => (
-                                                <Link
-                                                    key={i}
-                                                    href={child.href}
-                                                    className="flex items-center text-sm text-gray-700 hover:text-black dark:text-white dark:hover:text-gray-100"
-                                                >
-                                                    {child.icon && <child.icon className="mr-2 h-4 w-4" />}
-                                                    {child.title}
-                                                </Link>
-                                            ))}
-                                        </div>
-                                    )}
-                                </SidebarMenuItem>
-                            );
-                        }
-
-                        return (
-                            <SidebarMenuItem key={index}>
-                                <SidebarMenuButton className="flex items-center">
-                                    {item.icon && <item.icon className="mr-2 h-4 w-4" />}
-                                    <Link href={item.href || '#'}>{item.title}</Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        );
-                    })}
-                </SidebarMenu>
+                <NavMain items={getNavItems()} />
             </SidebarContent>
 
             <SidebarFooter>
