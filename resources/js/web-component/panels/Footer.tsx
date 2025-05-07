@@ -1,47 +1,54 @@
+import { Link } from '@inertiajs/react';
+
 export default function Footer() {
     return (
         <>
             <footer className="dark:shadow-sm-white bg-black dark:border-t-1 dark:border-t-gray-400 dark:bg-gray-900">
                 <div className="container pt-10 pb-10">
                     <div className="md:flex md:justify-between">
-                        <div className="mb-6 md:mb-0 w-full md:w-[30%] lg:w-[30%]">
-                            <a href="/" className="flex items-center mb-2">
+                        <div className="mb-6 w-full md:mb-0 md:w-[30%] lg:w-[30%]">
+                            <Link href="/" className="mb-2 flex items-center">
                                 <img src="/build/assets/web-assets/edtech_logo.png" className="me-3 h-8" alt="FlowBite Logo" />
                                 <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"></span>
-                            </a>
-                            <p className="text-white text-normal">
+                            </Link>
+                            <p className="text-normal text-white">
                                 EdTech Innovate is a SaaS company that offers online services to universities and students for smooth operations
                                 including ERP, CRM, LMS, and exam administration.
                             </p>
                         </div>
                         <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 sm:gap-6">
                             <div>
-                                <h2 className="mb-6 text-sm font-semibold text-white uppercase dark:text-white">Resources</h2>
+                                <h2 className="mb-6 text-sm font-semibold text-white uppercase dark:text-white">Courses</h2>
                                 <ul className="font-medium text-gray-500 dark:text-gray-400">
-                                    <li className="mb-4">
-                                        <a href="https://flowbite.com/" className="hover:underline">
+                                    {/* <li className="mb-4">
+                                        <Link href="https://flowbite.com/" className="hover:underline">
                                             Flowbite
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li>
-                                        <a href="https://tailwindcss.com/" className="hover:underline">
+                                        <Link href="https://tailwindcss.com/" className="hover:underline">
                                             Tailwind CSS
-                                        </a>
-                                    </li>
+                                        </Link>
+                                    </li> */}
                                 </ul>
                             </div>
                             <div>
-                                <h2 className="mb-6 text-sm font-semibold text-white uppercase dark:text-white">Follow us</h2>
+                                <h2 className="mb-6 text-sm font-semibold text-white uppercase dark:text-white">Other Link</h2>
                                 <ul className="font-medium text-gray-500 dark:text-gray-400">
                                     <li className="mb-4">
-                                        <a href="https://github.com/themesberg/flowbite" className="hover:underline">
-                                            Github
-                                        </a>
+                                        <Link href="/courses" className="hover:underline">
+                                            Course
+                                        </Link>
+                                    </li>
+                                    <li className="mb-4">
+                                        <Link href="/all-blogs" className="hover:underline">
+                                            Blogs
+                                        </Link>
                                     </li>
                                     <li>
-                                        <a href="https://discord.gg/4eeurUVvTy" className="hover:underline">
-                                            Discord
-                                        </a>
+                                        <Link href="/about" className="hover:underline">
+                                            About Us
+                                        </Link>
                                     </li>
                                 </ul>
                             </div>
@@ -49,14 +56,19 @@ export default function Footer() {
                                 <h2 className="mb-6 text-sm font-semibold text-white uppercase dark:text-white">Legal</h2>
                                 <ul className="font-medium text-gray-500 dark:text-gray-400">
                                     <li className="mb-4">
-                                        <a href="#" className="hover:underline">
+                                        <Link href="/refund" className="hover:underline">
+                                            Refund Policy
+                                        </Link>
+                                    </li>
+                                    <li className="mb-4">
+                                        <Link href="/privacy" className="hover:underline">
                                             Privacy Policy
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li>
-                                        <a href="#" className="hover:underline">
+                                        <Link href="/term-condition" className="hover:underline">
                                             Terms &amp; Conditions
-                                        </a>
+                                        </Link>
                                     </li>
                                 </ul>
                             </div>
@@ -66,13 +78,13 @@ export default function Footer() {
                     <div className="sm:flex sm:items-center sm:justify-between">
                         <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
                             © 2023{' '}
-                            <a href="https://flowbite.com/" className="hover:underline">
-                                Flowbite™
-                            </a>
+                            <Link href="https://flowbite.com/" className="hover:underline">
+                                Edtech Inovate Pvt Ltd
+                            </Link>
                             . All Rights Reserved.
                         </span>
                         <div className="mt-4 flex sm:mt-0 sm:justify-center">
-                            <a href="#" className="text-gray-500 hover:text-white dark:hover:text-white">
+                            {/* <Link href="#" className="text-gray-500 hover:text-white dark:hover:text-white">
                                 <svg className="h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 8 19">
                                     <path
                                         fill-rule="evenodd"
@@ -81,8 +93,8 @@ export default function Footer() {
                                     />
                                 </svg>
                                 <span className="sr-only">Facebook page</span>
-                            </a>
-                            <a href="#" className="ms-5 text-gray-500 hover:text-white dark:hover:text-white">
+                            </Link>
+                            <Link href="#" className="ms-5 text-gray-500 hover:text-white dark:hover:text-white">
                                 <svg
                                     className="h-4 w-4"
                                     aria-hidden="true"
@@ -93,8 +105,8 @@ export default function Footer() {
                                     <path d="M16.942 1.556a16.3 16.3 0 0 0-4.126-1.3 12.04 12.04 0 0 0-.529 1.1 15.175 15.175 0 0 0-4.573 0 11.585 11.585 0 0 0-.535-1.1 16.274 16.274 0 0 0-4.129 1.3A17.392 17.392 0 0 0 .182 13.218a15.785 15.785 0 0 0 4.963 2.521c.41-.564.773-1.16 1.084-1.785a10.63 10.63 0 0 1-1.706-.83c.143-.106.283-.217.418-.33a11.664 11.664 0 0 0 10.118 0c.137.113.277.224.418.33-.544.328-1.116.606-1.71.832a12.52 12.52 0 0 0 1.084 1.785 16.46 16.46 0 0 0 5.064-2.595 17.286 17.286 0 0 0-2.973-11.59ZM6.678 10.813a1.941 1.941 0 0 1-1.8-2.045 1.93 1.93 0 0 1 1.8-2.047 1.919 1.919 0 0 1 1.8 2.047 1.93 1.93 0 0 1-1.8 2.045Zm6.644 0a1.94 1.94 0 0 1-1.8-2.045 1.93 1.93 0 0 1 1.8-2.047 1.918 1.918 0 0 1 1.8 2.047 1.93 1.93 0 0 1-1.8 2.045Z" />
                                 </svg>
                                 <span className="sr-only">Discord community</span>
-                            </a>
-                            <a href="#" className="ms-5 text-gray-500 hover:text-white dark:hover:text-white">
+                            </Link>
+                            <Link href="#" className="ms-5 text-gray-500 hover:text-white dark:hover:text-white">
                                 <svg
                                     className="h-4 w-4"
                                     aria-hidden="true"
@@ -109,8 +121,8 @@ export default function Footer() {
                                     />
                                 </svg>
                                 <span className="sr-only">Twitter page</span>
-                            </a>
-                            <a href="#" className="ms-5 text-gray-500 hover:text-white dark:hover:text-white">
+                            </Link>
+                            <Link href="#" className="ms-5 text-gray-500 hover:text-white dark:hover:text-white">
                                 <svg
                                     className="h-4 w-4"
                                     aria-hidden="true"
@@ -125,8 +137,8 @@ export default function Footer() {
                                     />
                                 </svg>
                                 <span className="sr-only">GitHub account</span>
-                            </a>
-                            <a href="#" className="ms-5 text-gray-500 hover:text-white dark:hover:text-white">
+                            </Link>
+                            <Link href="#" className="ms-5 text-gray-500 hover:text-white dark:hover:text-white">
                                 <svg
                                     className="h-4 w-4"
                                     aria-hidden="true"
@@ -141,7 +153,21 @@ export default function Footer() {
                                     />
                                 </svg>
                                 <span className="sr-only">Dribbble account</span>
-                            </a>
+                            </Link> */}
+                            <div className="mt-4 flex space-x-5 text-xl sm:mt-0 sm:justify-center">
+                                <Link href="https://facebook.com/yourpage" className="text-gray-500 hover:text-white">
+                                    <i className="ri-facebook-fill"></i>
+                                </Link>
+                                <Link href="https://instagram.com/yourprofile" className="text-gray-500 hover:text-white">
+                                    <i className="ri-instagram-line"></i>
+                                </Link>
+                                <Link href="https://youtube.com/yourchannel" className="text-gray-500 hover:text-white">
+                                    <i className="ri-youtube-fill"></i>
+                                </Link>
+                                <Link href="https://linkedin.com/company/yourcompany" className="text-gray-500 hover:text-white">
+                                    <i className="ri-linkedin-fill"></i>
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>

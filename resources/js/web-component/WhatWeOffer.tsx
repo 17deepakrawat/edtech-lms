@@ -7,20 +7,32 @@ import 'swiper/css/pagination';
 export default function WhatWeOffer() {
   const tabs = [
     {
-      title: 'Tab 1',
-      content: 'Lorem ipsum dolor sit amet...',
+      title: 'Experience The Best User-Friendly Interface:',
+      content: 'Our main goal is to give users a best and streamline the interface experience by providing them easy way to navigate our courses and other related information without any ambiguity. It will help in increasing websites overall engagement.',
       image: '/build/assets/web-assets/whatweoffer.avif',
       pagelink: '/xnqowiw',
     },
     {
-      title: 'Tab 2',
-      content: 'Lorem ipsum dolor sit amet...',
+      title: 'Upgrade Your Knowledge With The Easy to Access Course Catalog:',
+      content: ' Well-organized listing with detailed descriptions of all the courses, topics, and modules offered by Edtech Innovate. It works by permitting learners to browse from available courses by providing required flexible prerequisites as well as schedules.',
       image: '/build/assets/web-assets/whatweoffer.avif',
       pagelink: '/xnqowiw',
     },
     {
-      title: 'Tab 3',
-      content: 'Lorem ipsum dolor sit amet...',
+      title: 'Launch Your Career With Structured Internship & Game Changer Certification:',
+      content: 'Gain industry-recognized certification of your desired course. This certification will highlight applicants expertise. The structured internship program will add experience and make you ready to enter a competitive field.',
+      image: '/build/assets/web-assets/whatweoffer.avif',
+      pagelink: '/xnqowiw',
+    },
+    {
+      title: 'Learning Anything, Anytime From Anywhere:',
+      content: ' Access course materials and resources whenever its convenient for you. We are on the path to making education accessible by allowing you to learn at your own pace.',
+      image: '/build/assets/web-assets/whatweoffer.avif',
+      pagelink: '/xnqowiw',
+    },
+    {
+      title: 'Get Continuous Support and Feedback:',
+      content: 'Get our tailored feedback from knowledgeable mentors and teachers that will work as dynamic approach to regularly providing employees with constructive criticism so they can advance and improve their performance.',
       image: '/build/assets/web-assets/whatweoffer.avif',
       pagelink: '/xnqowiw',
     },

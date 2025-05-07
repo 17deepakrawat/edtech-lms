@@ -37,7 +37,21 @@ const adminNavItems: NavItem[] = [
         href: '/feedback',
         icon: Users,
     },
-   
+    {
+        title: 'University Partner',
+        href: '/universitypartner',
+        icon: Users,
+    },
+    {
+        title: 'What We Offer',
+        href: '/weoffers',
+        icon: Users,
+    },
+    {
+        title: 'Departments',
+        href: '/department',
+        icon: Users,
+    },
 ];
 
 const mentorNavItems: NavItem[] = [

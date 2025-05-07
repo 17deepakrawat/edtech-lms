@@ -41,7 +41,7 @@ export default function Footer() {
                     </div>
                     <div id="mega-menu" className="hidden w-full items-center justify-between md:order-1 md:flex md:w-auto">
                         <ul className="mt-4 flex flex-col font-medium md:mt-0 md:flex-row md:space-x-8 rtl:space-x-reverse">
-                            <li>
+                            {/* <li>
                                 <a
                                     href="#"
                                     className="block border-b border-gray-100 px-3 py-2 text-blue-600 hover:bg-gray-50 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-600 dark:border-gray-700 dark:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
@@ -145,18 +145,26 @@ export default function Footer() {
                                         </ul>
                                     </div>
                                 </div>
-                            </li>
+                            </li> */}
                             <li>
                                 <a
-                                    href="#"
+                                    href="/about"
                                     className="block border-b border-gray-100 px-3 py-2 text-gray-900 hover:bg-gray-50 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-600 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
                                 >
-                                    Team
+                                    About Us
                                 </a>
                             </li>
                             <li>
                                 <a
-                                    href="#"
+                                    href="/courses"
+                                    className="block border-b border-gray-100 px-3 py-2 text-gray-900 hover:bg-gray-50 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-600 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
+                                >
+                                    Courses
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="/contact"
                                     className="block border-b border-gray-100 px-3 py-2 text-gray-900 hover:bg-gray-50 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-600 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
                                 >
                                     Contact

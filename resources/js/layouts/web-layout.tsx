@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import Header from '@/web-component/panels/Header';
 import Footer from '@/web-component/panels/Footer';
 

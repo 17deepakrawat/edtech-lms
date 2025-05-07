@@ -1,30 +1,28 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/Textarea';
 import AppLayout from '@/layouts/app-layout';
 import { Link, useForm } from '@inertiajs/react';
-import { toast } from 'sonner'; // ✅ Import from sonner
+import { toast } from 'sonner';
 
-interface Feedbacks {
+interface universityPartners {
     id: number;
     name: string;
-    title: string;
-    description: string;
+    link: string;
     image: string;
 }
 
 interface Props {
-    feedbacks: Feedbacks;
+    universityPartners: universityPartners;
 }
 
-export default function Edit({ feedbacks }: Props) {
+export default function Edit({ universityPartners }: Props) {
+    console.log(universityPartners);
     const { data, setData, post, processing, errors } = useForm({
         _method: 'PUT',
-        name: feedbacks.name || '',
-        title: feedbacks.title || '',
-        description: feedbacks.description || '',
-        image: null as File | null,
+        name: universityPartners.name || '',
+        link: universityPartners.link || '',
+        image: null,
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -32,29 +30,28 @@ export default function Edit({ feedbacks }: Props) {
         const formData = new FormData();
         formData.append('_method', 'PUT');
         formData.append('name', data.name);
-        formData.append('title', data.title);
-        formData.append('description', data.description);
+        formData.append('link', data.link);
         if (data.image) {
             formData.append('image', data.image);
         }
 
-        post(`/feedback/${feedbacks.id}`, {
+        post(`/universitypartner/${universityPartners.id}`, {
             data: formData,
             forceFormData: true,
             preserveScroll: true,
             onSuccess: () => {
-                toast.success('Feedback updated successfully!'); // Success toast
+                toast.success('University Partner updated successfully!');
             },
             onError: () => {
-                toast.error('Failed to update feedback. Please try again.'); // Error toast
-            }
+                toast.error('Failed to update. Please check your input.');
+            },
         });
     };
-
+console.log(data.name);
     return (
         <AppLayout>
             <div className="px-4">
-                <h1 className="text-2xl font-bold mb-4">Edit Feedback</h1>
+                <h1 className="mb-4 text-2xl font-bold">Edit University Partner</h1>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <Label htmlFor="name">Name</Label>
@@ -67,23 +64,13 @@ export default function Edit({ feedbacks }: Props) {
                     </div>
 
                     <div>
-                        <Label htmlFor="title">Title</Label>
+                        <Label htmlFor="link">Link</Label>
                         <Input
-                            id="title"
-                            value={data.title}
-                            onChange={(e) => setData('title', e.target.value)}
+                            id="link"
+                            value={data.link}
+                            onChange={(e) => setData('link', e.target.value)}
                         />
-                        {errors.title && <p className="text-sm text-red-500">{errors.title}</p>}
-                    </div>
-
-                    <div>
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea
-                            id="description"
-                            value={data.description}
-                            onChange={(e) => setData('description', e.target.value)}
-                        />
-                        {errors.description && <p className="text-sm text-red-500">{errors.description}</p>}
+                        {errors.link && <p className="text-sm text-red-500">{errors.link}</p>}
                     </div>
 
                     <div>
@@ -94,9 +81,9 @@ export default function Edit({ feedbacks }: Props) {
                             onChange={(e) => setData('image', e.target.files?.[0] || null)}
                         />
                         {errors.image && <p className="text-sm text-red-500">{errors.image}</p>}
-                        {feedbacks.image && (
+                        {universityPartners.image && (
                             <img
-                                src={`/storage/${feedbacks.image}`}
+                                src={`/storage/${universityPartners.image}`}
                                 alt="Current"
                                 className="mt-2 w-48 rounded"
                             />
@@ -104,7 +91,7 @@ export default function Edit({ feedbacks }: Props) {
                     </div>
 
                     <div className="flex justify-end gap-2">
-                        <Link href="/feedback">
+                        <Link href="/universitypartner">
                             <Button variant="outline">← Back</Button>
                         </Link>
                         <Button type="submit" disabled={processing}>

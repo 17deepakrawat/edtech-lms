@@ -1,0 +1,101 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Weoffers;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
+class WeoffersController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        return Inertia::render('admin/weoffer/Index', [
+            'weoffers' => Weoffers::all(),
+        ]);
+    }
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return Inertia::render('admin/weoffer/Create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string', 'max:255'],
+            'link' => ['nullable', 'url', 'max:255'],
+            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+        ]);
+
+        $validated['image'] = $request->file('image')->store('weoffer', 'public');
+
+        Weoffers::create($validated);
+
+        return redirect()->route('weoffers.index');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Weoffers $weoffers)
+    {
+     
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Weoffers $weoffer)
+    {
+      return Inertia::render('admin/weoffer/Edit', [
+        'weoffers'=> $weoffer,
+      ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Weoffers $weoffer)
+    {
+        $validated = $request->validate([
+             'title' => [ 'string', 'max:255'],
+            'description' => [ 'string', 'max:255'],
+            'link' => [ 'url', 'max:255'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+        ]);
+
+        if ($request->hasFile('image')) {
+            if ($weoffer->image && Storage::disk('public')->exists($weoffer->image)) {
+                Storage::disk('public')->delete($weoffer->image);
+            }
+            $validated['image'] = $request->file('image')->store('weoffer', 'public');
+        } else {
+            unset($validated['image']);
+        }
+
+        $weoffer->update($validated);
+
+        return redirect()
+            ->route('weoffers.index')
+            ->with('success', 'University Partner updated successfully.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Weoffers $weoffer)
+    {
+        $weoffer->delete();
+        return redirect()->route('weoffers.index');
+    }
+}

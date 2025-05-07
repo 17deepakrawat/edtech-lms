@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\BannersController;
+use App\Http\Controllers\DepartmentsController;
 use App\Http\Controllers\FeedbacksController;
+use App\Http\Controllers\UniversityPartnersController;
+use App\Http\Controllers\WeoffersController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -24,8 +27,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:admin'])->group(function () {
         Route::resource('banner', BannersController::class)->names('banner');
         Route::resource('feedback', FeedbacksController::class)->names('feedback');
+        Route::resource('universitypartner', UniversityPartnersController::class)->names('universitypartner');
+        Route::resource('weoffers', WeoffersController::class)->names('weoffers');
+        Route::resource('department', DepartmentsController::class)->names('department');
     });
-   
 });
 Route::get('/', function () {
     return Inertia::render('web-pages/Home');
@@ -48,8 +53,17 @@ Route::get('/blog-details', function () {
 Route::get('/contact', function () {
     return Inertia::render('web-pages/Contact');
 })->name('contact');
+Route::get('/refund', function () {
+    return Inertia::render('web-pages/Refund');
+})->name('refund');
+Route::get('/privacy', function () {
+    return Inertia::render('web-pages/Privacy');
+})->name('privacy');
+Route::get('/term-condition', function () {
+    return Inertia::render('web-pages/TermCondition');
+})->name('term-condition');
 Route::get('/about', function () {
-    return Inertia::render('web-pages/About');
+    return Inertia::render('web-pages/AboutUs');
 })->name('about');
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
