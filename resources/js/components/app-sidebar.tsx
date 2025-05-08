@@ -52,6 +52,16 @@ const adminNavItems: NavItem[] = [
         href: '/department',
         icon: Users,
     },
+    {
+        title: 'Programs',
+        href: '/programs',
+        icon: Users,
+    },
+    {
+        title: 'Courses',
+        href: '/courses',
+        icon: Users,
+    },
 ];
 
 const mentorNavItems: NavItem[] = [

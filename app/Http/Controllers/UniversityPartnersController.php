@@ -57,14 +57,20 @@ class UniversityPartnersController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
 
-        if ($request->hasFile('image')) {
-            if ($universitypartner->image && Storage::disk('public')->exists($universitypartner->image)) {
-                Storage::disk('public')->delete($universitypartner->image);
-            }
-            $validated['image'] = $request->file('image')->store('university_partner', 'public');
-        } else {
-            unset($validated['image']);
-        }
+        // if ($request->hasFile('image')) {
+        //     if ($universitypartner->image && Storage::disk('public')->exists($universitypartner->image)) {
+        //         Storage::disk('public')->delete($universitypartner->image);
+        //     }
+        //     $validated['image'] = $request->file('image')->store('university_partner', 'public');
+        // } else {
+        //     unset($validated['image']);
+        // }
+        $validated['image'] = Controller::handleImageUpdate(
+                $request,
+                'image',
+                $universitypartner->image,
+                'university_partner'
+            );
 
         $universitypartner->update($validated);
 

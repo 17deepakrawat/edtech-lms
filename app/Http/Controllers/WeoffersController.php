@@ -74,15 +74,20 @@ class WeoffersController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
 
-        if ($request->hasFile('image')) {
-            if ($weoffer->image && Storage::disk('public')->exists($weoffer->image)) {
-                Storage::disk('public')->delete($weoffer->image);
-            }
-            $validated['image'] = $request->file('image')->store('weoffer', 'public');
-        } else {
-            unset($validated['image']);
-        }
-
+        // if ($request->hasFile('image')) {
+        //     if ($weoffer->image && Storage::disk('public')->exists($weoffer->image)) {
+        //         Storage::disk('public')->delete($weoffer->image);
+        //     }
+        //     $validated['image'] = $request->file('image')->store('weoffer', 'public');
+        // } else {
+        //     unset($validated['image']);
+        // }
+        $validated['image'] = Controller::handleImageUpdate(
+            $request,
+            'image',
+            $weoffer->image,
+            'weoffer'
+        );
         $weoffer->update($validated);
 
         return redirect()

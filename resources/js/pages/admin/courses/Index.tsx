@@ -8,20 +8,24 @@ import { Edit, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import Swal from 'sweetalert2';
 
-interface department {
+interface courses {
     id: number;
-    name: string;    
+    name: string; 
+    program_id : string;
+    department_id :string;
+    image:string;
+    price:number;   
 }
 
 interface Props extends PageProps {
-    departments: department[];
+    courses: courses[];
 }
 
-export default function departmentIndex({ departments }: Props) {
+export default function departmentIndex({ courses }: Props) {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
 
-    const columns: ColumnDef<department>[] = [
+    const columns: ColumnDef<courses>[] = [
         {
             header: 'S.No',
             cell: (info) => info.row.index + 1,
@@ -29,12 +33,28 @@ export default function departmentIndex({ departments }: Props) {
         {
             accessorKey: 'name',
             header: 'Name',
-        },       
+        }, 
+               {
+            accessorKey: 'department_id',
+            header: 'Deparment',
+        }, 
+        {
+            accessorKey: 'program_id',
+            header: 'Programss',
+        },
+        {
+            accessorKey: 'price',
+            header: 'Price',
+        }, 
+        {
+            header: 'Image',
+            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="Banner" className="h-20 w-20 rounded" />,
+        },
         {
             header: 'Actions',
             cell: ({ row }) => (
                 <div className="flex space-x-2">
-                    <Link href={`/department/${row.original.id}/edit`}>
+                    <Link href={`/courses/${row.original.id}/edit`}>
                         <Button variant="ghost" size="icon">
                             <Edit className="h-4 w-4" />
                         </Button>
@@ -48,7 +68,7 @@ export default function departmentIndex({ departments }: Props) {
     ];
 
     const table = useReactTable({
-        data: departments,
+        data: courses,
         columns,
         state: {
             globalFilter,
@@ -80,7 +100,7 @@ export default function departmentIndex({ departments }: Props) {
         }).then((result) => {
             if (result.isConfirmed) {
                 // Perform the delete operation
-                router.delete(`/department/${id}`);
+                router.delete(`/courses/${id}`);
                 Swal.fire('Deleted!', 'The department has been deleted.', 'success');
             }
         });
@@ -93,7 +113,7 @@ export default function departmentIndex({ departments }: Props) {
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Departments</h1>
-                    <Link href="/department/create">
+                    <Link href="/courses/create">
                         <Button>
                             <Plus className="mr-2 h-4 w-4" /> Create Department
                         </Button>

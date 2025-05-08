@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\BannersController;
+use App\Http\Controllers\CoursesController;
 use App\Http\Controllers\DepartmentsController;
 use App\Http\Controllers\FeedbacksController;
+use App\Http\Controllers\ProgramsController;
 use App\Http\Controllers\UniversityPartnersController;
 use App\Http\Controllers\WeoffersController;
 use Illuminate\Support\Facades\Route;
@@ -30,14 +32,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('universitypartner', UniversityPartnersController::class)->names('universitypartner');
         Route::resource('weoffers', WeoffersController::class)->names('weoffers');
         Route::resource('department', DepartmentsController::class)->names('department');
+        Route::resource('programs', ProgramsController::class)->names('programs');
+        Route::get('/programs/{program}/toggle-status', [ProgramsController::class, 'toggleStatus'])->name('programs.toggle-status');
+        Route::resource('programs', ProgramsController::class)->names('programs');
+        Route::resource('courses',CoursesController::class)->names('courses');
     });
 });
 Route::get('/', function () {
     return Inertia::render('web-pages/Home');
 })->name('home');
-Route::get('/courses', function () {
+Route::get('/course', function () {
     return Inertia::render('web-pages/course/Index');
-})->name('courses');
+})->name('course');
 Route::get('/courses-details', function () {
     return Inertia::render('web-pages/course/Details');
 })->name('courses-details');

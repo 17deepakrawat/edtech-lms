@@ -6,6 +6,7 @@ use App\Models\Banners;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+
 class BannersController extends Controller
 {
     public function index()
@@ -34,7 +35,6 @@ class BannersController extends Controller
         Banners::create($validated);
 
         return redirect()->route('banner.index');
-        
     }
 
     public function edit(Banners $banner)
@@ -53,22 +53,19 @@ class BannersController extends Controller
             'description' => ['required', 'string'],
             'bannerimage' => ['nullable', 'image', 'max:2048'],
         ]);
-    
-        if ($request->hasFile('bannerimage')) {            
-            if ($banner->bannerimage && Storage::disk('public')->exists($banner->bannerimage)) {
-                Storage::disk('public')->delete($banner->bannerimage);
-            }    
-            $validated['bannerimage'] = $request->file('bannerimage')->store('banners', 'public');
-        } else {
-            unset($validated['bannerimage']);
-        }
-    
+        $validated['bannerimage'] = Controller::handleImageUpdate(
+            $request,
+            'bannerimage',
+            $banner->bannerimage,
+            'banners'
+        );
+
         $banner->update($validated);
-    
+
         return redirect()->route('banner.index');
     }
-    
-    
+
+
     public function destroy(Banners $banner)
     {
         $banner->delete();

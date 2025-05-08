@@ -63,7 +63,7 @@ class FeedbacksController extends Controller
      */
 
 
-    public function update(Request $request, Feedbacks $feedbacks)
+    public function update(Request $request, Feedbacks $feedback)
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -71,15 +71,20 @@ class FeedbacksController extends Controller
             'description' => ['required', 'string'],
             'image' => ['nullable', 'image', 'max:2048'],
         ]);
-
-        if ($request->hasFile('image')) {
-            if ($feedbacks->image && Storage::disk('public')->exists($feedbacks->image)) {
-                Storage::disk('public')->delete($feedbacks->image);
-            }
-            $validated['image'] = $request->file('image')->store('image', 'public');
-        }
-
-        $feedbacks->update($validated);
+        //   dd($request);
+        // if ($request->hasFile('image')) {
+        //     if ($feedback->image && Storage::disk('public')->exists($feedback->image)) {
+        //         Storage::disk('public')->delete($feedback->image);
+        //     }
+        //     $validated['image'] = $request->file('image')->store('image', 'public');
+        // }
+        $validated['image'] = Controller::handleImageUpdate(
+            $request,
+            'image',
+            $feedback->image,
+            'image'
+        );
+        $feedback->update($validated);
 
         return redirect()->route('feedback.index');
     }
