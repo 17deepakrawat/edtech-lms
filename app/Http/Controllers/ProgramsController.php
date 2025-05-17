@@ -12,6 +12,7 @@ class ProgramsController extends Controller
     /**
      * Display a listing of the resource.
      */
+    
     public function index()
     {
         $programs = Programs::with('department')->get()->map(function ($program) {

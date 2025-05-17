@@ -1,12 +1,15 @@
 <?php
 
 use App\Http\Controllers\BannersController;
+use App\Http\Controllers\BlogCategoriesController;
+use App\Http\Controllers\BlogsController;
 use App\Http\Controllers\CoursesController;
 use App\Http\Controllers\DepartmentsController;
 use App\Http\Controllers\FeedbacksController;
 use App\Http\Controllers\ProgramsController;
 use App\Http\Controllers\UniversityPartnersController;
 use App\Http\Controllers\WeoffersController;
+use App\Models\BlogCategories;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -35,7 +38,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('programs', ProgramsController::class)->names('programs');
         Route::get('/programs/{program}/toggle-status', [ProgramsController::class, 'toggleStatus'])->name('programs.toggle-status');
         Route::resource('programs', ProgramsController::class)->names('programs');
-        Route::resource('courses',CoursesController::class)->names('courses');
+        Route::resource('courses', CoursesController::class)->names('courses');
+        Route::get('/get-program-by-departmnet/{department_id}', [CoursesController::class, 'getByDepartment']);
+        Route::resource('blogcategories', BlogCategoriesController::class)->names('blogcategories');
+        Route::get('/blogcategories/{blogcategories}/toggle-status', [BlogCategoriesController::class, 'toggleStatus'])->name('blogcategories.toggle-status');
+        Route::resource('/adminblogs', BlogsController::class)->names('adminblogs');
+
     });
 });
 Route::get('/', function () {

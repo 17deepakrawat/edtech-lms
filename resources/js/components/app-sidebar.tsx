@@ -62,6 +62,16 @@ const adminNavItems: NavItem[] = [
         href: '/courses',
         icon: Users,
     },
+    {
+        title: 'Blog Category',
+        href: '/blogcategories',
+        icon: Users,
+    },
+    {
+        title: 'Blog ',
+        href: '/adminblogs',
+        icon: Users,
+    },
 ];
 
 const mentorNavItems: NavItem[] = [

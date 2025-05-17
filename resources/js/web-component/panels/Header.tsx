@@ -21,7 +21,7 @@ export default function Header() {
 
     return (
         <>
-            <nav className="dark:shadow-sm-white fixed top-0 z-50 w-full border-gray-200 bg-white shadow-sm dark:border-b-1 dark:border-b-gray-400 dark:bg-gray-900">
+            <nav className="dark:shadow-sm-white fixed top-0 z-100 w-full border-gray-200 bg-white shadow-sm dark:border-b-1 dark:border-b-gray-400 dark:bg-gray-900">
                 <div className="container">
                     <div className=" flex flex-wrap items-center justify-between py-4 px-0">
                         <Link href="/" prefetch className="flex w-[82px] items-center space-x-3 sm:w-[120px] rtl:space-x-reverse">
@@ -221,36 +221,36 @@ export default function Header() {
                                     </Link>
                                 </li> */}
                                 <li>
-                                <a
+                                <Link
                                     href="/about"
                                     className="block border-b border-gray-100 px-3 py-2 text-gray-900 hover:bg-gray-50 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-600 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
                                 >
                                     About Us
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a
-                                    href="/courses"
+                                <Link
+                                    href="/course"
                                     className="block border-b border-gray-100 px-3 py-2 text-gray-900 hover:bg-gray-50 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-600 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
                                 >
                                     Courses
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a
+                                <Link
                                     href="/blogs"
                                     className="block border-b border-gray-100 px-3 py-2 text-gray-900 hover:bg-gray-50 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-600 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
                                 >
                                     Blogs
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a
+                                <Link
                                     href="/contact"
                                     className="block border-b border-gray-100 px-3 py-2 text-gray-900 hover:bg-gray-50 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-600 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
                                 >
                                     Contact
-                                </a>
+                                </Link>
                             </li>
                             </ul>
                         </div>

@@ -4,89 +4,26 @@ import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
-import { Edit, Plus, Trash2 } from 'lucide-react';
+import { CheckCircle, Edit, Plus, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import Swal from 'sweetalert2';
 
-interface courses {
+interface BlogCategory {
     id: number;
-    name: string; 
-    program_id : string;
-    department_id :string;
-    image:string;
-    price:number;   
+    name: string;
+    department_name: string;
+    status: boolean;
 }
 
 interface Props extends PageProps {
-    courses: courses[];
+    blogCategory: BlogCategory[];
 }
 
-export default function departmentIndex({ courses }: Props) {
+export default function DepartmentIndex({ blogCategory }: Props) {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
-
-    const columns: ColumnDef<courses>[] = [
-        {
-            header: 'S.No',
-            cell: (info) => info.row.index + 1,
-        },
-        {
-            accessorKey: 'name',
-            header: 'Name',
-        }, 
-               {
-            accessorKey: 'department',
-            header: 'Deparment',
-        }, 
-        {
-            accessorKey: 'program',
-            header: 'Programss',
-        },
-        {
-            accessorKey: 'price',
-            header: 'Price',
-        }, 
-        {
-            header: 'Image',
-            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="Banner" className="h-20 w-20 rounded" />,
-        },
-        {
-            header: 'Actions',
-            cell: ({ row }) => (
-                <div className="flex space-x-2">
-                    <Link href={`/courses/${row.original.id}/edit`}>
-                        <Button variant="ghost" size="icon">
-                            <Edit className="h-4 w-4" />
-                        </Button>
-                    </Link>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
-                        <Trash2 className="h-4 w-4 text-red-600" />
-                    </Button>
-                </div>
-            ),
-        },
-    ];
-
-    const table = useReactTable({
-        data: courses,
-        columns,
-        state: {
-            globalFilter,
-            pagination: {
-                pageSize,
-                pageIndex: 0,
-            },
-        },
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        onGlobalFilterChange: setGlobalFilter,
-        onPaginationChange: (updater) => {
-            const newState = typeof updater === 'function' ? updater(table.getState().pagination) : updater;
-            table.setPageIndex(newState.pageIndex);
-        },
-        manualPagination: false,
-    });
+    const [data, setData] = useState<BlogCategory[]>(blogCategory);
 
     const handleDelete = (id: number) => {
         Swal.fire({
@@ -99,23 +36,107 @@ export default function departmentIndex({ courses }: Props) {
             confirmButtonText: 'Yes, delete it!',
         }).then((result) => {
             if (result.isConfirmed) {
-                // Perform the delete operation
-                router.delete(`/courses/${id}`);
-                Swal.fire('Deleted!', 'The department has been deleted.', 'success');
+                router.delete(`/blogcategories/${id}`, {
+                    onSuccess: () => {
+                        toast.success('Category deleted successfully!');
+                        setData(prev => prev.filter(item => item.id !== id));
+                    },
+                    onError: () => {
+                        toast.error('Failed to delete category.');
+                    }
+                });
             }
         });
     };
 
+    const handleStatusToggle = (id: number, currentStatus: boolean) => {
+        router.get(
+            `/blogcategories/${id}/toggle-status`,
+            {},
+            {
+                preserveState: true,
+                onSuccess: (page) => {
+                    // Update the local state to reflect the new status
+                    setData(prev =>
+                        prev.map(item =>
+                            item.id === id ? { ...item, status: !currentStatus } : item
+                        )
+                    );
+                    toast.success('Category status updated');
+                },
+                onError: () => {
+                    toast.error('Failed to update status.');
+                }
+            }
+        );
+    };
+    
+
+    const columns: ColumnDef<BlogCategory>[] = [
+        {
+            header: 'S.No',
+            cell: (info) => info.row.index + 1,
+        },
+        {
+            accessorKey: 'name',
+            header: 'Name',
+        },
+        {
+            accessorKey: 'status',
+            header: 'Status',
+            cell: ({ row }) => (
+                <Button
+                    variant="outline"
+                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800 ' : 'bg-red-600 hover:bg-red-600 '} text-white hover:text-white`}
+                    onClick={() => handleStatusToggle(row.original.id, row.original.status)}
+                >
+                    {row.original.status ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+                </Button>
+            ),
+        },
+        {
+            header: 'Actions',
+            cell: ({ row }) => (
+                <div className="flex space-x-2">
+                    <Link href={`/blogcategories/${row.original.id}/edit`}>
+                        <Button variant="ghost" size="icon">
+                            <Edit className="h-4 w-4" />
+                        </Button>
+                    </Link>
+                    <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
+                        <Trash2 className={`h-4 w-4 `} />
+                    </Button>
+                </div>
+            ),
+        },
+    ];
+
+    const table = useReactTable({
+        data,
+        columns,
+        state: {
+            globalFilter,
+            pagination: {
+                pageSize,
+                pageIndex: 0,
+            },
+        },
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        onGlobalFilterChange: setGlobalFilter,
+        manualPagination: false,
+    });
+
     return (
         <AppLayout>
-            <Head title="Feed Back" />
-
+            <Head title="Blog Category" />
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Departments</h1>
-                    <Link href="/courses/create">
+                    <h1 className="text-2xl font-bold">Blog Category</h1>
+                    <Link href="/blogcategories/create">
                         <Button>
-                            <Plus className="mr-2 h-4 w-4" /> Create Department
+                            <Plus className="mr-2 h-4 w-4" /> Create Blog Category
                         </Button>
                     </Link>
                 </div>
@@ -130,7 +151,7 @@ export default function departmentIndex({ courses }: Props) {
                     </select>
                     <Input
                         placeholder="Search..."
-                        value={globalFilter ?? ''}
+                        value={globalFilter}
                         onChange={(e) => setGlobalFilter(e.target.value)}
                         className="max-w-2xs"
                     />
@@ -138,9 +159,9 @@ export default function departmentIndex({ courses }: Props) {
 
                 <table className="w-full table-auto rounded border bg-white shadow dark:bg-neutral-800">
                     <thead>
-                        {table.getHeaderGroups().map((headerGroup) => (
+                        {table.getHeaderGroups().map(headerGroup => (
                             <tr key={headerGroup.id} className="bg-neutral-100 dark:bg-neutral-700">
-                                {headerGroup.headers.map((header) => (
+                                {headerGroup.headers.map(header => (
                                     <th key={header.id} className="px-4 py-2 text-left">
                                         {flexRender(header.column.columnDef.header, header.getContext())}
                                     </th>
@@ -149,9 +170,9 @@ export default function departmentIndex({ courses }: Props) {
                         ))}
                     </thead>
                     <tbody>
-                        {table.getRowModel().rows.map((row) => (
+                        {table.getRowModel().rows.map(row => (
                             <tr key={row.id} className="border-t dark:border-neutral-700">
-                                {row.getVisibleCells().map((cell) => (
+                                {row.getVisibleCells().map(cell => (
                                     <td key={cell.id} className="px-4 py-2">
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </td>
