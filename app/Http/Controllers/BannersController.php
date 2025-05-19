@@ -72,4 +72,16 @@ class BannersController extends Controller
 
         return redirect()->route('banner.index');
     }
+
+    public function toggleStatus($id)
+    {
+        try {
+            $banner = Banners::findOrFail($id);
+            $banner->status = !$banner->status;
+            $banner->save();
+            return redirect()->back()->with('success', 'Status updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());
+        }
+    }
 }

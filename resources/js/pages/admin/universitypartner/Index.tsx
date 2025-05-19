@@ -4,22 +4,49 @@ import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
-import { Edit, Plus, Trash2 } from 'lucide-react';
+import { CheckCircle, Edit, Plus, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import Swal from 'sweetalert2';
+
 interface UniversityPartner {
     id: number;
     name: string;
-    title: string;
-    description: string;
     image: string;
+    link: string;
+    status: boolean;
 }
+
 interface Props extends PageProps {
     universitypartners: UniversityPartner[];
 }
+
 export default function UniversityPartnerIndex({ universitypartners }: Props) {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
+    const [data, setData] = useState<UniversityPartner[]>(universitypartners);
+
+    const handleStatusToggle = (id: number, currentStatus: boolean) => {
+        router.get(
+            `/universitypartner/${id}/toggle-status`,
+            {},
+            {
+                preserveState: true,
+                onSuccess: () => {
+                    setData(prev =>
+                        prev.map(item =>
+                            item.id === id ? { ...item, status: !currentStatus } : item
+                        )
+                    );
+                    toast.success('University partner status updated');
+                },
+                onError: () => {
+                    toast.error('Failed to update status.');
+                }
+            }
+        );
+    };
+
     const columns: ColumnDef<UniversityPartner>[] = [
         {
             header: 'S.No',
@@ -29,10 +56,26 @@ export default function UniversityPartnerIndex({ universitypartners }: Props) {
             accessorKey: 'name',
             header: 'Name',
         },
-                
         {
             header: 'Image',
-            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="Banner" className="h-20 w-20 rounded" />,
+            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="University Partner" className="h-20 w-20 rounded" />,
+        },
+        {
+            accessorKey: 'link',
+            header: 'Link',
+        },
+        {
+            accessorKey: 'status',
+            header: 'Status',
+            cell: ({ row }) => (
+                <Button
+                    variant="outline"
+                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800 ' : 'bg-red-600 hover:bg-red-600 '} text-white hover:text-white`}
+                    onClick={() => handleStatusToggle(row.original.id, row.original.status)}
+                >
+                    {row.original.status ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+                </Button>
+            ),
         },
         {
             header: 'Actions',
@@ -51,7 +94,7 @@ export default function UniversityPartnerIndex({ universitypartners }: Props) {
         },
     ];
     const table = useReactTable({
-        data: universitypartners,
+        data: data,
         columns,
         state: {
             globalFilter,

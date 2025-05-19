@@ -3,16 +3,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { Link, useForm } from '@inertiajs/react';
-import { Textarea } from '@/components/ui/Textarea';
-
-import { title } from 'process';
 import { toast } from 'sonner';
+import RichTextEditor from '@/components/ui/RichTextEditor'; // ✅ Import your text editor
 
 interface weoffers {
     id: number;
     title: string;
     description: string;
-    link:string;
+    link: string;
     image: string;
 }
 
@@ -21,7 +19,6 @@ interface Props {
 }
 
 export default function Edit({ weoffers }: Props) {
-    console.log(weoffers);
     const { data, setData, post, processing, errors } = useForm({
         _method: 'PUT',
         title: weoffers.title || '',
@@ -95,11 +92,18 @@ export default function Edit({ weoffers }: Props) {
                             />
                         )}
                     </div>
+
                     <div className="w-full">
-                        <Label htmlFor="name">Description</Label>
-                        <Textarea id="description" value={data.description} onChange={(e) => setData('description', e.target.value)} />
-                        {errors.description && <p className="text-sm text-red-500">{errors.description}</p>}
+                        <Label htmlFor="description">Description</Label>
+                        <RichTextEditor
+                            value={data.description}
+                            onChange={(content) => setData('description', content)}
+                        />
+                        {errors.description && (
+                            <p className="text-sm text-red-500">{errors.description}</p>
+                        )}
                     </div>
+
                     <div className="flex justify-end gap-2">
                         <Link href="/universitypartner">
                             <Button variant="outline">← Back</Button>

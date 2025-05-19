@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/Textarea';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { toast } from 'sonner'; // ✅ Import from sonner
+import { toast } from 'sonner';
+import RichTextEditor from '@/components/ui/RichTextEditor'; // ✅ Import RichTextEditor
 
 interface Banner {
     id: number;
@@ -19,7 +19,7 @@ interface Props {
 
 export default function Edit({ banner }: Props) {
     const { data, setData, post, processing, errors } = useForm({
-        _method: 'PUT', // Required for PUT in Inertia
+        _method: 'PUT',
         title: banner.title,
         description: banner.description,
         bannerimage: null as File | null,
@@ -28,21 +28,19 @@ export default function Edit({ banner }: Props) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Prepare FormData
         const formData = new FormData();
         formData.append('title', data.title);
         formData.append('description', data.description);
         if (data.bannerimage) formData.append('bannerimage', data.bannerimage);
 
-        // Send PUT request with FormData
         post(`/banner/${banner.id}`, {
             data: formData,
             preserveState: true,
             onSuccess: () => {
-                toast.success('Banner updated successfully!'); // Success message
+                toast.success('Banner updated successfully!');
             },
             onError: () => {
-                toast.error('Failed to update banner. Please try again.'); // Error message
+                toast.error('Failed to update banner. Please try again.');
             }
         });
     };
@@ -66,12 +64,13 @@ export default function Edit({ banner }: Props) {
 
                     <div>
                         <Label htmlFor="description">Description</Label>
-                        <Textarea
-                            id="description"
+                        <RichTextEditor
                             value={data.description}
-                            onChange={(e) => setData('description', e.target.value)}
+                            onChange={(val) => setData('description', val)}
                         />
-                        {errors.description && <p className="text-sm text-red-500">{errors.description}</p>}
+                        {errors.description && (
+                            <p className="text-sm text-red-500">{errors.description}</p>
+                        )}
                     </div>
 
                     <div>
@@ -81,7 +80,9 @@ export default function Edit({ banner }: Props) {
                             type="file"
                             onChange={(e) => setData('bannerimage', e.target.files?.[0] || null)}
                         />
-                        {errors.bannerimage && <p className="text-sm text-red-500">{errors.bannerimage}</p>}
+                        {errors.bannerimage && (
+                            <p className="text-sm text-red-500">{errors.bannerimage}</p>
+                        )}
                         {banner.bannerimage && (
                             <img
                                 src={`/storage/${banner.bannerimage}`}

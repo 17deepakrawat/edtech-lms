@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Departments extends Model
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'status'];
 
     /**
      * Get all programs under this department.

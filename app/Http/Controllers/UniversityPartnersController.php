@@ -29,16 +29,12 @@ class UniversityPartnersController extends Controller
             'image' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
 
-        $validated['image'] = $request->file('image')->store('UniversityPartners', 'public');
+        $validated['image'] = $request->file('image')->store('university_partner', 'public');
+        $validated['status'] = false; // Set default status to false
 
         UniversityPartners::create($validated);
 
         return redirect()->route('universitypartner.index')->with('success', 'University Partner created successfully.');
-    }
-
-    public function show(UniversityPartners $universityPartners)
-    {
-        //
     }
 
     public function edit(UniversityPartners $universitypartner)
@@ -48,7 +44,6 @@ class UniversityPartnersController extends Controller
         ]);
     }
 
-
     public function update(Request $request, UniversityPartners $universitypartner)
     {
         $validated = $request->validate([
@@ -57,20 +52,12 @@ class UniversityPartnersController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
 
-        // if ($request->hasFile('image')) {
-        //     if ($universitypartner->image && Storage::disk('public')->exists($universitypartner->image)) {
-        //         Storage::disk('public')->delete($universitypartner->image);
-        //     }
-        //     $validated['image'] = $request->file('image')->store('university_partner', 'public');
-        // } else {
-        //     unset($validated['image']);
-        // }
         $validated['image'] = Controller::handleImageUpdate(
-                $request,
-                'image',
-                $universitypartner->image,
-                'university_partner'
-            );
+            $request,
+            'image',
+            $universitypartner->image,
+            'university_partner'
+        );
 
         $universitypartner->update($validated);
 
@@ -79,10 +66,25 @@ class UniversityPartnersController extends Controller
             ->with('success', 'University Partner updated successfully.');
     }
 
-
     public function destroy(UniversityPartners $universitypartner)
     {
+        if ($universitypartner->image && Storage::disk('public')->exists($universitypartner->image)) {
+            Storage::disk('public')->delete($universitypartner->image);
+        }
+        
         $universitypartner->delete();
-        return redirect()->route('universitypartner.index');
+        return redirect()->route('universitypartner.index')->with('success', 'University Partner deleted successfully.');
+    }
+
+    public function toggleStatus($id)
+    {
+        try {
+            $partner = UniversityPartners::findOrFail($id);
+            $partner->status = !$partner->status;
+            $partner->save();
+            return redirect()->back()->with('success', 'Status updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());
+        }
     }
 }

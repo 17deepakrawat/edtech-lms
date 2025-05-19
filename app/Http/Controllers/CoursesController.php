@@ -203,4 +203,16 @@ class CoursesController extends Controller
 
         return redirect()->route('courses.index')->with('success', 'Course deleted successfully!');
     }
+
+    public function toggleStatus($id)
+    {
+        try {
+            $course = Courses::findOrFail($id);
+            $course->status = !$course->status;
+            $course->save();
+            return redirect()->back()->with('success', 'Status updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());
+        }
+    }
 }

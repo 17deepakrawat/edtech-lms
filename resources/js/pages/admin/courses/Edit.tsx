@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import RichTextEditor from '@/components/ui/RichTextEditor';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/Textarea';
 import AppLayout from '@/layouts/app-layout';
@@ -66,12 +67,8 @@ export default function Edit({ course, departments, programs: initialPrograms })
         post(`/courses/${course.id}`, {
             data: formData,
             preserveState: true,
-            onSuccess: () => {
-                toast.success('Course updated successfully!');
-            },
-            onError: () => {
-                toast.error('Failed to update Course. Please try again.');
-            }
+            onSuccess: () => toast.success('Course updated successfully!'),
+            onError: () => toast.error('Failed to update Course. Please try again.'),
         });
     };
 
@@ -133,7 +130,7 @@ export default function Edit({ course, departments, programs: initialPrograms })
 
                     <div>
                         <Label>Full Description</Label>
-                        <Textarea value={data.content} onChange={(e) => setData('content', e.target.value)} />
+                        <RichTextEditor value={data.content} onChange={(content) => setData('content', content)} />
                         {errors.content && <p className="text-sm text-red-500">{errors.content}</p>}
                     </div>
 
@@ -220,7 +217,7 @@ export default function Edit({ course, departments, programs: initialPrograms })
                     <div>
                         <Label>FAQs</Label>
                         {data.faqs.map((faq, index) => (
-                            <div key={index} className="mb-4 rounded-md  space-y-2">
+                            <div key={index} className="mb-4 space-y-2 rounded-md">
                                 <div>
                                     <Label>Question</Label>
                                     <Input
@@ -234,11 +231,11 @@ export default function Edit({ course, departments, programs: initialPrograms })
                                 </div>
                                 <div>
                                     <Label>Answer</Label>
-                                    <Textarea
+                                    <RichTextEditor
                                         value={faq.answer}
-                                        onChange={(e) => {
+                                        onChange={(content) => {
                                             const updated = [...data.faqs];
-                                            updated[index].answer = e.target.value;
+                                            updated[index].answer = content;
                                             setData('faqs', updated);
                                         }}
                                     />
@@ -256,11 +253,7 @@ export default function Edit({ course, departments, programs: initialPrograms })
                                 </Button>
                             </div>
                         ))}
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => setData('faqs', [...data.faqs, { question: '', answer: '' }])}
-                        >
+                        <Button type="button" variant="outline" onClick={() => setData('faqs', [...data.faqs, { question: '', answer: '' }])}>
                             + Add FAQ
                         </Button>
                         {errors.faqs && <p className="text-sm text-red-500">{errors.faqs}</p>}

@@ -103,4 +103,16 @@ class WeoffersController extends Controller
         $weoffer->delete();
         return redirect()->route('weoffers.index');
     }
+
+    public function toggleStatus($id)
+    {
+        try {
+            $weoffer = Weoffers::findOrFail($id);
+            $weoffer->status = !$weoffer->status;
+            $weoffer->save();
+            return redirect()->back()->with('success', 'Status updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());
+        }
+    }
 }

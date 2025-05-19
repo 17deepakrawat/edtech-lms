@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import RichTextEditor from '@/components/ui/RichTextEditor';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/Textarea';
 import AppLayout from '@/layouts/app-layout';
@@ -20,8 +21,8 @@ export default function Create({ departments }) {
         rating: '',
         price: '',
         is_subject: '',
-        course_keys: [''], // Start with one key point
-        faqs: [{ question: '', answer: '' }], // Start with one FAQ
+        course_keys: [''],
+        faqs: [{ question: '', answer: '' }],
         image: null,
     });
 
@@ -34,7 +35,7 @@ export default function Create({ departments }) {
         Object.entries(data).forEach(([key, value]) => {
             if (key === 'course_keys' || key === 'faqs') {
                 formData.append(key, JSON.stringify(value));
-            } else if (key === 'image' && value) {
+            } else if (key === 'image' && value instanceof File) {
                 formData.append('image', value);
             } else {
                 formData.append(key, value);
@@ -51,7 +52,6 @@ export default function Create({ departments }) {
     };
 
     const fetchPrograms = (department_id) => {
-        // console.log(department_id);return false;
         if (!department_id) return;
         fetch(`/get-program-by-departmnet/${department_id}`)
             .then((res) => res.json())
@@ -60,6 +60,12 @@ export default function Create({ departments }) {
                 setData('program_id', '');
             })
             .catch(() => setPrograms([]));
+    };
+
+    const handleFaqChange = (index, field, value) => {
+        const updated = [...data.faqs];
+        updated[index][field] = value;
+        setData('faqs', updated);
     };
 
     return (
@@ -94,7 +100,11 @@ export default function Create({ departments }) {
                         </div>
                         <div>
                             <Label>Select Program</Label>
-                            <Select value={data.program_id} onValueChange={(val) => setData('program_id', val)} disabled={!programs.length}>
+                            <Select
+                                value={data.program_id}
+                                onValueChange={(val) => setData('program_id', val)}
+                                disabled={!programs.length}
+                            >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select Program" />
                                 </SelectTrigger>
@@ -110,7 +120,7 @@ export default function Create({ departments }) {
                         </div>
                     </div>
 
-                    {/* Basic Course Info */}
+                    {/* Basic Info */}
                     <div>
                         <Label>Course Name</Label>
                         <Input value={data.name} onChange={(e) => setData('name', e.target.value)} />
@@ -125,7 +135,7 @@ export default function Create({ departments }) {
 
                     <div>
                         <Label>Full Description</Label>
-                        <Textarea value={data.content} onChange={(e) => setData('content', e.target.value)} />
+                        <RichTextEditor value={data.content} onChange={(content) => setData('content', content)} />
                         {errors.content && <p className="text-sm text-red-500">{errors.content}</p>}
                     </div>
 
@@ -179,100 +189,85 @@ export default function Create({ departments }) {
                         </div>
                     </div>
 
-                    {/* Course Keys + FAQs */}
-                    <div className="">
-                        {/* Course Keys */}
-                        <div>
-                            <Label>Course Key Points</Label>
-                            {data.course_keys.map((key, index) => (
-                                <div key={index} className="mb-2 flex items-center gap-2">
-                                    <Input
-                                        value={key}
-                                        onChange={(e) => {
-                                            const updated = [...data.course_keys];
-                                            updated[index] = e.target.value;
-                                            setData('course_keys', updated);
-                                        }}
-                                    />
-                                    <Button
-                                        type="button"
-                                        size="sm"
-                                        variant="destructive"
-                                        onClick={() => {
-                                            const filtered = data.course_keys.filter((_, i) => i !== index);
-                                            setData('course_keys', filtered);
-                                        }}
-                                    >
-                                        Remove
-                                    </Button>
-                                </div>
-                            ))}
-                            <Button type="button" variant="outline" onClick={() => setData('course_keys', [...data.course_keys, ''])}>
-                                + Add Point
-                            </Button>
-                            {errors.course_keys && <p className="mt-1 text-sm text-red-500">{errors.course_keys}</p>}
-                        </div>
-                        {/* Image Upload */}
-                        <div>
-                            <Label>Course Image</Label>
-                            <Input type="file" onChange={(e) => setData('image', e.target.files[0])} />
-                            {errors.image && <p className="text-sm text-red-500">{errors.image}</p>}
-                        </div>
-                        {/* FAQs */}
-                        <div className="mt-8">
-                            <Label>FAQs</Label>
-                            <div className="grid grid-cols-1 gap-4">
-                                {data.faqs.map((faq, index) => (
-                                    <div key={index} className="relative space-y-2 rounded-md">
-                                        <div className="flex justify-end">
-                                            <Button
-                                                type="button"
-                                                size="sm"
-                                                variant="destructive"
-                                                className=""
-                                                onClick={() => {
-                                                    const updated = data.faqs.filter((_, i) => i !== index);
-                                                    setData('faqs', updated);
-                                                }}
-                                            >
-                                                ✕
-                                            </Button>
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-medium">Question</Label>
-                                            <Input
-                                                placeholder="Enter question"
-                                                value={faq.question}
-                                                onChange={(e) => {
-                                                    const updated = [...data.faqs];
-                                                    updated[index].question = e.target.value;
-                                                    setData('faqs', updated);
-                                                }}
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-medium">Answer</Label>
-                                            <Textarea
-                                                placeholder="Enter answer"
-                                                value={faq.answer}
-                                                onChange={(e) => {
-                                                    const updated = [...data.faqs];
-                                                    updated[index].answer = e.target.value;
-                                                    setData('faqs', updated);
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="mt-4">
-                                <Button type="button" variant="outline" onClick={() => setData('faqs', [...data.faqs, { question: '', answer: '' }])}>
-                                    + Add FAQ
+                    {/* Course Keys */}
+                    <div>
+                        <Label>Course Key Points</Label>
+                        {data.course_keys.map((key, index) => (
+                            <div key={index} className="mb-2 flex items-center gap-2">
+                                <Input
+                                    value={key}
+                                    onChange={(e) => {
+                                        const updated = [...data.course_keys];
+                                        updated[index] = e.target.value;
+                                        setData('course_keys', updated);
+                                    }}
+                                />
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="destructive"
+                                    onClick={() => {
+                                        const filtered = data.course_keys.filter((_, i) => i !== index);
+                                        setData('course_keys', filtered);
+                                    }}
+                                >
+                                    Remove
                                 </Button>
                             </div>
-                            {errors.faqs && <p className="mt-1 text-sm text-red-500">{errors.faqs}</p>}
+                        ))}
+                        <Button type="button" variant="outline" onClick={() => setData('course_keys', [...data.course_keys, ''])}>
+                            + Add Point
+                        </Button>
+                        {errors.course_keys && <p className="mt-1 text-sm text-red-500">{errors.course_keys}</p>}
+                    </div>
+
+                    {/* Image Upload */}
+                    <div>
+                        <Label>Course Image</Label>
+                        <Input type="file" accept="image/*" onChange={(e) => setData('image', e.target.files?.[0])} />
+                        {errors.image && <p className="text-sm text-red-500">{errors.image}</p>}
+                    </div>
+
+                    {/* FAQs */}
+                    <div className="mt-8">
+                        <Label>FAQs</Label>
+                        <div className="grid grid-cols-1 gap-4">
+                            {data.faqs.map((faq, index) => (
+                                <div key={index} className="relative space-y-2 rounded-md ">
+                                    <div className="flex justify-end">
+                                        <Button
+                                            type="button"
+                                            size="sm"
+                                            variant="destructive"
+                                            onClick={() => {
+                                                const updated = data.faqs.filter((_, i) => i !== index);
+                                                setData('faqs', updated);
+                                            }}
+                                        >
+                                            ✕
+                                        </Button>
+                                    </div>
+                                    <div>
+                                        <Label>Question</Label>
+                                        <Input
+                                            placeholder="Enter question"
+                                            value={faq.question}
+                                            onChange={(e) => handleFaqChange(index, 'question', e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label>Answer</Label>
+                                        <RichTextEditor value={faq.answer} onChange={(content) => handleFaqChange(index, 'answer', content)} />
+                                    </div>
+                                </div>
+                            ))}
                         </div>
+                        <div className="mt-4">
+                            <Button type="button" variant="outline" onClick={() => setData('faqs', [...data.faqs, { question: '', answer: '' }])}>
+                                + Add FAQ
+                            </Button>
+                        </div>
+                        {errors.faqs && <p className="mt-1 text-sm text-red-500">{errors.faqs}</p>}
                     </div>
 
                     {/* Submit */}

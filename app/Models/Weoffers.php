@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Weoffers extends Model
 {
-    protected $fillable=['title','link','description','image'];
+    protected $fillable = ['title','description','link','image','status'];
 }

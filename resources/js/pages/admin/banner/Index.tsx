@@ -4,8 +4,9 @@ import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
-import { Edit, Plus, Trash2 } from 'lucide-react';
+import { CheckCircle, Edit, Plus, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import Swal from 'sweetalert2'; // Import SweetAlert2
 
 interface Banner {
@@ -13,6 +14,7 @@ interface Banner {
     title: string;
     description: string;
     bannerimage: string;
+    status: boolean;
 }
 
 interface Props extends PageProps {
@@ -22,6 +24,28 @@ interface Props extends PageProps {
 export default function BannerIndex({ banners }: Props) {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
+    const [data, setData] = useState<Banner[]>(banners);
+
+    const handleStatusToggle = (id: number, currentStatus: boolean) => {
+        router.get(
+            `/banner/${id}/toggle-status`,
+            {},
+            {
+                preserveState: true,
+                onSuccess: () => {
+                    setData(prev =>
+                        prev.map(item =>
+                            item.id === id ? { ...item, status: !currentStatus } : item
+                        )
+                    );
+                    toast.success('Banner status updated');
+                },
+                onError: () => {
+                    toast.error('Failed to update status.');
+                }
+            }
+        );
+    };
 
     const columns: ColumnDef<Banner>[] = [
         {
@@ -35,10 +59,24 @@ export default function BannerIndex({ banners }: Props) {
         {
             accessorKey: 'description',
             header: 'Description',
+            cell: ({ row }) => <div className="line-clamp-3 max-w-xs text-sm" dangerouslySetInnerHTML={{ __html: row.original.description }} />,
         },
         {
             header: 'Image',
             cell: ({ row }) => <img src={`/storage/${row.original.bannerimage}`} alt="Banner" className="h-20 w-20 rounded" />,
+        },
+        {
+            accessorKey: 'status',
+            header: 'Status',
+            cell: ({ row }) => (
+                <Button
+                    variant="outline"
+                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800 ' : 'bg-red-600 hover:bg-red-600 '} text-white hover:text-white`}
+                    onClick={() => handleStatusToggle(row.original.id, row.original.status)}
+                >
+                    {row.original.status ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+                </Button>
+            ),
         },
         {
             header: 'Actions',

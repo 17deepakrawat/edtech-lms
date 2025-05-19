@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/Textarea';
+import RichTextEditor from '@/components/ui/RichTextEditor'; // ✅ import the rich text editor
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { toast } from 'sonner';
@@ -58,11 +58,16 @@ export default function Create() {
                         <Input id="image" type="file" onChange={(e) => setData('image', e.target.files?.[0] || null)} />
                         {errors.image && <p className="text-sm text-red-500">{errors.image}</p>}
                     </div>
+
                     <div className="w-full">
-                        <Label htmlFor="name">Description</Label>
-                        <Textarea id="description" value={data.description} onChange={(e) => setData('description', e.target.value)} />
+                        <Label htmlFor="description">Description</Label>
+                        <RichTextEditor
+                            value={data.description}
+                            onChange={(content) => setData('description', content)}
+                        />
                         {errors.description && <p className="text-sm text-red-500">{errors.description}</p>}
                     </div>
+
                     <div className="flex justify-end space-x-3">
                         <Link href="/weoffers">
                             <Button variant="outline">← Back</Button>

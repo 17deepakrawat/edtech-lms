@@ -1,11 +1,11 @@
-
 import AppLayout from '@/layouts/app-layout';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/Textarea';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner'; // ✅ Import from sonner
-import { Head, Link,useForm } from '@inertiajs/react';
+import { toast } from 'sonner';
+import { Head, Link, useForm } from '@inertiajs/react';
+import RichTextEditor from '@/components/ui/RichTextEditor'; // ✅ RichTextEditor added
+
 export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
@@ -26,7 +26,6 @@ export default function Create() {
             preserveScroll: true,
             onSuccess: () => {
                 toast.success('Banner created successfully!');
-                // optionally reset form or redirect
             },
             onError: () => {
                 toast.error('Please check your input and try again.');
@@ -40,8 +39,8 @@ export default function Create() {
             <div className="px-4">
                 <h1 className="text-2xl font-bold">Create New Banner</h1>
 
-                <form onSubmit={handleSubmit} className="space-y-4 ">
-                    <div className='w-full'>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="w-full">
                         <Label htmlFor="title">Title</Label>
                         <Input
                             id="title"
@@ -53,12 +52,13 @@ export default function Create() {
 
                     <div>
                         <Label htmlFor="description">Description</Label>
-                        <Textarea
-                            id="description"
+                        <RichTextEditor
                             value={data.description}
-                            onChange={e => setData('description', e.target.value)}
+                            onChange={(val) => setData('description', val)}
                         />
-                        {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+                        {errors.description && (
+                            <p className="text-red-500 text-sm">{errors.description}</p>
+                        )}
                     </div>
 
                     <div>
@@ -68,15 +68,19 @@ export default function Create() {
                             type="file"
                             onChange={e => setData('bannerimage', e.target.files?.[0] || null)}
                         />
-                        {errors.bannerimage && <p className="text-red-500 text-sm">{errors.bannerimage}</p>}
+                        {errors.bannerimage && (
+                            <p className="text-red-500 text-sm">{errors.bannerimage}</p>
+                        )}
                     </div>
+
                     <div className="justify-end flex">
-                    <Link href="/banner">
-                        <Button variant="outline">← Back</Button>
-                    </Link>
-                    <Button className='ms-3' type="submit" disabled={processing}>
-                        {processing ? 'Saving...' : 'Create'}
-                    </Button></div>
+                        <Link href="/banner">
+                            <Button variant="outline">← Back</Button>
+                        </Link>
+                        <Button className="ms-3" type="submit" disabled={processing}>
+                            {processing ? 'Saving...' : 'Create'}
+                        </Button>
+                    </div>
                 </form>
             </div>
         </AppLayout>

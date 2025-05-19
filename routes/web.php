@@ -3,6 +3,7 @@
 use App\Http\Controllers\BannersController;
 use App\Http\Controllers\BlogCategoriesController;
 use App\Http\Controllers\BlogsController;
+use App\Http\Controllers\CKEditorController;
 use App\Http\Controllers\CoursesController;
 use App\Http\Controllers\DepartmentsController;
 use App\Http\Controllers\FeedbacksController;
@@ -31,21 +32,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
     Route::middleware(['role:admin'])->group(function () {
         Route::resource('banner', BannersController::class)->names('banner');
+        Route::get('/banner/{banner}/toggle-status', [BannersController::class, 'toggleStatus'])->name('banner.toggle-status');
         Route::resource('feedback', FeedbacksController::class)->names('feedback');
+        Route::get('/feedback/{feedback}/toggle-status', [FeedbacksController::class, 'toggleStatus'])->name('feedback.toggle-status');
         Route::resource('universitypartner', UniversityPartnersController::class)->names('universitypartner');
+        Route::get('/universitypartner/{universitypartner}/toggle-status', [UniversityPartnersController::class, 'toggleStatus'])->name('universitypartner.toggle-status');
         Route::resource('weoffers', WeoffersController::class)->names('weoffers');
+        Route::get('/weoffers/{weoffer}/toggle-status', [WeoffersController::class, 'toggleStatus'])->name('weoffers.toggle-status');
         Route::resource('department', DepartmentsController::class)->names('department');
+        Route::get('/department/{department}/toggle-status', [DepartmentsController::class, 'toggleStatus'])->name('department.toggle-status');
         Route::resource('programs', ProgramsController::class)->names('programs');
         Route::get('/programs/{program}/toggle-status', [ProgramsController::class, 'toggleStatus'])->name('programs.toggle-status');
-        Route::resource('programs', ProgramsController::class)->names('programs');
         Route::resource('courses', CoursesController::class)->names('courses');
+        Route::get('/courses/{course}/toggle-status', [CoursesController::class, 'toggleStatus'])->name('courses.toggle-status');
         Route::get('/get-program-by-departmnet/{department_id}', [CoursesController::class, 'getByDepartment']);
         Route::resource('blogcategories', BlogCategoriesController::class)->names('blogcategories');
         Route::get('/blogcategories/{blogcategories}/toggle-status', [BlogCategoriesController::class, 'toggleStatus'])->name('blogcategories.toggle-status');
         Route::resource('/adminblogs', BlogsController::class)->names('adminblogs');
-
+        Route::get('/adminblogs/{blog}/toggle-status', [BlogsController::class, 'toggleStatus'])->name('adminblogs.toggle-status');
     });
 });
+Route::post('/ckeditor/upload', [CKEditorController::class, 'upload'])
+    ->name('ckeditor.upload')
+    ->middleware('auth'); // Add auth middleware if needed
 Route::get('/', function () {
     return Inertia::render('web-pages/Home');
 })->name('home');

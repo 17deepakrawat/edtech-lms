@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/Textarea';
 import AppLayout from '@/layouts/app-layout';
 import { Link, useForm } from '@inertiajs/react';
-import { toast } from 'sonner'; // ✅ Import from sonner
+import { toast } from 'sonner';
+import RichTextEditor from '@/components/ui/RichTextEditor'; // ✅ Import RichTextEditor
 
 interface Feedbacks {
     id: number;
@@ -43,10 +43,10 @@ export default function Edit({ feedbacks }: Props) {
             forceFormData: true,
             preserveScroll: true,
             onSuccess: () => {
-                toast.success('Feedback updated successfully!'); // Success toast
+                toast.success('Feedback updated successfully!');
             },
             onError: () => {
-                toast.error('Failed to update feedback. Please try again.'); // Error toast
+                toast.error('Failed to update feedback. Please try again.');
             }
         });
     };
@@ -78,10 +78,9 @@ export default function Edit({ feedbacks }: Props) {
 
                     <div>
                         <Label htmlFor="description">Description</Label>
-                        <Textarea
-                            id="description"
+                        <RichTextEditor
                             value={data.description}
-                            onChange={(e) => setData('description', e.target.value)}
+                            onChange={(val) => setData('description', val)}
                         />
                         {errors.description && <p className="text-sm text-red-500">{errors.description}</p>}
                     </div>

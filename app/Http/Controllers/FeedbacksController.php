@@ -98,4 +98,16 @@ class FeedbacksController extends Controller
         $feedback->delete();
         return redirect()->route('feedback.index');
     }
+
+    public function toggleStatus($id)
+    {
+        try {
+            $feedback = Feedbacks::findOrFail($id);
+            $feedback->status = !$feedback->status;
+            $feedback->save();
+            return redirect()->back()->with('success', 'Status updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());
+        }
+    }
 }

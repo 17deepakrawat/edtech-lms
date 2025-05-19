@@ -9,27 +9,26 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
 
-interface Weoffer {
+interface Course {
     id: number;
     title: string;
     description: string;
-    link: string;
     image: string;
     status: boolean;
 }
 
 interface Props extends PageProps {
-    weoffers: Weoffer[];
+    courses: Course[];
 }
 
-export default function WeOffersIndex({ weoffers }: Props) {
+export default function CourseIndex({ courses }: Props) {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
-    const [data, setData] = useState<Weoffer[]>(weoffers);
+    const [data, setData] = useState<Course[]>(courses);
 
     const handleStatusToggle = (id: number, currentStatus: boolean) => {
         router.get(
-            `/weoffers/${id}/toggle-status`,
+            `/courses/${id}/toggle-status`,
             {},
             {
                 preserveState: true,
@@ -39,7 +38,7 @@ export default function WeOffersIndex({ weoffers }: Props) {
                             item.id === id ? { ...item, status: !currentStatus } : item
                         )
                     );
-                    toast.success('We offer status updated');
+                    toast.success('Course status updated');
                 },
                 onError: () => {
                     toast.error('Failed to update status.');
@@ -48,7 +47,31 @@ export default function WeOffersIndex({ weoffers }: Props) {
         );
     };
 
-    const columns: ColumnDef<Weoffer>[] = [
+    const handleDelete = (id: number) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                router.delete(`/courses/${id}`, {
+                    onSuccess: () => {
+                        setData(prev => prev.filter(item => item.id !== id));
+                        toast.success('Course deleted successfully');
+                    },
+                    onError: () => {
+                        toast.error('Failed to delete course.');
+                    }
+                });
+            }
+        });
+    };
+
+    const columns: ColumnDef<Course>[] = [
         {
             header: 'S.No',
             cell: (info) => info.row.index + 1,
@@ -63,12 +86,8 @@ export default function WeOffersIndex({ weoffers }: Props) {
             cell: ({ row }) => <div className="line-clamp-3 max-w-xs text-sm" dangerouslySetInnerHTML={{ __html: row.original.description }} />,
         },
         {
-            accessorKey: 'link',
-            header: 'Link',
-        },
-        {
             header: 'Image',
-            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="We Offer" className="h-20 w-20 rounded" />,
+            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="Course" className="h-20 w-20 rounded" />,
         },
         {
             accessorKey: 'status',
@@ -87,7 +106,7 @@ export default function WeOffersIndex({ weoffers }: Props) {
             header: 'Actions',
             cell: ({ row }) => (
                 <div className="flex space-x-2">
-                    <Link href={`/weoffers/${row.original.id}/edit`}>
+                    <Link href={`/courses/${row.original.id}/edit`}>
                         <Button variant="ghost" size="icon">
                             <Edit className="h-4 w-4" />
                         </Button>
@@ -99,6 +118,7 @@ export default function WeOffersIndex({ weoffers }: Props) {
             ),
         },
     ];
+
     const table = useReactTable({
         data: data,
         columns,
@@ -119,39 +139,17 @@ export default function WeOffersIndex({ weoffers }: Props) {
         },
         manualPagination: false,
     });
-    const handleDelete = (id: number) => {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                router.delete(`/weoffers/${id}`, {
-                    onSuccess: () => {
-                        Swal.fire('Deleted!', 'weoffers has been deleted.', 'success');
-                    },
-                    onError: () => {
-                        Swal.fire('Error!', 'Failed to delete weoffers.', 'error');
-                    },
-                });
-            }
-        });
-    };
 
     return (
         <AppLayout>
-            <Head title="University Partner" />
+            <Head title="Courses" />
 
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">University Partner</h1>
-                    <Link href="/weoffers/create">
+                    <h1 className="text-2xl font-bold">Courses</h1>
+                    <Link href="/courses/create">
                         <Button>
-                            <Plus className="mr-2 h-4 w-4" /> Create University Partner
+                            <Plus className="mr-2 h-4 w-4" /> Create Course
                         </Button>
                     </Link>
                 </div>
@@ -211,4 +209,4 @@ export default function WeOffersIndex({ weoffers }: Props) {
             </div>
         </AppLayout>
     );
-}
+} 

@@ -4,52 +4,115 @@ import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
-import { Edit, Plus, Trash2 } from 'lucide-react';
+import { CheckCircle, Edit, Plus, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import Swal from 'sweetalert2';
 
-interface blogs {
+interface Blog {
     id: number;
     name: string;
+    author_name: string;
     author_image: string;
     image: string;
-    author_name: string;
     content: string;
-    blog_category_id: string;
+    faq: Array<{ question: string; answer: string }>;
+    blog_category_id: number;
+    status: boolean;
 }
 
 interface Props extends PageProps {
-    blogs: blogs[];
+    blogs: Blog[];
 }
 
-export default function departmentIndex({ blogs }: Props) {
+export default function BlogIndex({ blogs }: Props) {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
+    const [data, setData] = useState<Blog[]>(blogs);
 
-    const columns: ColumnDef<blogs>[] = [
+    const handleStatusToggle = (id: number, currentStatus: boolean) => {
+        router.get(
+            `/adminblogs/${id}/toggle-status`,
+            {},
+            {
+                preserveState: true,
+                onSuccess: () => {
+                    setData(prev =>
+                        prev.map(item =>
+                            item.id === id ? { ...item, status: !currentStatus } : item
+                        )
+                    );
+                    toast.success('Blog status updated');
+                },
+                onError: () => {
+                    toast.error('Failed to update status.');
+                }
+            }
+        );
+    };
+
+    const handleDelete = (id: number) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                router.delete(`/adminblogs/${id}`, {
+                    onSuccess: () => {
+                        setData(prev => prev.filter(item => item.id !== id));
+                        toast.success('Blog deleted successfully');
+                    },
+                    onError: () => {
+                        toast.error('Failed to delete blog.');
+                    }
+                });
+            }
+        });
+    };
+
+    const columns: ColumnDef<Blog>[] = [
         {
             header: 'S.No',
             cell: (info) => info.row.index + 1,
-        },       
-        {
-            cell: ({ row }) => <img src={`/storage/${row.original.author_image}`} alt="Banner" className="h-20 w-20 rounded" />,
-            header: 'Author Image',
-        },
-        {
-            accessorKey: 'author_name',
-            header: 'Autor Name',
         },
         {
             accessorKey: 'name',
-            header: 'Name',
+            header: 'Title',
+        },
+        {
+            accessorKey: 'author_name',
+            header: 'Author',
+        },
+        {
+            header: 'Author Image',
+            cell: ({ row }) => <img src={`/storage/${row.original.author_image}`} alt="Author" className="h-20 w-20 rounded" />,
+        },
+        {
+            header: 'Blog Image',
+            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="Blog" className="h-20 w-20 rounded" />,
         },
         {
             accessorKey: 'content',
             header: 'Content',
+            cell: ({ row }) => <div className="line-clamp-3 max-w-xs text-sm" dangerouslySetInnerHTML={{ __html: row.original.content }} />,
         },
         {
-            header: 'Image',
-            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="Banner" className="h-20 w-20 rounded" />,
+            accessorKey: 'status',
+            header: 'Status',
+            cell: ({ row }) => (
+                <Button
+                    variant="outline"
+                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800 ' : 'bg-red-600 hover:bg-red-600 '} text-white hover:text-white`}
+                    onClick={() => handleStatusToggle(row.original.id, row.original.status)}
+                >
+                    {row.original.status ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+                </Button>
+            ),
         },
         {
             header: 'Actions',
@@ -69,7 +132,7 @@ export default function departmentIndex({ blogs }: Props) {
     ];
 
     const table = useReactTable({
-        data: blogs,
+        data: data,
         columns,
         state: {
             globalFilter,
@@ -89,34 +152,16 @@ export default function departmentIndex({ blogs }: Props) {
         manualPagination: false,
     });
 
-    const handleDelete = (id: number) => {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Perform the delete operation
-                router.delete(`/adminblogs/${id}`);
-                Swal.fire('Deleted!', 'The department has been deleted.', 'success');
-            }
-        });
-    };
-
     return (
         <AppLayout>
-            <Head title="Feed Back" />
+            <Head title="Blogs" />
 
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Departments</h1>
+                    <h1 className="text-2xl font-bold">Blogs</h1>
                     <Link href="/adminblogs/create">
                         <Button>
-                            <Plus className="mr-2 h-4 w-4" /> Create Department
+                            <Plus className="mr-2 h-4 w-4" /> Create Blog
                         </Button>
                     </Link>
                 </div>

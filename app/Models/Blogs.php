@@ -7,12 +7,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Blogs extends Model
 {
-    protected $fillable = ['name', 'author_image', 'author_name', 'content', 'blog_category_id','image'];
+    protected $fillable = ['name', 'author_image', 'content', 'author_name', 'blog_category_id', 'image', 'faq'];
+    
     protected $casts = [
-        'faq' => 'array'
+        'faq' => 'array',
+        'status' => 'boolean',
     ];
-    public function blogcategory():BelongsTo
+
+    public function category(): BelongsTo
     {
-        return $this->belongsTo(BlogCategories::class, 'blog_category_id');// foreign key
+        return $this->belongsTo(BlogCategories::class, 'blog_category_id');
     }
 }

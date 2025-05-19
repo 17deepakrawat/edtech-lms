@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Courses extends Model
 {
-    protected $fillable = ['department_id', 'program_id', 'name', 'short_description','image', 'content', 'modes', 'duration', 'rating', 'price', 'is_subject', 'course_keys', 'faqs'];
+    protected $fillable = ['department_id', 'program_id', 'name', 'short_description','image', 'content', 'modes', 'duration', 'rating', 'price', 'is_subject', 'course_keys', 'faqs', 'status'];
     protected $casts = [
         'is_subject' => 'boolean',
         'course_keys' => 'array',  // automatically JSON encode/decode

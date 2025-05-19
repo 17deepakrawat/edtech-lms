@@ -1,14 +1,46 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/Textarea';
+import RichTextEditor from '@/components/ui/RichTextEditor';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { ChangeEvent } from 'react';
 import { toast } from 'sonner';
 
-export default function Create({ blogCategories }) {
-    const { data, setData, post, processing, errors } = useForm({
+interface BlogCategory {
+    id: number;
+    name: string;
+}
+
+interface FAQItem {
+    question: string;
+    answer: string;
+}
+
+interface CreateProps {
+    blogCategories: BlogCategory[];
+}
+
+interface FormData {
+    name: string;
+    author_name: string;
+    author_image: File | null;
+    image: File | null;
+    content: string;
+    faq: FAQItem[];
+    blog_category_id: string;
+}
+
+export default function Create({ blogCategories }: CreateProps) {
+    const { data, setData, post, processing, errors } = useForm<FormData>({
         name: '',
         author_name: '',
         author_image: null,
@@ -18,7 +50,7 @@ export default function Create({ blogCategories }) {
         blog_category_id: '',
     });
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         const formData = new FormData();
@@ -27,8 +59,8 @@ export default function Create({ blogCategories }) {
                 formData.append(key, JSON.stringify(value));
             } else if ((key === 'image' || key === 'author_image') && value) {
                 formData.append(key, value);
-            } else {
-                formData.append(key, value);
+            } else if (value !== null) {
+                formData.append(key, value.toString());
             }
         });
 
@@ -37,7 +69,31 @@ export default function Create({ blogCategories }) {
             preserveScroll: true,
             forceFormData: true,
             onSuccess: () => toast.success('Blog created successfully'),
+            onError: () => toast.error('Failed to create blog'),
         });
+    };
+
+    const handleAddFaq = () => {
+        setData('faq', [...data.faq, { question: '', answer: '' }]);
+    };
+
+    const handleRemoveFaq = (index: number) => {
+        setData(
+            'faq',
+            data.faq.filter((_, i) => i !== index),
+        );
+    };
+
+    const handleFaqChange = (index: number, field: keyof FAQItem, value: string) => {
+        const updated = [...data.faq];
+        updated[index][field] = value;
+        setData('faq', updated);
+    };
+
+    const handleFileChange = (field: 'author_image' | 'image') => (e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setData(field, e.target.files[0]);
+        }
     };
 
     return (
@@ -48,7 +104,10 @@ export default function Create({ blogCategories }) {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
                         <Label>Blog Category</Label>
-                        <Select value={data.blog_category_id} onValueChange={(val) => setData('blog_category_id', val)}>
+                        <Select
+                            value={data.blog_category_id}
+                            onValueChange={(val: string) => setData('blog_category_id', val)}
+                        >
                             <SelectTrigger>
                                 <SelectValue placeholder="Select category" />
                             </SelectTrigger>
@@ -62,33 +121,55 @@ export default function Create({ blogCategories }) {
                         </Select>
                         {errors.blog_category_id && <p className="text-sm text-red-500">{errors.blog_category_id}</p>}
                     </div>
+
                     <div>
                         <Label>Blog Title</Label>
-                        <Input value={data.name} onChange={(e) => setData('name', e.target.value)} />
+                        <Input
+                            value={data.name}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                setData('name', e.target.value)
+                            }
+                        />
                         {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
                     </div>
 
                     <div>
                         <Label>Author Name</Label>
-                        <Input value={data.author_name} onChange={(e) => setData('author_name', e.target.value)} />
+                        <Input
+                            value={data.author_name}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                setData('author_name', e.target.value)
+                            }
+                        />
                         {errors.author_name && <p className="text-sm text-red-500">{errors.author_name}</p>}
                     </div>
 
                     <div>
                         <Label>Author Image</Label>
-                        <Input type="file" onChange={(e) => setData('author_image', e.target.files[0])} />
+                        <Input
+                            type="file"
+                            onChange={handleFileChange('author_image')}
+                            accept="image/*"
+                        />
                         {errors.author_image && <p className="text-sm text-red-500">{errors.author_image}</p>}
                     </div>
 
                     <div>
                         <Label>Blog Image</Label>
-                        <Input type="file" onChange={(e) => setData('image', e.target.files[0])} />
+                        <Input
+                            type="file"
+                            onChange={handleFileChange('image')}
+                            accept="image/*"
+                        />
                         {errors.image && <p className="text-sm text-red-500">{errors.image}</p>}
                     </div>
 
                     <div>
                         <Label>Blog Content</Label>
-                        <Textarea value={data.content} onChange={(e) => setData('content', e.target.value)} />
+                        <RichTextEditor
+                            value={data.content}
+                            onChange={(content) => setData('content', content)}
+                        />
                         {errors.content && <p className="text-sm text-red-500">{errors.content}</p>}
                     </div>
 
@@ -96,18 +177,13 @@ export default function Create({ blogCategories }) {
                         <Label>FAQs</Label>
                         <div className="grid gap-4">
                             {data.faq.map((faq, index) => (
-                                <div key={index} className="relative space-y-2 ">
+                                <div key={index} className="relative space-y-2 rounded-md">
                                     <div className="flex justify-end">
                                         <Button
                                             type="button"
                                             size="sm"
                                             variant="destructive"
-                                            onClick={() =>
-                                                setData(
-                                                    'faq',
-                                                    data.faq.filter((_, i) => i !== index),
-                                                )
-                                            }
+                                            onClick={() => handleRemoveFaq(index)}
                                         >
                                             ✕
                                         </Button>
@@ -116,30 +192,23 @@ export default function Create({ blogCategories }) {
                                         <Label>Question</Label>
                                         <Input
                                             value={faq.question}
-                                            onChange={(e) => {
-                                                const updated = [...data.faq];
-                                                updated[index].question = e.target.value;
-                                                setData('faq', updated);
-                                            }}
+                                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                                handleFaqChange(index, 'question', e.target.value)
+                                            }
                                         />
                                     </div>
                                     <div>
                                         <Label>Answer</Label>
-                                        <Textarea
+                                        <RichTextEditor
                                             value={faq.answer}
-                                            onChange={(e) => {
-                                                const updated = [...data.faq];
-                                                updated[index].answer = e.target.value;
-                                                setData('faq', updated);
-                                            }}
+                                            onChange={(content) => handleFaqChange(index, 'answer', content)}
                                         />
                                     </div>
                                 </div>
                             ))}
                         </div>
-
                         <div className="mt-4">
-                            <Button type="button" variant="outline" onClick={() => setData('faq', [...data.faq, { question: '', answer: '' }])}>
+                            <Button type="button" variant="outline" onClick={handleAddFaq}>
                                 + Add FAQ
                             </Button>
                         </div>

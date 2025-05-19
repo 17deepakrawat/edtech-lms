@@ -77,4 +77,16 @@ class DepartmentsController extends Controller
         $department->delete();
         return redirect()->route('department.index');
     }
+
+    public function toggleStatus($id)
+    {
+        try {
+            $department = Departments::findOrFail($id);
+            $department->status = !$department->status;
+            $department->save();
+            return redirect()->back()->with('success', 'Status updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());
+        }
+    }
 }

@@ -10,5 +10,6 @@ class Banners extends Model
         'title',
         'description',
         'bannerimage',
+        'status',
     ];
 }

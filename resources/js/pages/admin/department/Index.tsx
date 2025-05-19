@@ -4,24 +4,72 @@ import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
-import { Edit, Plus, Trash2 } from 'lucide-react';
+import { CheckCircle, Edit, Plus, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import Swal from 'sweetalert2';
 
-interface department {
+interface Department {
     id: number;
-    name: string;    
+    name: string;
+    status: boolean;
 }
 
 interface Props extends PageProps {
-    departments: department[];
+    departments: Department[];
 }
 
-export default function departmentIndex({ departments }: Props) {
+export default function DepartmentIndex({ departments }: Props) {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
+    const [data, setData] = useState<Department[]>(departments);
 
-    const columns: ColumnDef<department>[] = [
+    const handleStatusToggle = (id: number, currentStatus: boolean) => {
+        router.get(
+            `/department/${id}/toggle-status`,
+            {},
+            {
+                preserveState: true,
+                onSuccess: () => {
+                    setData(prev =>
+                        prev.map(item =>
+                            item.id === id ? { ...item, status: !currentStatus } : item
+                        )
+                    );
+                    toast.success('Department status updated');
+                },
+                onError: () => {
+                    toast.error('Failed to update status.');
+                }
+            }
+        );
+    };
+
+    const handleDelete = (id: number) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                router.delete(`/department/${id}`, {
+                    onSuccess: () => {
+                        setData(prev => prev.filter(item => item.id !== id));
+                        toast.success('Department deleted successfully');
+                    },
+                    onError: () => {
+                        toast.error('Failed to delete department.');
+                    }
+                });
+            }
+        });
+    };
+
+    const columns: ColumnDef<Department>[] = [
         {
             header: 'S.No',
             cell: (info) => info.row.index + 1,
@@ -29,7 +77,20 @@ export default function departmentIndex({ departments }: Props) {
         {
             accessorKey: 'name',
             header: 'Name',
-        },       
+        },
+        {
+            accessorKey: 'status',
+            header: 'Status',
+            cell: ({ row }) => (
+                <Button
+                    variant="outline"
+                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800 ' : 'bg-red-600 hover:bg-red-600 '} text-white hover:text-white`}
+                    onClick={() => handleStatusToggle(row.original.id, row.original.status)}
+                >
+                    {row.original.status ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+                </Button>
+            ),
+        },
         {
             header: 'Actions',
             cell: ({ row }) => (
@@ -48,7 +109,7 @@ export default function departmentIndex({ departments }: Props) {
     ];
 
     const table = useReactTable({
-        data: departments,
+        data: data,
         columns,
         state: {
             globalFilter,
@@ -68,27 +129,9 @@ export default function departmentIndex({ departments }: Props) {
         manualPagination: false,
     });
 
-    const handleDelete = (id: number) => {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Perform the delete operation
-                router.delete(`/department/${id}`);
-                Swal.fire('Deleted!', 'The department has been deleted.', 'success');
-            }
-        });
-    };
-
     return (
         <AppLayout>
-            <Head title="Feed Back" />
+            <Head title="Departments" />
 
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">

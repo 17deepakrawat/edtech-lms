@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class UniversityPartners extends Model
 {
-   protected $fillable = ['image','name','link'];
+   protected $fillable = ['image','name','link','status'];
 }
