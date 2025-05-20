@@ -68,7 +68,7 @@ export default function WeOffersIndex({ weoffers }: Props) {
         },
         {
             header: 'Image',
-            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="We Offer" className="h-20 w-20 rounded" />,
+            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="We Offer" className="rounded"  style={{ width: '80px', height: '40px' }} />,
         },
         {
             accessorKey: 'status',

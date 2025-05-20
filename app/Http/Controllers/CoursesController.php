@@ -34,6 +34,7 @@ class CoursesController extends Controller
                 'program' => $course->program?->name,
                 'price' => $course->price,
                 'image' => $course->image,
+                'status' => $course->status,
             ];
         });
 

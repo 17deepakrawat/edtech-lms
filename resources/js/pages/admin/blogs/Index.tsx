@@ -90,11 +90,11 @@ export default function BlogIndex({ blogs }: Props) {
         },
         {
             header: 'Author Image',
-            cell: ({ row }) => <img src={`/storage/${row.original.author_image}`} alt="Author" className="h-20 w-20 rounded" />,
+            cell: ({ row }) => <img src={`/storage/${row.original.author_image}`} alt="Author"  style={{ width: '80px', height: '40px' }} className="rounded" />,
         },
         {
             header: 'Blog Image',
-            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="Blog" className="h-20 w-20 rounded" />,
+            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="Blog" className=" rounded"  style={{ width: '80px', height: '40px' }}/>,
         },
         {
             accessorKey: 'content',

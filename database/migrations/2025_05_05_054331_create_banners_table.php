@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('description');
             $table->string('bannerimage');
-            $table->boolean('status')->default('0');
+            $table->boolean('status')->default('1');
             $table->timestamps();
         });
     }

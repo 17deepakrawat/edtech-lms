@@ -125,5 +125,16 @@ class BlogsController extends Controller
     
         return redirect()->route('adminblogs.index')->with('success', 'Blog deleted successfully!');
     }
-    
+
+    public function toggleStatus($id)
+    {
+        try {
+            $blog = Blogs::findOrFail($id);
+            $blog->status = !$blog->status;
+            $blog->save();
+            return redirect()->back()->with('success', 'Status updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());
+        }
+    }
 }

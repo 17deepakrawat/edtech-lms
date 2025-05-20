@@ -28,49 +28,88 @@ const adminNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'Home Banner',
-        href: '/banner',
+        title: 'Webpage',
         icon: Users,
-    },
-    {
-        title: 'Feedback',
-        href: '/feedback',
-        icon: Users,
-    },
-    {
-        title: 'University Partner',
-        href: '/universitypartner',
-        icon: Users,
-    },
-    {
-        title: 'What We Offer',
-        href: '/weoffers',
-        icon: Users,
-    },
-    {
-        title: 'Departments',
-        href: '/department',
-        icon: Users,
-    },
-    {
-        title: 'Programs',
-        href: '/programs',
-        icon: Users,
-    },
-    {
-        title: 'Courses',
-        href: '/courses',
-        icon: Users,
-    },
-    {
-        title: 'Blog Category',
-        href: '/blogcategories',
-        icon: Users,
-    },
-    {
-        title: 'Blog ',
-        href: '/adminblogs',
-        icon: Users,
+        children: [
+            {
+                title: 'Home Components',
+                icon: Users,
+                children: [
+                    {
+                        title: 'Home Banner',
+                        href: '/banner',
+                        icon: Users,
+                    },
+                    {
+                        title: 'Feedback',
+                        href: '/feedback',
+                        icon: Users,
+                    },
+                    {
+                        title: 'University Partner',
+                        href: '/universitypartner',
+                        icon: Users,
+                    },
+                    {
+                        title: 'What We Offer',
+                        href: '/weoffers',
+                        icon: Users,
+                    },
+                ],
+            },
+            {
+                title: 'Courses',
+                icon: Users,
+                children: [
+                    {
+                        title: 'Departments',
+                        href: '/department',
+                        icon: Users,
+                    },
+                    {
+                        title: 'Programs',
+                        href: '/programs',
+                        icon: Users,
+                    },
+                    {
+                        title: 'Courses',
+                        href: '/courses',
+                        icon: Users,
+                    },
+                ],
+            },
+            {
+                title: 'Blog',
+                icon: Users,
+                children: [
+                    {
+                        title: 'Blog Category',
+                        href: '/blogcategories',
+                        icon: Users,
+                    },
+                    {
+                        title: 'Blog',
+                        href: '/adminblogs',
+                        icon: Users,
+                    },
+                ],
+            },
+            // {
+            //     title: 'Courses',
+            //     href: '/courses',
+            //     icon: Users,
+            // },
+            // {
+            //     title: 'Blog Category',
+            //     href: '/blogcategories',
+            //     icon: Users,
+            // },
+            // {
+            //     title: 'Blog',
+            //     href: '/adminblogs',
+            //     icon: Users,
+            // },
+        ],
     },
 ];
 
@@ -135,8 +174,12 @@ export function AppSidebar() {
     };
 
     return (
-        <Sidebar collapsible="icon" variant="inset">
-            <SidebarHeader>
+        <Sidebar 
+            collapsible="icon" 
+            variant="inset"
+            className="h-screen overflow-y-auto scrollbar-none"
+        >
+            <SidebarHeader className="sticky top-0 z-10 bg-background">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
@@ -148,11 +191,11 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            <SidebarContent>
+            <SidebarContent className="flex-1 overflow-y-auto scrollbar-none">
                 <NavMain items={getNavItems()} />
             </SidebarContent>
 
-            <SidebarFooter>
+            <SidebarFooter className="sticky bottom-0 z-10 bg-background">
                 <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>

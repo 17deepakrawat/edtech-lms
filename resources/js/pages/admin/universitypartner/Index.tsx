@@ -58,7 +58,7 @@ export default function UniversityPartnerIndex({ universitypartners }: Props) {
         },
         {
             header: 'Image',
-            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="University Partner" className="h-20 w-20 rounded" />,
+            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="University Partner" className=" rounded"  style={{ width: '80px', height: '40px' }} />,
         },
         {
             accessorKey: 'link',

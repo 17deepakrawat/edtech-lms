@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('duration');
             $table->float('rating');
             $table->float('price');
-            $table->boolean('status')->default('0');
+            $table->boolean('status')->default('1');
             $table->boolean('is_subject')->default(false); 
             $table->json('course_keys')->nullable();  
             $table->json('faqs')->nullable();      

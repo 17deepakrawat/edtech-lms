@@ -63,7 +63,8 @@ export default function BannerIndex({ banners }: Props) {
         },
         {
             header: 'Image',
-            cell: ({ row }) => <img src={`/storage/${row.original.bannerimage}`} alt="Banner" className="h-20 w-20 rounded" />,
+            cell: ({ row }) => <img src={`/storage/${row.original.bannerimage}`} alt="Banner" style={{ width: '80px', height: '40px' }}
+ />,
         },
         {
             accessorKey: 'status',

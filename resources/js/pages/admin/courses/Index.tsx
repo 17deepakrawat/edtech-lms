@@ -4,28 +4,76 @@ import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
-import { Edit, Plus, Trash2 } from 'lucide-react';
+import { CheckCircle, Edit, Plus, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import Swal from 'sweetalert2';
 
-interface courses {
+interface Course {
     id: number;
-    name: string; 
-    program_id : string;
-    department_id :string;
-    image:string;
-    price:number;   
+    name: string;
+    department: string;
+    program: string;
+    price: number;
+    image: string;
+    status: boolean;
 }
 
 interface Props extends PageProps {
-    courses: courses[];
+    courses: Course[];
 }
 
-export default function departmentIndex({ courses }: Props) {
+export default function CourseIndex({ courses }: Props) {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
+    const [data, setData] = useState<Course[]>(courses);
 
-    const columns: ColumnDef<courses>[] = [
+    const handleStatusToggle = (id: number, currentStatus: boolean) => {
+        router.get(
+            `/courses/${id}/toggle-status`,
+            {},
+            {
+                preserveState: true,
+                onSuccess: () => {
+                    setData(prev =>
+                        prev.map(item =>
+                            item.id === id ? { ...item, status: !currentStatus } : item
+                        )
+                    );
+                    toast.success('Course status updated');
+                },
+                onError: () => {
+                    toast.error('Failed to update status.');
+                }
+            }
+        );
+    };
+
+    const handleDelete = (id: number) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                router.delete(`/courses/${id}`, {
+                    onSuccess: () => {
+                        setData(prev => prev.filter(item => item.id !== id));
+                        toast.success('Course deleted successfully');
+                    },
+                    onError: () => {
+                        toast.error('Failed to delete course.');
+                    }
+                });
+            }
+        });
+    };
+
+    const columns: ColumnDef<Course>[] = [
         {
             header: 'S.No',
             cell: (info) => info.row.index + 1,
@@ -33,22 +81,36 @@ export default function departmentIndex({ courses }: Props) {
         {
             accessorKey: 'name',
             header: 'Name',
-        }, 
-               {
+        },
+        {
             accessorKey: 'department',
-            header: 'Deparment',
-        }, 
+            header: 'Department',
+        },
         {
             accessorKey: 'program',
-            header: 'Programss',
+            header: 'Program',
         },
         {
             accessorKey: 'price',
             header: 'Price',
-        }, 
+            cell: ({ row }) => `$${row.original.price}`,
+        },
         {
             header: 'Image',
-            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="Banner" className="h-20 w-20 rounded" />,
+            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="Course" className=" rounded"   style={{ width: '80px', height: '40px' }} />,
+        },
+        {
+            accessorKey: 'status',
+            header: 'Status',
+            cell: ({ row }) => (
+                <Button
+                    variant="outline"
+                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800 ' : 'bg-red-600 hover:bg-red-600 '} text-white hover:text-white`}
+                    onClick={() => handleStatusToggle(row.original.id, row.original.status)}
+                >
+                    {row.original.status ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+                </Button>
+            ),
         },
         {
             header: 'Actions',
@@ -68,7 +130,7 @@ export default function departmentIndex({ courses }: Props) {
     ];
 
     const table = useReactTable({
-        data: courses,
+        data: data,
         columns,
         state: {
             globalFilter,
@@ -88,34 +150,16 @@ export default function departmentIndex({ courses }: Props) {
         manualPagination: false,
     });
 
-    const handleDelete = (id: number) => {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Perform the delete operation
-                router.delete(`/courses/${id}`);
-                Swal.fire('Deleted!', 'The department has been deleted.', 'success');
-            }
-        });
-    };
-
     return (
         <AppLayout>
-            <Head title="Feed Back" />
+            <Head title="Courses" />
 
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Departments</h1>
+                    <h1 className="text-2xl font-bold">Courses</h1>
                     <Link href="/courses/create">
                         <Button>
-                            <Plus className="mr-2 h-4 w-4" /> Create Department
+                            <Plus className="mr-2 h-4 w-4" /> Create Course
                         </Button>
                     </Link>
                 </div>
