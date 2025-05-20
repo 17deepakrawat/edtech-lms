@@ -76,6 +76,16 @@ const adminNavItems: NavItem[] = [
                         href: '/courses',
                         icon: Users,
                     },
+                    {
+                        title: 'Units',
+                        href: '/units',
+                        icon: Users,
+                    },
+                    {
+                        title: 'Topics',
+                        href: '/topics',
+                        icon: Users,
+                    },
                 ],
             },
             {
@@ -93,22 +103,7 @@ const adminNavItems: NavItem[] = [
                         icon: Users,
                     },
                 ],
-            },
-            // {
-            //     title: 'Courses',
-            //     href: '/courses',
-            //     icon: Users,
-            // },
-            // {
-            //     title: 'Blog Category',
-            //     href: '/blogcategories',
-            //     icon: Users,
-            // },
-            // {
-            //     title: 'Blog',
-            //     href: '/adminblogs',
-            //     icon: Users,
-            // },
+            },           
         ],
     },
 ];

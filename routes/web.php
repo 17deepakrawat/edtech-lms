@@ -8,8 +8,10 @@ use App\Http\Controllers\CoursesController;
 use App\Http\Controllers\DepartmentsController;
 use App\Http\Controllers\FeedbacksController;
 use App\Http\Controllers\ProgramsController;
+use App\Http\Controllers\TopicController;
 use App\Http\Controllers\UniversityPartnersController;
 use App\Http\Controllers\WeoffersController;
+use App\Http\Controllers\UnitController;
 use App\Models\BlogCategories;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -50,6 +52,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/blogcategories/{blogcategories}/toggle-status', [BlogCategoriesController::class, 'toggleStatus'])->name('blogcategories.toggle-status');
         Route::resource('/adminblogs', BlogsController::class)->names('adminblogs');
         Route::get('/adminblogs/{blog}/toggle-status', [BlogsController::class, 'toggleStatus'])->name('adminblogs.toggle-status');
+        Route::resource('units', UnitController::class)->names('units');
+        Route::get('/units/{unit}/toggle-status', [UnitController::class, 'toggleStatus'])->name('units.toggle-status');
+        Route::resource('topics', TopicController::class)->names('topics');
+        Route::get('/topics/{id}/toggle-status', [TopicController::class, 'toggleStatus'])->name('topics.toggle-status');
     });
 });
 Route::post('/ckeditor/upload', [CKEditorController::class, 'upload'])
