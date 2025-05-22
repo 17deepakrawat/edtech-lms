@@ -12,6 +12,7 @@ use App\Http\Controllers\TopicController;
 use App\Http\Controllers\UniversityPartnersController;
 use App\Http\Controllers\WeoffersController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\VideoController;
 use App\Models\BlogCategories;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -56,11 +57,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/units/{unit}/toggle-status', [UnitController::class, 'toggleStatus'])->name('units.toggle-status');
         Route::resource('topics', TopicController::class)->names('topics');
         Route::get('/topics/{id}/toggle-status', [TopicController::class, 'toggleStatus'])->name('topics.toggle-status');
+        Route::resource('videos', VideoController::class)->names('videos');
+        Route::get('/videos/{id}/toggle-status', [VideoController::class, 'toggleStatus'])->name('videos.toggle-status');
+        Route::get('/videos/get-units-by-course/{courseId}', [VideoController::class, 'getUnitsByCourse'])->name('videos.get-units');
+        Route::get('/videos/get-topics-by-unit/{unitId}', [VideoController::class, 'getTopicsByUnit'])->name('videos.get-topics');
     });
 });
-Route::post('/ckeditor/upload', [CKEditorController::class, 'upload'])
-    ->name('ckeditor.upload')
-    ->middleware('auth'); // Add auth middleware if needed
 Route::get('/', function () {
     return Inertia::render('web-pages/Home');
 })->name('home');

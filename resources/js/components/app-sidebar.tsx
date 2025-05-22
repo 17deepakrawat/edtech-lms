@@ -86,6 +86,11 @@ const adminNavItems: NavItem[] = [
                         href: '/topics',
                         icon: Users,
                     },
+                     {
+                        title: 'Course Video',
+                        href: '/videos',
+                        icon: Users,
+                    },
                 ],
             },
             {

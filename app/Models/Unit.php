@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Unit extends Model
 {
@@ -12,8 +13,7 @@ class Unit extends Model
 
     protected $fillable = [
         'course_id',
-        'title',
-        'slug',
+        'title',        
         'description',
         'order',
         'status'
@@ -24,8 +24,27 @@ class Unit extends Model
         'order' => 'integer'
     ];
 
+    /**
+     * Get the course that owns the unit.
+     */
     public function course(): BelongsTo
     {
-        return $this->belongsTo(Courses::class);
+        return $this->belongsTo(Course::class);
+    }
+
+    /**
+     * Get the topics for the unit.
+     */
+    public function topics(): HasMany
+    {
+        return $this->hasMany(Topic::class);
+    }
+
+    /**
+     * Get the videos for the unit.
+     */
+    public function videos(): HasMany
+    {
+        return $this->hasMany(Video::class);
     }
 }

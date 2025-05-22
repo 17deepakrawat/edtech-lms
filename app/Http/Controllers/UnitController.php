@@ -39,6 +39,7 @@ class UnitController extends Controller
      */
     public function store(Request $request)
     {
+
         $validated = $request->validate([
             'course_id' => 'required|exists:courses,id',
             'title' => 'required|string|max:255',
@@ -47,11 +48,7 @@ class UnitController extends Controller
 
         $unit = Unit::create($validated);
 
-        return response()->json([
-            'units' => [
-                'data' => [$unit->load('course')]
-            ]
-        ]);
+        return redirect()->route('units.index')->with('success', 'Unit created successfully.');
     }
 
     /**
@@ -83,9 +80,7 @@ class UnitController extends Controller
 
         $unit->update($validated);
 
-        return response()->json([
-            'unit' => $unit->load('course')
-        ]);
+        return redirect()->route('units.index')->with('success', 'Unit update successfully.');
     }
 
     /**
@@ -95,7 +90,7 @@ class UnitController extends Controller
     {
         $unit->delete();
         return response()->json(['message' => 'Unit deleted successfully']);
-    }  
+    }
     public function toggleStatus($id)
     {
         try {

@@ -4,37 +4,31 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Topic extends Model
+class Course extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'unit_id',
         'name',
         'description',
         'status'
     ];
 
-    protected $casts = [
-        'status' => 'boolean'
-    ];
-
     /**
-     * Get the unit that owns the topic.
+     * Get the units for the course.
      */
-    public function unit(): BelongsTo
+    public function units(): HasMany
     {
-        return $this->belongsTo(Unit::class);
+        return $this->hasMany(Unit::class);
     }
 
     /**
-     * Get the videos for the topic.
+     * Get the videos for the course.
      */
     public function videos(): HasMany
     {
         return $this->hasMany(Video::class);
     }
-}
+} 
