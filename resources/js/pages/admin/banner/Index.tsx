@@ -160,11 +160,11 @@ export default function BannerIndex({ banners }: Props) {
       <Head title="Videos" />
       <div className="container mx-auto p-4">
         <div className="mb-4 flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">Videos</h1>
-          <Link href="/videos/create">
+          <h1 className="text-2xl font-semibold">Home Banner</h1>
+          <Link href="/banner/create">
             <Button>
               <Plus className="mr-2 h-4 w-4" />
-              Add Video
+              Add Home Banner
             </Button>
           </Link>
         </div>
