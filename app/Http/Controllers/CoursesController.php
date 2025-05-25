@@ -8,6 +8,7 @@ use App\Models\Programs;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class CoursesController extends Controller
@@ -15,6 +16,8 @@ class CoursesController extends Controller
     /**
      * Display a listing of the resource.
      */
+ 
+
     public function getByDepartment($department_id)
     {
         $programs = Programs::where('department_id', $department_id)

@@ -6,30 +6,24 @@ import { Autoplay } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import LeadForm from '../leadform/LeadForm';
 
-const slides = [
-    {
-        title: 'Engaging & Accessible Online Courses For All ',
-        description: 'With our carefully crafted online courses, which are customized to meet each learners requirements and individual goals, you can explore a world of knowledge. Our captivating content, which covers everything from basic abilities to more complex subjects, guarantees that education is available at any time and from any location, enabling students to succeed in todays fast-paced world. Begin to achieve your goal right now!',
-        image: '/build/assets/web-assets/herobanner.png',
-    },
-    {
-        title: 'Engaging & Accessible Online Courses For All ',
-        description: 'With our carefully crafted online courses, which are customized to meet each learners requirements and individual goals, you can explore a world of knowledge. Our captivating content, which covers everything from basic abilities to more complex subjects, guarantees that education is available at any time and from any location, enabling students to succeed in todays fast-paced world. Begin to achieve your goal right now!',
-        image: '/build/assets/web-assets/herobanner.png',
-    },
-    {
-        title: 'Engaging & Accessible Online Courses For All ',
-        description: 'With our carefully crafted online courses, which are customized to meet each learners requirements and individual goals, you can explore a world of knowledge. Our captivating content, which covers everything from basic abilities to more complex subjects, guarantees that education is available at any time and from any location, enabling students to succeed in todays fast-paced world. Begin to achieve your goal right now!',
-        image: '/build/assets/web-assets/herobanner.png',
-    },
-];
+interface BannerSlide {
+    id: number;
+    title: string;
+    description: string;
+    bannerimage: string;
+    status: boolean;
+}
 
-export default function Banner() {
-    const titleCharRefs = useRef([]);
-    const descRefs = useRef([]);
-    const imageRefs = useRef([]);
+interface BannerProps {
+    banners?: BannerSlide[];
+}
 
-    const animateContent = (index) => {
+export default function Banner({ banners = [] }: BannerProps) {
+    const titleCharRefs = useRef<HTMLSpanElement[][]>([]);
+    const descRefs = useRef<(HTMLParagraphElement | null)[]>([]);
+    const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
+
+    const animateContent = (index: number) => {
         const charEls = titleCharRefs.current[index] || [];
         const descEl = descRefs.current[index];
         const imageEl = imageRefs.current[index];
@@ -48,33 +42,58 @@ export default function Banner() {
             ease: 'power3.out',
             stagger: 0.05,
         })
-        .fromTo(
-            descEl,
-            { y: 20, opacity: 0 },
-            {
-                y: 0,
-                opacity: 1,
-                duration: 0.5,
-                ease: 'power2.out',
-            },
-            '+=0.3'
-        )
-        .to(
-            imageEl,
-            {
-                y: 0,
-                opacity: 1,
-                scale: 1,
-                duration: 0.8,
-                ease: 'power3.out',
-            },
-            '-=0.3'
-        );
+            .fromTo(
+                descEl,
+                { y: 20, opacity: 0 },
+                {
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.5,
+                    ease: 'power2.out',
+                },
+                '+=0.3',
+            )
+            .to(
+                imageEl,
+                {
+                    y: 0,
+                    opacity: 1,
+                    scale: 1,
+                    duration: 0.8,
+                    ease: 'power3.out',
+                },
+                '-=0.3',
+            );
     };
 
     useEffect(() => {
-        animateContent(0);
-    }, []);
+        if (banners.length > 0) {
+            animateContent(0);
+        }
+    }, [banners]);
+
+    // If no banners are provided, use default slides
+    const slides =
+        banners.length > 0
+            ? banners
+            : [
+                  {
+                      id: 1,
+                      title: 'Engaging & Accessible Online Courses For All ',
+                      description:
+                          'With our carefully crafted online courses, which are customized to meet each learners requirements and individual goals, you can explore a world of knowledge. Our captivating content, which covers everything from basic abilities to more complex subjects, guarantees that education is available at any time and from any location, enabling students to succeed in todays fast-paced world. Begin to achieve your goal right now!',
+                      bannerimage: '/build/assets/web-assets/herobanner.png',
+                      status: true,
+                  },
+                  {
+                      id: 2,
+                      title: 'Engaging & Accessible Online Courses For All ',
+                      description:
+                          'With our carefully crafted online courses, which are customized to meet each learners requirements and individual goals, you can explore a world of knowledge. Our captivating content, which covers everything from basic abilities to more complex subjects, guarantees that education is available at any time and from any location, enabling students to succeed in todays fast-paced world. Begin to achieve your goal right now!',
+                      bannerimage: '/build/assets/web-assets/herobanner.png',
+                      status: true,
+                  },
+              ];
 
     return (
         <>
@@ -104,7 +123,7 @@ export default function Banner() {
                     titleCharRefs.current[index] = [];
 
                     return (
-                        <SwiperSlide key={index} className='pt-20 pb-8'>
+                        <SwiperSlide key={slide.id} className="pt-20 pb-8">
                             <div className="container py-10">
                                 <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
                                     <div>
@@ -113,7 +132,9 @@ export default function Banner() {
                                                 <span
                                                     key={charIndex}
                                                     ref={(el) => {
-                                                        titleCharRefs.current[index][charIndex] = el;
+                                                        if (el) {
+                                                            titleCharRefs.current[index][charIndex] = el;
+                                                        }
                                                     }}
                                                     style={{ display: 'inline-block' }}
                                                 >
@@ -124,14 +145,13 @@ export default function Banner() {
                                         <p
                                             ref={(el) => (descRefs.current[index] = el)}
                                             className="text-gray-700 dark:text-white"
-                                        >
-                                            {slide.description}
-                                        </p>
+                                            dangerouslySetInnerHTML={{ __html: slide.description }}
+                                        ></p>
                                     </div>
                                     <div className="flex items-center justify-center">
                                         <img
                                             ref={(el) => (imageRefs.current[index] = el)}
-                                            src={slide.image}
+                                            src={'/storage/' + slide.bannerimage}
                                             alt={slide.title}
                                             className="w-full max-w-md rounded-lg object-cover"
                                         />
@@ -142,7 +162,7 @@ export default function Banner() {
                     );
                 })}
             </Swiper>
-            <LeadForm/>
+            <LeadForm />
         </>
     );
 }

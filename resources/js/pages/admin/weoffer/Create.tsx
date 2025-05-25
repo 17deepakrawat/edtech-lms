@@ -9,7 +9,6 @@ import { toast } from 'sonner';
 export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
-        link: '',
         description: '',
         image: null as File | null,
     });
@@ -19,7 +18,6 @@ export default function Create() {
         const formData = new FormData();
         formData.append('title', data.title);
         formData.append('description', data.description);
-        formData.append('link', data.link);
         if (data.image) formData.append('image', data.image);
 
         post('/weoffers', {
@@ -45,12 +43,6 @@ export default function Create() {
                         <Label htmlFor="name">Title</Label>
                         <Input id="name" value={data.title} onChange={(e) => setData('title', e.target.value)} />
                         {errors.title && <p className="text-sm text-red-500">{errors.title}</p>}
-                    </div>
-
-                    <div className="w-full">
-                        <Label htmlFor="link">Link</Label>
-                        <Input id="link" value={data.link} onChange={(e) => setData('link', e.target.value)} />
-                        {errors.link && <p className="text-sm text-red-500">{errors.link}</p>}
                     </div>
 
                     <div className="w-full">

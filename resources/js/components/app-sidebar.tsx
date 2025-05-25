@@ -3,7 +3,7 @@ import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 import { BookOpen, Folder, LayoutGrid, Users, GraduationCap, Settings, FileText } from 'lucide-react';
 import AppLogo from './app-logo';
 import { PageProps } from '@inertiajs/core';
@@ -55,6 +55,11 @@ const adminNavItems: NavItem[] = [
                         href: '/weoffers',
                         icon: Users,
                     },
+                    {
+                        title: 'Course Plans',
+                        href: '/plans',
+                        icon: Users,
+                    },
                 ],
             },
             {
@@ -91,6 +96,7 @@ const adminNavItems: NavItem[] = [
                         href: '/videos',
                         icon: Users,
                     },
+                     
                 ],
             },
             {

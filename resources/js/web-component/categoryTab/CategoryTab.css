@@ -18,3 +18,9 @@
     color: black !important;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
 }
+.sswiper-slide {
+width:max-content !important;
+}
+.custom_course_card{
+    width:auto !important;
+}

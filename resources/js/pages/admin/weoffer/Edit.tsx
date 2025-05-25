@@ -10,7 +10,6 @@ interface weoffers {
     id: number;
     title: string;
     description: string;
-    link: string;
     image: string;
 }
 
@@ -23,7 +22,6 @@ export default function Edit({ weoffers }: Props) {
         _method: 'PUT',
         title: weoffers.title || '',
         description: weoffers.description || '',
-        link: weoffers.link || '',
         image: null,
     });
 
@@ -33,7 +31,6 @@ export default function Edit({ weoffers }: Props) {
         formData.append('_method', 'PUT');
         formData.append('title', data.title);
         formData.append('description', data.description);
-        formData.append('link', data.link);
         if (data.image) {
             formData.append('image', data.image);
         }
@@ -64,16 +61,6 @@ export default function Edit({ weoffers }: Props) {
                             onChange={(e) => setData('title', e.target.value)}
                         />
                         {errors.title && <p className="text-sm text-red-500">{errors.title}</p>}
-                    </div>
-
-                    <div>
-                        <Label htmlFor="link">Link</Label>
-                        <Input
-                            id="link"
-                            value={data.link}
-                            onChange={(e) => setData('link', e.target.value)}
-                        />
-                        {errors.link && <p className="text-sm text-red-500">{errors.link}</p>}
                     </div>
 
                     <div>

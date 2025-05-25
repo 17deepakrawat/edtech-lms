@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Storage;
 
 class BannersController extends Controller
 {
+    public function show()
+    {
+       
+    }
+
     public function index()
     {
         return Inertia::render('admin/banner/Index', [
@@ -44,8 +49,6 @@ class BannersController extends Controller
         ]);
     }
 
-
-
     public function update(Request $request, Banners $banner)
     {
         $validated = $request->validate([
@@ -64,7 +67,6 @@ class BannersController extends Controller
 
         return redirect()->route('banner.index');
     }
-
 
     public function destroy(Banners $banner)
     {

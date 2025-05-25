@@ -23,9 +23,10 @@ export default function CourseCard({ courses }: { courses: any }) {
 
     return (
         <div className="mt-0 rounded-lg bg-white pt-0 text-gray-800 transition-all duration-300 hover:shadow-lg dark:bg-gray-900 dark:text-gray-100">
-            <Card className="relative pt-0 pb-0 shadow-md transition-all duration-300 hover:shadow-xl gap-3" style={{ minHeight: '360px' }}>
-                <img src={courses.img} alt="Course Banner" className="h-[200px] w-full rounded-t-lg object-cover" />
-                <CardHeader className=" mt-0">
+            <Card className="relative gap-3 pt-0 pb-0 shadow-md transition-all duration-300 hover:shadow-xl" style={{ minHeight: '360px' }}>
+                {/* <img src="{{ asset('storage/' . $courses->image) }}" alt="Course Banner" className="h-[200px] w-full rounded-t-lg object-cover" /> */}
+                <img src={`/storage/${courses.image}`} alt="Course Banner" className="h-[200px] w-full rounded-t-lg object-cover" />
+                <CardHeader className="mt-0">
                     {/* Only render rating section if courses.rating exists */}
                     {courses.rating !== undefined && (
                         <div className="mb-2 flex flex-row items-center">
@@ -34,11 +35,11 @@ export default function CourseCard({ courses }: { courses: any }) {
                         </div>
                     )}
 
-                    <CardTitle className="text-xl font-semibold">{courses.courseTitle}</CardTitle>
+                    <CardTitle className="text-xl font-semibold">{courses.name}</CardTitle>
                     <p className="pb-1 text-sm text-gray-500 dark:text-gray-300">
                         {courses.courseDescription ? courses.courseDescription.substring(0, 25) + '...' : ''}
                     </p>
-                    <div className="flex justify-end items-center text-lg font-semibold mt-2">
+                    <div className="mt-2 flex items-center justify-end text-lg font-semibold">
                         <FaRupeeSign className="" />
                         <p>{courses.price}</p>
                     </div>

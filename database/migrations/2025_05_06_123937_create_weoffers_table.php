@@ -14,9 +14,8 @@ return new class extends Migration
         Schema::create('weoffers', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->string('description');
+            $table->text('description');
             $table->boolean('status')->default('1');
-            $table->string('link')->nullable();
             $table->string('image')->nullable();
             $table->timestamps();
         });

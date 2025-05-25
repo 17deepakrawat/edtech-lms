@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('banners', function (Blueprint $table) {
+        Schema::create('web_plans', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->longText('description');
-            $table->string('bannerimage');
-            $table->boolean('status')->default('1');
+            $table->decimal('price', 10, 2); 
+            $table->string('frequency');
+            $table->json('features')->nullable();
+            $table->json('disabled_features')->nullable();
+            $table->boolean('status')->default(1);
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('banners');
+        Schema::dropIfExists('web_plans');
     }
 };

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UniversityPartners extends Model
+class UniversityPartner extends Model
 {
     use HasFactory;
 
@@ -19,4 +19,4 @@ class UniversityPartners extends Model
     protected $casts = [
         'status' => 'boolean'
     ];
-}
+} 

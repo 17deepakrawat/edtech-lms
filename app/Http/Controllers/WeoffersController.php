@@ -32,8 +32,7 @@ class WeoffersController extends Controller
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string', 'max:255'],
-            'link' => ['nullable', 'url', 'max:255'],
+            'description' => [ 'string'],
             'image' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
 
@@ -68,20 +67,11 @@ class WeoffersController extends Controller
     public function update(Request $request, Weoffers $weoffer)
     {
         $validated = $request->validate([
-             'title' => [ 'string', 'max:255'],
-            'description' => [ 'string', 'max:255'],
-            'link' => [ 'url', 'max:255'],
+            'title' => ['string', 'max:255'],
+            'description' => [ 'string'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
 
-        // if ($request->hasFile('image')) {
-        //     if ($weoffer->image && Storage::disk('public')->exists($weoffer->image)) {
-        //         Storage::disk('public')->delete($weoffer->image);
-        //     }
-        //     $validated['image'] = $request->file('image')->store('weoffer', 'public');
-        // } else {
-        //     unset($validated['image']);
-        // }
         $validated['image'] = Controller::handleImageUpdate(
             $request,
             'image',
