@@ -7,6 +7,7 @@ use App\Models\Blogs;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 
 class BlogsController extends Controller
 {
@@ -18,6 +19,49 @@ class BlogsController extends Controller
             'blogs' => $blogs,
         ]);
     }
+
+    public function details($slug)
+    {
+        $blog = Blogs::with('category')
+            ->where('slug', $slug)
+            ->where('status', 1)
+            ->firstOrFail();
+
+        // Fetch other blogs in the same category, excluding the current one
+        $otherBlogs = Blogs::where('blog_category_id', $blog->blog_category_id)
+            ->where('id', '!=', $blog->id)
+            ->where('status', 1)
+            ->latest()
+            ->take(5)
+            ->get(['id', 'slug', 'name', 'image', 'created_at','content']);
+
+        return Inertia::render('web-pages/blogs/Details', [
+            'blog' => [
+                'id' => $blog->id,
+                'slug' => $blog->slug,
+                'name' => $blog->name,
+                'excerpt' => $blog->excerpt,
+                'content' => $blog->content,
+                'image' => $blog->image,
+                'created_at' => $blog->created_at->toDateString(),
+                'author_name' => $blog->author_name,
+                'author_image' => $blog->author_image,
+                'category' => $blog->category?->name ?? 'Uncategorized',
+                'faq' => json_decode($blog->faq, true),
+            ],
+            'otherBlogs' => $otherBlogs->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'slug' => $item->slug,
+                    'title' => $item->name,
+                    'content' => $item->content,
+                    'img' => $item->image,
+                    'published' => $item->created_at->toDateString(),
+                ];
+            }),
+        ]);
+    }
+
 
     public function create()
     {
@@ -47,6 +91,7 @@ class BlogsController extends Controller
 
         Blogs::create([
             'name' => $validated['name'],
+            'slug' => Str::slug($validated['name']),
             'author_name' => $validated['author_name'],
             'author_image' => $authorImagePath,
             'image' => $imagePath,
@@ -100,6 +145,7 @@ class BlogsController extends Controller
 
         $blog->update([
             'name' => $validated['name'],
+            'slug' => Str::slug($validated['name']),
             'author_name' => $validated['author_name'],
             'content' => $validated['content'],
             'faq' => json_encode($validated['faq']),
@@ -112,17 +158,17 @@ class BlogsController extends Controller
     public function destroy($id)
     {
         $blog = Blogs::findOrFail($id);
-    
+
         if ($blog->author_image && Storage::disk('public')->exists($blog->author_image)) {
             Storage::disk('public')->delete($blog->author_image);
         }
-    
+
         if ($blog->image && Storage::disk('public')->exists($blog->image)) {
             Storage::disk('public')->delete($blog->image);
         }
-    
+
         $blog->delete();
-    
+
         return redirect()->route('adminblogs.index')->with('success', 'Blog deleted successfully!');
     }
 
@@ -132,6 +178,7 @@ class BlogsController extends Controller
             $blog = Blogs::findOrFail($id);
             $blog->status = !$blog->status;
             $blog->save();
+
             return redirect()->back()->with('success', 'Status updated successfully!');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());

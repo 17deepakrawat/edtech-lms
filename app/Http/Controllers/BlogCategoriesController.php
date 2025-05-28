@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\BlogCategories;
+use App\Models\Blogs;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 
 class BlogCategoriesController extends Controller
 {
@@ -22,6 +24,38 @@ class BlogCategoriesController extends Controller
             return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());
         }
     }
+  public function category($slug)
+{
+    // Fetch category and its active blogs
+    $blogCategory = BlogCategories::where('slug', $slug)
+        ->where('status', 1)
+        ->with(['blogs' => function ($query) {
+            $query->where('status', 1)->with('category');
+        }])
+        ->firstOrFail();
+
+    return Inertia::render('web-pages/blogs/Index', [
+        'category' => [
+            'slug' => $blogCategory->slug,
+            'name' => $blogCategory->name,
+        ],
+        'blogs' => $blogCategory->blogs->map(function ($blog) use ($blogCategory) {
+            return [
+                'id' => $blog->id,
+                'name' => $blog->name ?? 'No Title', // consistent naming
+                'slug' => $blog->slug ?? 'no-title',
+                'excerpt' => $blog->excerpt ?? '',
+                'content' => $blog->content ?? 'No Content',
+                'image' => $blog->image ?? '',
+                'created_at' => $blog->created_at ? $blog->created_at->toDateString() : null,
+                'author_name' => $blog->author_name ?? 'Unknown Author',
+                'author_image' => $blog->author_image ?? '',
+                'category' => $blog->category ? $blog->category->name : $blogCategory->name,
+            ];
+        }),
+    ]);
+}
+
 
     public function index()
     {
@@ -41,22 +75,73 @@ class BlogCategoriesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
         ]);
-        BlogCategories::create($validated);
-        return redirect()->route('blogcategories.index');
+
+        BlogCategories::create([
+            'name' => $validated['name'],
+            'slug' => Str::slug($validated['name']), // generate slug from name
+        ]);
+
+        return redirect()->route('blogcategories.index')->with('success', 'Category created successfully!');
     }
+
 
     /**
      * Display the specified resource.
      */
-    public function show(BlogCategories $blogCategories)
+    public function show()
     {
-        //
+        $blogCategories = BlogCategories::where('status', 1)
+            ->with(['blogs' => function ($query) {
+                $query->where('status', 1)->with('category');
+            }])
+            ->get()
+            ->map(function ($category) {
+                return [
+                    'slug' => $category->slug, // ✅ Include the slug here
+                    'blogs' => $category->blogs->map(function ($blog) use ($category) {
+                        return [
+                            'id' => $blog->id,
+                            'name' => $blog->name ?? 'No Title', // change 'title' to 'name' to match frontend
+                            'slug' => $blog->slug ?? 'no-title',
+                            'image' => $blog->image ?? '',
+                            'created_at' => $blog->created_at ? $blog->created_at->toDateString() : null,
+                            'author_name' => $blog->author_name ?? 'Unknown Author',
+                            'author_image' => $blog->author_image ?? '',
+                            'category' => $category->name, // category name
+                        ];
+                    })->values(),
+                ];
+            });
+
+        $allBlogs = Blogs::where('status', 1)
+            ->with('category')
+            ->get()
+            ->map(function ($blog) {
+                return [
+                    'id' => $blog->id,
+                    'name' => $blog->name ?? 'No Title', // consistent with frontend
+                    'slug' => $blog->slug ?? 'no-title',
+                    'content' => $blog->content ?? 'No Content',
+                    'image' => $blog->image ?? '',
+                    'created_at' => $blog->created_at ? $blog->created_at->toDateString() : null,
+                    'author_name' => $blog->author_name ?? 'Unknown Author',
+                    'author_image' => $blog->author_image ?? '',
+                    'category' => $blog->category ? $blog->category->name : 'Uncategorized',
+                ];
+            });
+
+        return Inertia::render('web-pages/blogs/Blogs', [
+            'categories' => $blogCategories,
+            'slidblogs' => $allBlogs,
+        ]);
     }
+
     public function edit(BlogCategories $blogcategory)
     {
         return Inertia::render('admin/blogcategories/Edit', [
@@ -73,7 +158,10 @@ class BlogCategoriesController extends Controller
             'name' => ['required', 'string', 'max:255'],
         ]);
 
-        $blogcategory->update($validated);
+        $blogcategory->update([
+            'name' => $validated['name'],
+            'slug' => Str::slug($validated['name']), // generate slug from name
+        ]);
 
         return redirect()->route('blogcategories.index')->with('success', 'Blog category updated successfully!');
     }

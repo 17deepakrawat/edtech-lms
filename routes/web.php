@@ -77,23 +77,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/videos/get-units-by-course/{courseId}', [VideoController::class, 'getUnitsByCourse'])->name('videos.get-units');
         Route::get('/videos/get-topics-by-unit/{unitId}', [VideoController::class, 'getTopicsByUnit'])->name('videos.get-topics');
         Route::resource('plans', WebPlanController::class)->names('plans');
+        Route::get('/plans/{plan}/toggle-status', [WebPlanController::class, 'toggleStatus'])->name('plans.toggle-status');
     });
 });
-
+Route::get('/blogs', [BlogCategoriesController::class,'show'])->name('blogs');
+// Route::get('/blogs', [BlogCategoriesController::class,'show'])->name('blogs');
+Route::get('/blog/{slug}',[BlogsController::class,'details'])->name('blog');
+Route::get('/category/{slug}',[BlogCategoriesController::class,'category'])->name('category');
+Route::get('course',[CoursesController::class,'courselist' ])->name('course');
+Route::get('/course/{slug}', [CoursesController::class, 'details'])->name('course-details');
 Route::get('/', [Webhomcontroller::class, 'home']);
-
-Route::get('/course', function () {
-    return Inertia::render('web-pages/course/Index');
-})->name('course');
+// Route::get('/course', function () {
+//     return Inertia::render('web-pages/course/Index');
+// })->name('course');
 Route::get('/courses-details', function () {
     return Inertia::render('web-pages/course/Details');
 })->name('courses-details');
 Route::get('/all-blogs', function () {
     return Inertia::render('web-pages/blogs/Index');
 })->name('all-blogs');
-Route::get('/blogs', function () {
-    return Inertia::render('web-pages/blogs/Blogs');
-})->name('blogs');
 Route::get('/blog-details', function () {
     return Inertia::render('web-pages/blogs/Details');
 })->name('blog-details');

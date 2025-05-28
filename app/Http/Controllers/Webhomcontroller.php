@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Banners;
 use App\Models\Departments;
+use App\Models\Feedbacks;
 use App\Models\UniversityPartners;
 use App\Models\Weoffers;
+use App\Models\WebPlan;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -57,12 +59,16 @@ class Webhomcontroller extends Controller
             ->select('id', 'name', 'image', 'link')
             ->get();
         //end university partner
+        $webplan = WebPlan::where('status', 1)->limit(3)->get();
+        $feedback= Feedbacks::where('status', 1)->get();
         // dd($univserityPartner);
         return Inertia::render('web-pages/Home', [
             'banners' => $banners,
             'categoryData' => $formattedData,
             'weoffers' => $weoffers,
-            'universityPartner' => $universityPartner
+            'universityPartner' => $universityPartner,
+            'webplan'=> $webplan,
+            'feedback'=> $feedback,
         ]);
-    }
+    }   
 }

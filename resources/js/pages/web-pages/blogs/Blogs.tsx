@@ -1,135 +1,66 @@
+import { usePage, Link } from '@inertiajs/react';
 import WebLayouts from '@/layouts/web-layout';
 import BlogBanner from '@/web-component/banner/BlogBanner';
 import BlogCard from '@/web-component/BlogCard';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
-type BlogPost = {
-    id: number;
-    category: string;
-    date: string;
-    title: string;
-    excerpt: string;
-    image: string;
-    author: string;
-    authorimg: string;
+type Blog = {
+  id: number;
+  name: string;
+  slug: string;
+  excerpt?: string;
+  image: string;
+  created_at: string | null;
+  category: string;
+  author_name: string;
+  author_image: string;
 };
 
-const allPosts: BlogPost[] = [
-    {
-        id: 1,
-        category: 'Travel',
-        date: 'October 31, 2018',
-        author: 'Deepak Singh Rawat',
-        authorimg: '/build/assets/web-assets/course.jpg',
-        title: 'Why your socks may be the most important thing you pack',
-        excerpt: 'Alice was beginning to get very tired of sitting by her sister on the bank...',
-        image: '/build/assets/web-assets/course.jpg',
-    },
-    {
-        id: 2,
-        category: 'Fitness',
-        date: 'October 31, 2018',
-        author: 'Safdar Ali',
-        authorimg: '/build/assets/web-assets/course.jpg',
-        title: 'Visualizing your goal weight could help boost weight loss',
-        excerpt: 'Alice was beginning to get very tired of sitting by her sister on the bank...',
-        image: '/build/assets/web-assets/course.jpg',
-    },
-    {
-        id: 3,
-        category: 'Fitness',
-        date: 'October 31, 2018',
-        author: 'Safdar Ali',
-        authorimg: '/build/assets/web-assets/course.jpg',
-        title: 'Visualizing your goal weight could help boost weight loss',
-        excerpt: 'Alice was beginning to get very tired of sitting by her sister on the bank...',
-        image: '/build/assets/web-assets/course.jpg',
-    },
-    {
-        id: 4,
-        category: 'Fitness',
-        date: 'October 31, 2018',
-        author: 'Safdar Ali',
-        authorimg: '/build/assets/web-assets/course.jpg',
-        title: 'Visualizing your goal weight could help boost weight loss',
-        excerpt: 'Alice was beginning to get very tired of sitting by her sister on the bank...',
-        image: '/build/assets/web-assets/course.jpg',
-    },
-    {
-        id: 5,
-        category: 'Fitness',
-        date: 'October 31, 2018',
-        author: 'Safdar Ali',
-        authorimg: '/build/assets/web-assets/course.jpg',
-        title: 'Visualizing your goal weight could help boost weight loss',
-        excerpt: 'Alice was beginning to get very tired of sitting by her sister on the bank...',
-        image: '/build/assets/web-assets/course.jpg',
-    },
-    {
-        id: 6,
-        category: 'Fitness',
-        date: 'October 31, 2018',
-        author: 'Safdar Ali',
-        authorimg: '/build/assets/web-assets/course.jpg',
-        title: 'Visualizing your goal weight could help boost weight loss',
-        excerpt: 'Alice was beginning to get very tired of sitting by her sister on the bank...',
-        image: '/build/assets/web-assets/course.jpg',
-    },
-    {
-        id: 7,
-        category: 'Fitness',
-        date: 'October 31, 2018',
-        author: 'Safdar Ali',
-        authorimg: '/build/assets/web-assets/course.jpg',
-        title: 'Visualizing your goal weight could help boost weight loss',
-        excerpt: 'Alice was beginning to get very tired of sitting by her sister on the bank...',
-        image: '/build/assets/web-assets/course.jpg',
-    },
-    {
-        id: 8,
-        category: 'Fitness',
-        date: 'October 31, 2018',
-        author: 'Safdar Ali',
-        authorimg: '/build/assets/web-assets/course.jpg',
-        title: 'Visualizing your goal weight could help boost weight loss',
-        excerpt: 'Alice was beginning to get very tired of sitting by her sister on the bank...',
-        image: '/build/assets/web-assets/course.jpg',
-    },
-    {
-        id: 9,
-        category: 'Fitness',
-        date: 'October 31, 2018',
-        author: 'Safdar Ali',
-        authorimg: '/build/assets/web-assets/course.jpg',
-        title: 'Visualizing your goal weight could help boost weight loss',
-        excerpt: 'Alice was beginning to get very tired of sitting by her sister on the bank...',
-        image: '/build/assets/web-assets/course.jpg',
-    },
-    {
-        id: 10,
-        category: 'Fitness',
-        date: 'October 31, 2018',
-        author: 'Safdar Ali',
-        authorimg: '/build/assets/web-assets/course.jpg',
-        title: 'Visualizing your goal weight could help boost weight loss',
-        excerpt: 'Alice was beginning to get very tired of sitting by her sister on the bank...',
-        image: '/build/assets/web-assets/course.jpg',
-    },
-];
+type BlogCategoryGroup = {
+  slug: string;
+  blogs: Blog[];
+};
 
 export default function Blogs() {
-    return (
-        <WebLayouts>
-            <div className="container mx-auto px-4 py-8">
-                <BlogBanner blogPosts={allPosts.slice(0, 3)} />
-                <p className="course_title">Fitness</p>
-                <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-                    {allPosts.map((post) => (
-                        <BlogCard key={post.id} post={post} />
-                    ))}
+  const { slidblogs = [], categories = [] } = usePage().props as {
+    slidblogs: Blog[];
+    categories: BlogCategoryGroup[];
+  };
+
+  return (
+    <WebLayouts>
+      <div className="container mx-auto px-4 py-8">
+        {/* Banner slider for top blogs */}
+        {slidblogs.length > 0 && <BlogBanner blogPosts={slidblogs} />}
+
+        {/* Loop through each category group */}
+        {categories.length > 0 &&
+          categories.map((categoryGroup, index) => (
+            categoryGroup.blogs.length > 0 && (
+              <section key={index} className="my-8">
+                <div className="flex justify-between items-center">
+                  <p className="course_title">
+                    {categoryGroup.blogs[0]?.category ?? 'Uncategorized'}
+                  </p>
+                  
+                  <Link
+                    href={`/category/${categoryGroup.slug}`} // ✅ fixed this line
+                    className="text-sm text-blue-600 hover:underline"
+                  >
+                    View all
+                  </Link>
                 </div>
-            </div>
-        </WebLayouts>
-    );
+
+                <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+                  {categoryGroup.blogs.map((post) => (
+                    <BlogCard key={post.id} post={post} />
+                  ))}
+                </div>
+              </section>
+            )
+          ))}
+      </div>
+    </WebLayouts>
+  );
 }

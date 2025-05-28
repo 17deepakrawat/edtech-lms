@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
 import { Head, router } from '@inertiajs/react';
@@ -17,7 +16,6 @@ interface Plan {
     frequency: string;
     features: string[];
     disabled_features: string[];
-    status: boolean;
 }
 
 interface Props extends PageProps {
@@ -31,12 +29,15 @@ export default function Edit({ plan }: Props) {
         frequency: plan.frequency,
         features: plan.features,
         disabled_features: plan.disabled_features,
-        status: plan.status,
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        router.put(route('admin.plans.update', plan.id), data, {
+        router.put(route('plans.update', plan.id), {
+            ...data,
+            features: data.features.filter(f => f.trim() !== ''),
+            disabled_features: data.disabled_features.filter(f => f.trim() !== ''),
+        }, {
             onSuccess: () => {
                 toast.success('Plan updated successfully');
             },
@@ -177,15 +178,6 @@ export default function Edit({ plan }: Props) {
                             <Button type="button" variant="outline" onClick={addDisabledFeature} className="mt-2">
                                 <Plus className="mr-2 h-4 w-4" /> Add Disabled Feature
                             </Button>
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                            <Switch
-                                id="status"
-                                checked={data.status}
-                                onCheckedChange={(checked) => setData((prev) => ({ ...prev, status: checked }))}
-                            />
-                            <Label htmlFor="status">Active</Label>
                         </div>
                     </div>
 

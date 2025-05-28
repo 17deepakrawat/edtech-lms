@@ -27,7 +27,7 @@ class Video extends Model
      */
     public function course(): BelongsTo
     {
-        return $this->belongsTo(Course::class);
+        return $this->belongsTo(Courses::class, 'course_id');
     }
 
     /**
@@ -45,4 +45,4 @@ class Video extends Model
     {
         return $this->belongsTo(Topic::class);
     }
-} 
+}

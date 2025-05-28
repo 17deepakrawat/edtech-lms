@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
 use App\Models\Courses;
 use App\Models\Departments;
 use App\Models\Programs;
@@ -10,13 +11,14 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class CoursesController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
- 
+
 
     public function getByDepartment($department_id)
     {
@@ -26,6 +28,101 @@ class CoursesController extends Controller
 
         return response()->json($programs);
     }
+    // Laravel Controller Method
+    public function details($slug)
+    {
+        $course = Courses::with('videos')->where('slug', $slug)->firstOrFail();
+        $unit = Course::with(['units.topics'])
+            ->where('slug', $slug)
+            ->firstOrFail();       
+        $firstVideo = $course->videos->first();
+        $otherCourses = Courses::where('id', '!=', $course->id)
+            ->where('program_id', $course->program_id)
+            ->where('status', 1)
+            ->take(4)
+            ->get(['id', 'name', 'slug', 'image', 'rating', 'short_description', 'price']);
+
+        $data = [
+            'id' => $course->id,
+            'name' => $course->name ?? 'N/A',
+            'slug' => $course->slug,
+            'short_description' => $course->short_description ?? 'No short description available.',
+            'duration' => $course->duration ?? '0h',
+            'price' => $course->price ?? 0,
+            'rating' => $course->rating ?? 0,
+            'image' => $course->image ?? '/build/assets/web-assets/course.jpg',
+            'modes' => $course->modes ?? [],
+            'content' => $course->content ?? [],
+            'course_keys' => $course->course_keys ?? [],
+            'faqs' => $course->faqs ?? [],
+            'video_name' => $firstVideo->name ?? 'Course Introduction',
+            'videoid' => $firstVideo->id ?? 'No Id',
+            'video_type' => $firstVideo->video_type ?? 'normal',
+            'video_path' => $firstVideo->video_path ?? '/build/assets/web-assets/videoc.mp4',
+            'embed_url' => $firstVideo->embed_url ?? 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+            'video_duration' => $firstVideo->duration ?? '1:00',
+
+        ];
+        return Inertia::render('web-pages/course/Details', [
+            'course' => $data,
+            'other_courses' => $otherCourses ?? [],
+            'units' => $unit,
+            
+        ]);
+    }
+
+  
+
+
+
+
+
+
+
+    public function courselist()
+    {
+        $departments = Departments::where('status', 1)
+            ->with(['programs.courses' => function ($query) {
+                $query->where('status', 1);
+            }])
+            ->get();
+
+        $maxAmount = Courses::max('price');
+        $flatCourses = [];
+        $departmentPrograms = [];
+
+        foreach ($departments as $department) {
+            $deptName = $department->name;
+            $departmentPrograms[$deptName] = [];
+
+            foreach ($department->programs as $program) {
+                $progName = $program->name;
+                $departmentPrograms[$deptName][] = $progName;
+
+                foreach ($program->courses as $course) {
+                    $flatCourses[] = [
+                        'id' => $course->id,
+                        'name' => $course->name,
+                        'image' => $course->image,
+                        'rating' => $course->rating,
+                        'price' => $course->price,
+                        'department' => $deptName,
+                        'program' => $progName,
+                        'slug' => $course->slug,
+                    ];
+                }
+            }
+        }
+
+        return Inertia::render('web-pages/course/Index', [
+            'courses' => $flatCourses,
+            'departmentPrograms' => $departmentPrograms,
+            'maxAmount' => $maxAmount,
+        ]);
+    }
+
+
+
 
     public function index()
     {
@@ -91,6 +188,7 @@ class CoursesController extends Controller
         // Create the course
         Courses::create([
             'department_id' => $validated['department_id'],
+            'slug' => Str::slug($validated['name']),
             'program_id' => $validated['program_id'],
             'name' => $validated['name'],
             'short_description' => $validated['short_description'],
@@ -160,6 +258,7 @@ class CoursesController extends Controller
 
         $course->fill([
             'name' => $validated['name'] ?? $course->name,
+            'slug' => Str::slug($validated['name'] ?? $course->slug),
             'short_description' => $validated['short_description'] ?? $course->short_description,
             'content' => $validated['content'] ?? $course->content,
             'modes' => $validated['modes'] ?? $course->modes,

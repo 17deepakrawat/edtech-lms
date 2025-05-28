@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\WebPlan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -12,10 +13,19 @@ class WebPlanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(){
+    public function index()
+    {
         $plans = WebPlan::all();
 
-        return Inertia::render('admin/plans/Index', [
+        // If the user is authenticated and is an admin, show the admin view
+        if (Auth::check() && Auth::user()->hasRole('admin')) {
+            return Inertia::render('admin/plans/Index', [
+                'plans' => $plans,
+            ]);
+        }
+
+        // Otherwise show the public view
+        return Inertia::render('web-pages/Plans', [
             'plans' => $plans,
         ]);
     }
@@ -23,7 +33,8 @@ class WebPlanController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(){
+    public function create()
+    {
         return Inertia::render('admin/plans/Create');
     }
 
@@ -39,21 +50,19 @@ class WebPlanController extends Controller
             'features' => ['nullable', 'array'],
             'features.*' => ['string'],
             'disabled_features' => ['nullable', 'array'],
-            'disabled_features.*' => ['string'],
-            'status' => ['nullable', 'boolean'],
+            'disabled_features.*' => ['string'],            
         ]);
 
-        $validated['status'] = $request->boolean('status');
 
         WebPlan::create($validated);
 
-        return redirect()->route('websiteplan.index');
+        return redirect()->route('plans.index')->with('success', 'Plans created successfully.');;
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(WebPlan $plan): Response
+    public function edit(WebPlan $plan)
     {
         return Inertia::render('admin/plans/Edit', [
             'plan' => $plan,
@@ -89,31 +98,22 @@ class WebPlanController extends Controller
      */
     public function destroy(WebPlan $plan)
     {
-        try {
-            $plan->delete();
-
-            return redirect()->route('admin.plans.index')
-                ->with('success', 'Plan deleted successfully.');
-        } catch (\Throwable $e) {
-            return redirect()->route('admin.plans.index')
-                ->with('error', 'Failed to delete plan.');
-        }
+        $plan->delete();
+        return redirect()->route('plans.index')->with('success', 'Plan deleted successfully.');
     }
 
     /**
      * Toggle the status of the specified resource.
      */
-    public function toggleStatus(WebPlan $plan)
+    public function toggleStatus($id)
     {
         try {
+            $plan = WebPlan::findOrFail($id);
             $plan->status = !$plan->status;
             $plan->save();
-
-            return redirect()->back()
-                ->with('success', 'Plan status updated successfully.');
-        } catch (\Throwable $e) {
-            return redirect()->back()
-                ->with('error', 'Failed to update plan status.');
+            return redirect()->route('plans.index')->width('success', 'Status updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());
         }
     }
 }

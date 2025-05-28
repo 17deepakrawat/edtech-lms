@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-// import { Switch } from '@/components/ui/switch';
 import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
 import { Head, router } from '@inertiajs/react';
@@ -25,7 +24,7 @@ export default function Create({ auth }: Props) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        router.post(route('admin.plans.store'), {
+        router.post(route('plans.store'), {
             ...data,
             features: data.features.filter(f => f.trim() !== ''),
             disabled_features: data.disabled_features.filter(f => f.trim() !== ''),
@@ -162,14 +161,7 @@ export default function Create({ auth }: Props) {
                             </Button>
                         </div>
 
-                        {/* <div className="flex items-center space-x-2">
-                            <Switch
-                                id="status"
-                                checked={data.status}
-                                onCheckedChange={(checked) => setData((prev) => ({ ...prev, status: checked }))}
-                            />
-                            <Label htmlFor="status">Active</Label>
-                        </div> */}
+                       
                     </div>
 
                     <div className="flex justify-end">

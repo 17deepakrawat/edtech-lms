@@ -14,13 +14,11 @@ interface BannerSlide {
     title: string;
     description: string;
     bannerimage: string;
-    status: boolean;
 }
 
 interface Department {
     id: number;
     name: string;
-    status: boolean;
 }
 
 interface Course {
@@ -36,13 +34,11 @@ interface Course {
     is_subject?: boolean;
     course_keys?: string[];
     faqs?: any[];
-    status: boolean;
 }
 
 interface ProgramWithCourses {
     id: number;
     name: string;
-    status: boolean;
     department_id: number;
     courses: Course[];
 }
@@ -54,9 +50,26 @@ interface Partner {
     name: string;
 }
 
+interface WebPlan {
+    id: number;
+    title: string;
+    price: number;
+    frequency: string;
+    features: string[]; // JSON-decoded array from backend
+    disabled_features: string[]; // JSON-decoded array from backend
+}
+interface Feedback {
+    id: number;
+    name: string;
+    title: string;
+    description: string;
+    image: string;
+}
 interface HomeProps {
-    universityPartner?: Partner[]; // fixed
+    universityPartner?: Partner[];
     banners?: BannerSlide[];
+    feedback?: Feedback[];
+    webplan?: WebPlan[];
     departments?: Department[];
     programsWithCourses?: ProgramWithCourses[];
     categoryData?: Record<string, Record<string, any[]>>;
@@ -66,53 +79,10 @@ interface HomeProps {
         description: string;
         link: string;
         image: string;
-        status: boolean;
     }[];
 }
 
-const plans = [
-    {
-        title: 'Standard plan',
-        price: 49,
-        frequency: 'month',
-        features: ['2 team members', '20GB Cloud storage', 'Integration help'],
-        disabledFeatures: ['Sketch Files', 'API Access', 'Complete documentation', '24×7 phone & email support'],
-    },
-    {
-        title: 'Premium plan',
-        price: 99,
-        frequency: 'month',
-        features: ['10 team members', '100GB Cloud storage', 'Integration help', 'Sketch Files', 'API Access'],
-        disabledFeatures: ['Complete documentation', '24×7 phone & email support'],
-    },
-    {
-        title: 'Premium Plus plan',
-        price: 199,
-        frequency: 'month',
-        features: [
-            'Unlimited team members',
-            '1TB Cloud storage',
-            'Integration help',
-            'Sketch Files',
-            'API Access',
-            'Complete documentation',
-            '24×7 phone & email support',
-        ],
-        disabledFeatures: [],
-    },
-];
-
-const logos = [
-    '/build/assets/web-assets/university.svg',
-    '/build/assets/web-assets/university.svg',
-    '/build/assets/web-assets/university.svg',
-    '/build/assets/web-assets/university.svg',
-    '/build/assets/web-assets/university.svg',
-    '/build/assets/web-assets/university.svg',
-];
-
-export default function Home({ banners, departments, programsWithCourses, categoryData, weoffers, universityPartner }: HomeProps) {
-    // console.log(universityPartner);
+export default function Home({ banners, departments, programsWithCourses, categoryData, weoffers, universityPartner, webplan, feedback }: HomeProps) {
     return (
         <WebLayouts>
             <Head title="Home" />
@@ -128,20 +98,25 @@ export default function Home({ banners, departments, programsWithCourses, catego
             <section className="pt-24 pb-4">
                 <About />
             </section>
+
             <section className="py-16 pt-4">
                 <CategoryTab categoryData={categoryData || {}} />
             </section>
+
             <section>
                 <WhatWeOffer weoffers={weoffers || []} />
             </section>
+
             <section className="py-16 pt-4">
                 <PartnerSlider partners={universityPartner || []} />
             </section>
+
             <section className="py-16 pt-4">
-                <Plain plans={plans} />
+                <Plain plans={webplan || []} />
             </section>
+
             <section className="py-16 pt-4">
-                <Testimonials />
+                <Testimonials feedbacks={feedback || []} />
             </section>
         </WebLayouts>
     );

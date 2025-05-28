@@ -1,154 +1,84 @@
-// 'use client';
+'use client';
 
 import WebLayouts from '@/layouts/web-layout';
 import CourseCard from '@/web-component/CourseCard';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Home } from "lucide-react";
+import { usePage } from '@inertiajs/react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import React from 'react';
+
+// Debounce Hook
+function useDebounce<T>(value: T, delay: number): T {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+    useEffect(() => {
+        const handler = setTimeout(() => setDebouncedValue(value), delay);
+        return () => clearTimeout(handler);
+    }, [value, delay]);
+    return debouncedValue;
+}
 
 export default function CourseIndex() {
-    const minPrice = 0;
-    const maxPrice = 1000;
+    const { courses, departmentPrograms, maxAmount } = usePage().props as any;
 
-    const [price, setPrice] = useState(maxPrice);
-    const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
+    const allPrograms = Object.values(departmentPrograms).flat();
+    const [selectedPrograms, setSelectedPrograms] = useState<string[]>([]);
+    const [price, setPrice] = useState(maxAmount);
     const [searchQuery, setSearchQuery] = useState('');
+    const debouncedSearch = useDebounce(searchQuery, 150);
 
-    const courseData = {
-        Science: {
-            BSc: [
-                {
-                    img: '/build/assets/web-assets/course.jpg',
-                    duration: '12 Jan 2025',
-                    price: 200,
-                    courseTitle: 'Physics 101',
-                    isEnrolled: false,
-                    courseDescription: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reiciendis beatae quod nemo laboriosam vero vel animi ullam doloremque itaque! Deleniti?',
-                    rating: 4.5,
-                    department: 'Science',
-                },
-                {
-                    img: '/build/assets/web-assets/course.jpg',
-                    duration: '15 Jan 2025',
-                    price: 250,
-                    courseTitle: 'Chemistry 101',
-                    isEnrolled: true,
-                    courseDescription: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reiciendis beatae quod nemo laboriosam vero vel animi ullam doloremque itaque! Deleniti?',
-                    department: 'Science',
-                },
-                {
-                    img: '/build/assets/web-assets/course.jpg',
-                    duration: '18 Jan 2025',
-                    price: 180,
-                    courseTitle: 'Biology 101',
-                    isEnrolled: false,
-                    courseDescription: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reiciendis beatae quod nemo laboriosam vero vel animi ullam doloremque itaque! Deleniti?',
-                    department: 'Science',
-                },
-            ],
-            MSc: [
-                {
-                    img: '/build/assets/web-assets/course.jpg',
-                    duration: '12 Jan 2025',
-                    price: 200,
-                    courseTitle: 'Physics 201',
-                    isEnrolled: false,
-                    courseDescription: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nemo, voluptas.',
-                    rating: 4.7,
-                    department: 'Science',
-                },
-                {
-                    img: '/build/assets/web-assets/course.jpg',
-                    duration: '15 Jan 2025',
-                    price: 250,
-                    courseTitle: 'Chemistry 201',
-                    isEnrolled: true,
-                    courseDescription: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nemo, voluptas.',
-                    department: 'Science',
-                },
-            ],
-        },
-        Arts: {
-            BA: [],
-            MA: [],
-        },
-        Commerce: {
-            BCom: [],
-            MCom: [],
-        },
-    };
+    useEffect(() => {
+        setSelectedPrograms(allPrograms);
+    }, [departmentPrograms]);
 
     const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPrice(Number(e.target.value));
     };
 
-    const handleDepartmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleProgramChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value, checked } = e.target;
-        if (checked) {
-            setSelectedDepartments((prev) => [...prev, value]);
-        } else {
-            setSelectedDepartments((prev) => prev.filter((dept) => dept !== value));
-        }
+        setSelectedPrograms((prev) => (checked ? [...prev, value] : prev.filter((prog) => prog !== value)));
     };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
     };
 
-    const filterCourses = (courses: any[]) => {
-        return courses.filter((course) => {
-            const matchesDepartment = selectedDepartments.length === 0 || selectedDepartments.includes(`${course.department}-${course.level}`);
-            const matchesPrice = course.price <= price;
-            const matchesSearch = course.courseTitle.toLowerCase().includes(searchQuery.toLowerCase());
-            return matchesDepartment && matchesPrice && matchesSearch;
-        });
-    };
+    const activePrograms = selectedPrograms.length > 0 ? selectedPrograms : allPrograms;
+    const searchLower = debouncedSearch.toLowerCase();
+    const searchAsNumber = parseFloat(debouncedSearch);
 
-    const allCourses = Object.keys(courseData).reduce((acc: any[], program) => {
-        Object.keys(courseData[program]).forEach((level) => {
-            acc.push(
-                ...courseData[program][level].map((course: any) => ({
-                    ...course,
-                    program,
-                    level,
-                    department: program,
-                }))
-            );
-        });
-        return acc;
-    }, []);
+    const filteredCourses = courses.filter((course: any) => {
+        const matchesProgram = activePrograms.includes(course.program);
+        const matchesPrice = course.price <= price;
+        const matchesSearch =
+            course.name.toLowerCase().includes(searchLower) ||
+            course.program.toLowerCase().includes(searchLower) ||
+            course.department?.toLowerCase().includes(searchLower) ||
+            (!isNaN(searchAsNumber) && course.price === searchAsNumber);
 
-    const filteredCourses = filterCourses(allCourses);
+        return matchesProgram && matchesPrice && matchesSearch;
+    });
 
     return (
         <WebLayouts>
-            <div className="container-fluid">
-                <div className="pt-25 pb-5 sm:pt-25 sm:pb-5">
-                    {/* Breadcrumb */}
+            <div className="container-fluid mt-23">
+                <div className="pt-6 pb-5">
                     <nav className="flex" aria-label="Breadcrumb">
-                        <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                        <ol className="inline-flex items-center space-x-1 md:space-x-2">
                             <li className="inline-flex items-center">
                                 <a href="/" className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
-                                <svg
-                                            className="me-2.5 h-3 w-3"
-                                            aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
-                                        </svg>
-                                           Home
+                                    <svg className="me-2.5 h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
+                                    </svg>
+                                    Home
                                 </a>
                             </li>
                             <li>
                                 <div className="flex items-center">
-                                    <svg className="mx-1 h-3 w-3 text-gray-400 rtl:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                    <svg className="mx-1 h-3 w-3 text-gray-400" fill="none" viewBox="0 0 6 10">
                                         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" />
                                     </svg>
-                                    <span className="ms-1 text-sm font-bold text-gray-700 hover:text-blue-600">
-                                        Courses
-                                    </span>
+                                    <span className="text-sm font-bold text-gray-700">Courses</span>
                                 </div>
                             </li>
                         </ol>
@@ -156,17 +86,16 @@ export default function CourseIndex() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-8 pb-10 md:grid-cols-5">
-                    {/* Left Sidebar */}
+                    {/* Sidebar */}
                     <div className="md:col-span-2 lg:col-span-1">
-                        <p className="mb-3.5 text-2xl font-bold">All Category</p>
-
-                        <div className="max-h-96 space-y-4 overflow-y-auto">
-                            {Object.keys(courseData).map((program, index) => (
-                                <details key={index} className="group rounded-lg border ">
-                                    <summary className="flex cursor-pointer items-center justify-between p-4 text-gray-700 hover:bg-gray-100">
-                                        <span className="text-sm font-medium">{program}</span>
+                        <p className="mb-3 text-2xl font-bold">All Categories</p>
+                        <div className="max-h-[28rem] space-y-4 overflow-y-auto">
+                            {Object.entries(departmentPrograms).map(([dept, programs], i) => (
+                                <details key={i} className="group rounded-lg border">
+                                    <summary className="flex cursor-pointer justify-between p-4 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white dark:hover:borde-2">
+                                        <span className="text-sm font-medium">{dept}</span>
                                         <svg
-                                            className="h-4 w-4 transition-transform duration-200 group-open:rotate-180"
+                                            className="h-4 w-4 transition-transform group-open:rotate-180"
                                             fill="none"
                                             stroke="currentColor"
                                             strokeWidth="2"
@@ -175,19 +104,20 @@ export default function CourseIndex() {
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                                         </svg>
                                     </summary>
-                                    <div className="max-h-60 overflow-y-auto bg-white   p-4">
+                                    <div className="bg-white p-4">
                                         <ul className="space-y-2">
-                                            {Object.keys(courseData[program]).map((level, idx) => (
-                                                <li key={idx} className="flex items-center space-x-2">
+                                            {programs.map((prog, j) => (
+                                                <li key={j} className="flex items-center space-x-2">
                                                     <input
-                                                        id={`${program}-${level}`}
                                                         type="checkbox"
-                                                        value={`${program}-${level}`}
-                                                        onChange={handleDepartmentChange}
+                                                        id={prog}
+                                                        value={prog}
+                                                        checked={selectedPrograms.includes(prog)}
+                                                        onChange={handleProgramChange}
                                                         className="h-4 w-4 rounded border-gray-300"
                                                     />
-                                                    <label htmlFor={`${program}-${level}`} className="text-sm text-gray-700">
-                                                        {level}
+                                                    <label htmlFor={prog} className="text-sm text-gray-700">
+                                                        {prog}
                                                     </label>
                                                 </li>
                                             ))}
@@ -198,52 +128,45 @@ export default function CourseIndex() {
                         </div>
 
                         {/* Price Filter */}
-                        <div className="mt-6 w-full rounded-lg bg-white dark:bg-black dark:border-gray dark:border-1 p-4 shadow-md ">
-                            <h2 className="mb-4 text-lg font-semibold text-gray-700">Filter by Price</h2>
+                        <div className="mt-6 rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
+                            <h2 className="mb-4 text-lg font-semibold text-gray-700 dark:text-gray-200">Filter by Price</h2>
                             <input
                                 type="range"
-                                min={minPrice}
-                                max={maxPrice}
+                                min={0}
+                                max={maxAmount}
                                 value={price}
                                 onChange={handleSliderChange}
-                                className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200"
+                                className="accent-customgreen-600 h-2 w-full cursor-pointer rounded-lg bg-gray-200 dark:bg-gray-700"
                             />
-                            <div className="mt-2 flex justify-between text-sm text-gray-600">
-                                <span>₹{minPrice}</span>
+                            <div className="mt-2 flex justify-between text-sm text-gray-600 dark:text-gray-300">
+                                <span>₹0</span>
                                 <span>₹{price}</span>
-                                <span>₹{maxPrice}</span>
+                                <span>₹{maxAmount}</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Main Content */}
                     <div className="md:col-span-3 lg:col-span-4">
-                        {/* Search Bar */}
-                        <div className="pb-6">
-                            <form className="flex flex-col gap-2 sm:flex-row" onSubmit={(e) => e.preventDefault()}>
-                                <input
-                                    type="search"
-                                    value={searchQuery}
-                                    onChange={handleSearchChange}
-                                    className="w-full rounded-lg border border-gray-300 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-                                    placeholder="Search courses..."
-                                />
-                                <button
-                                    type="submit"
-                                    className="rounded-lg bg-customgreen-600 p-2 text-white hover:bg-blue-700"
-                                >
-                                    Search
-                                </button>
-                            </form>
-                        </div>
+                        <form className="flex flex-col gap-2 pb-6 sm:flex-row" onSubmit={(e) => e.preventDefault()}>
+                            <input
+                                type="search"
+                                value={searchQuery}
+                                onChange={handleSearchChange}
+                                className="w-full rounded-lg border border-gray-300 p-2 text-sm"
+                                placeholder="Search by course, program, department or price..."
+                            />
+                            {/* <button type="submit" className="bg-customgreen-600 text-white p-2 rounded-lg hover:bg-blue-700">
+                                Search
+                            </button> */}
+                        </form>
 
-                        {/* Course Cards */}
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                             <AnimatePresence>
                                 {filteredCourses.length > 0 ? (
-                                    filteredCourses.map((course, idx) => (
+                                    filteredCourses.map((course: any) => (
                                         <motion.div
-                                            key={course.courseTitle + idx}
+                                            key={course.id}
                                             layout
                                             initial={{ opacity: 0, scale: 0.95 }}
                                             animate={{ opacity: 1, scale: 1 }}
@@ -259,7 +182,6 @@ export default function CourseIndex() {
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
-                                        transition={{ duration: 0.3 }}
                                         className="col-span-full text-center text-gray-500"
                                     >
                                         No courses found.
