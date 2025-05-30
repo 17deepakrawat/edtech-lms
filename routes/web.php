@@ -78,7 +78,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/videos/get-topics-by-unit/{unitId}', [VideoController::class, 'getTopicsByUnit'])->name('videos.get-topics');
         Route::resource('plans', WebPlanController::class)->names('plans');
         Route::get('/plans/{plan}/toggle-status', [WebPlanController::class, 'toggleStatus'])->name('plans.toggle-status');
-        Route::get('/leads_index', [LeadsController::class, 'index'])->name('leads_index');
+        Route::resource('leads', LeadsController::class);
     });
 });
 Route::get('/blogs', [BlogCategoriesController::class, 'show'])->name('blogs');

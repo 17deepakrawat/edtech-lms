@@ -11,4 +11,11 @@ export interface PageProps {
     auth: {
         user: User;
     };
+}
+
+export interface NavItem {
+    title: string;
+    href?: string;
+    icon: React.ComponentType<{ className?: string }>;
+    children?: NavItem[];
 } 

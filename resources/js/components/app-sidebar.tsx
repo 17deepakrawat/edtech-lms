@@ -124,7 +124,7 @@ const adminNavItems: NavItem[] = [
             },
             {
                 title: 'Leads',
-                href: '/leads_index',
+                href: '/leads',
                 icon: Users,
             },
         ],

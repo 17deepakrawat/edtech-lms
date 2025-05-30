@@ -14,7 +14,10 @@ class LeadsController extends Controller
      */
     public function index()
     {
-        //
+        $leads = Leads::latest()->get();
+        return Inertia::render('admin/Leads/Index', [
+            'leads' => $leads,
+        ]);
     }
 
     /**
@@ -44,6 +47,7 @@ class LeadsController extends Controller
 
         return redirect()->back()->with('success', 'Lead created successfully!');
     }
+
     /**
      * Display the specified resource.
      */
@@ -74,8 +78,9 @@ class LeadsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Leads $leads)
+    public function destroy(Leads $lead)
     {
-        //
+        $lead->delete();
+        return redirect()->back()->with('success', 'Lead deleted successfully!');
     }
 }

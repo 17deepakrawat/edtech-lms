@@ -74,6 +74,8 @@
         "globals": "^15.14.0",
         "gsap": "^3.12.7",
         "highlight.js": "^11.11.1",
+        "jspdf": "^3.0.1",
+        "jspdf-autotable": "^5.0.2",
         "laravel-vite-plugin": "^1.0",
         "lexical": "^0.31.0",
         "lottie-react": "^2.4.1",
@@ -93,6 +95,7 @@
         "tailwindcss-animate": "^1.0.7",
         "typescript": "^5.7.2",
         "vite": "^6.0",
+        "xlsx": "^0.18.5",
         "zod": "^3.25.20"
     },
     "optionalDependencies": {
