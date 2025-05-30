@@ -32,9 +32,11 @@ class CoursesController extends Controller
     public function details($slug)
     {
         $course = Courses::with('videos')->where('slug', $slug)->firstOrFail();
-        $unit = Course::with(['units.topics'])
-            ->where('slug', $slug)
-            ->firstOrFail();       
+        $unit = Course::with([
+            'units.videos',           
+            'units.topics.videos'    
+        ])->where('slug', $slug)->firstOrFail();
+        // dd($course);
         $firstVideo = $course->videos->first();
         $otherCourses = Courses::where('id', '!=', $course->id)
             ->where('program_id', $course->program_id)
@@ -67,11 +69,11 @@ class CoursesController extends Controller
             'course' => $data,
             'other_courses' => $otherCourses ?? [],
             'units' => $unit,
-            
+
         ]);
     }
 
-  
+
 
 
 

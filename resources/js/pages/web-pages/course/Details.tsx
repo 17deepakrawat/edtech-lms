@@ -112,12 +112,9 @@ export default function CourseDetails({
     const keysRaw = course.course_keys;
     const items = Array.isArray(keysRaw) ? keysRaw : typeof keysRaw === 'string' ? JSON.parse(keysRaw) : [];
     const visibleItems = showAllFeatures ? items : items.slice(0, 4);
-
     // Handle units visibility - ensure units is always treated as an array
     const safeUnits = units['units'];
-    // console.log(safeUnits);
     const visibleUnits = showMoreUnits ? safeUnits : safeUnits.slice(0, 3);
-
     return (
         <WebLayout>
             <div className="bg-gray-700">
@@ -172,9 +169,9 @@ export default function CourseDetails({
                 </div>
             </div>
 
-            <div className="container py-15">
+            <div className="container pb-15">
                 <div className="grid grid-cols-12 gap-6 px-4">
-                    <div className="col-span-12 lg:col-span-9">
+                    <div className="col-span-12 pt-15 lg:col-span-9">
                         {/* Features */}
                         <section className="mb-10">
                             <p className="course_title mb-4">What we Got For This Course:</p>
@@ -203,13 +200,31 @@ export default function CourseDetails({
                             {visibleUnits.length > 0 ? (
                                 visibleUnits.map((unit) => {
                                     const isOpen = openUnitId === unit.id;
+                                    const hasUnitVideos = Array.isArray(unit.videos) && unit.videos.length > 0;
+
+                                    // Filter unit-only videos (exclude topic videos)
+                                    const unitOnlyVideos = unit.videos?.filter(
+                                        (uv) => !unit.topics.some((topic) => topic.videos?.some((tv) => tv.id === uv.id)),
+                                    );
+
                                     return (
                                         <div key={unit.id} className="mb-4 rounded-lg border dark:border-gray-700">
                                             <button
                                                 onClick={() => toggleUnit(unit.id)}
                                                 className="flex w-full justify-between bg-gray-100 p-4 font-semibold dark:bg-gray-800"
                                             >
-                                                {unit.title}
+                                                <span className="flex flex-wrap items-center gap-2">
+                                                    {unit.title}
+                                                    {unitOnlyVideos.length > 0 && (
+                                                        <span className="ml-2 flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                                                            {unitOnlyVideos.map((v, i) => (
+                                                                <span key={i} className="flex items-center gap-1">
+                                                                    <i className="ri-video-line text-base" /> {v.duration}
+                                                                </span>
+                                                            ))}
+                                                        </span>
+                                                    )}
+                                                </span>
                                                 <svg
                                                     className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
                                                     fill="none"
@@ -224,25 +239,45 @@ export default function CourseDetails({
                                                     {unit.topics.length === 0 ? (
                                                         <p className="text-gray-500 italic">No topics available</p>
                                                     ) : (
-                                                        unit.topics.map((topic: any) => {
+                                                        unit.topics.map((topic) => {
                                                             const showMore = showMoreSubtopics[topic.id] || false;
-                                                            const visibleSubtopics = showMore ? topic.subtopics : topic.subtopics.slice(0, 10);
+                                                            const visibleSubtopics = showMore
+                                                                ? topic.subtopics || []
+                                                                : (topic.subtopics || []).slice(0, 10);
+
+                                                            const topicVideos = topic.videos || [];
 
                                                             return (
                                                                 <div key={topic.id} className="mb-3">
-                                                                    <h3 className="font-semibold">{topic.title}</h3>
-                                                                    <ul className="ml-5 list-disc space-y-1">
-                                                                        {visibleSubtopics.map((sub, idx) => (
-                                                                            <li key={sub.id || idx}>{sub.name}</li>
-                                                                        ))}
-                                                                    </ul>
-                                                                    {topic.subtopics.length > 10 && (
-                                                                        <button
-                                                                            onClick={() => toggleSubtopicsVisibility(topic.id)}
-                                                                            className="mt-1 text-sm underline dark:text-white"
-                                                                        >
-                                                                            {showMore ? 'Show Less' : 'Show More'}
-                                                                        </button>
+                                                                    <h3 className="flex flex-wrap items-center gap-2 font-semibold">
+                                                                        {topic.name}
+                                                                        {topicVideos.length > 0 && (
+                                                                            <span className="ml-2 flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                                                                                {topicVideos.map((v, i) => (
+                                                                                    <span key={i} className="flex items-center gap-1">
+                                                                                        <i className="ri-video-line text-base" /> {v.duration}
+                                                                                    </span>
+                                                                                ))}
+                                                                            </span>
+                                                                        )}
+                                                                    </h3>
+
+                                                                    {Array.isArray(topic.subtopics) && topic.subtopics.length > 0 && (
+                                                                        <>
+                                                                            <ul className="ml-5 list-disc space-y-1">
+                                                                                {visibleSubtopics.map((sub, idx) => (
+                                                                                    <li key={sub.id || idx}>{sub.name}</li>
+                                                                                ))}
+                                                                            </ul>
+                                                                            {topic.subtopics.length > 10 && (
+                                                                                <button
+                                                                                    onClick={() => toggleSubtopicsVisibility(topic.id)}
+                                                                                    className="mt-1 text-sm underline dark:text-white"
+                                                                                >
+                                                                                    {showMore ? 'Show Less' : 'Show More'}
+                                                                                </button>
+                                                                            )}
+                                                                        </>
                                                                     )}
                                                                 </div>
                                                             );
@@ -277,16 +312,17 @@ export default function CourseDetails({
                         </section>
 
                         {/* FAQ */}
-                        {course.faq && course.faq.length > 0 && (
+                        {}
+                        {course.faqs && course.faqs.length > 0 && (
                             <section className="mt-10">
                                 <p className="course_title">Frequently Asked Questions</p>
-                                <FAQ faqs={course.faq} />
+
+                                <FAQ faqs={course.faqs} />
                             </section>
                         )}
                     </div>
 
-                    {/* Sidebar */}
-                    <div className="relative sticky top-24 col-span-12 h-fit lg:col-span-3">
+                    <div className="relative sticky mt-4 top-18 col-span-12 h-fit lg:col-span-3">
                         {course.video_path && (
                             <div className="w-full rounded-lg border bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                                 {activeVideo !== course.videoid ? (
@@ -326,9 +362,21 @@ export default function CourseDetails({
                                 )}
                                 <ul className="mt-4 space-y-2">
                                     <li>
-                                        <span className="font-medium">Duration:</span> {course.video_duration || 'N/A'}
+                                        <span className="text-xl mb-0 font-bold">{course.name || 'N/A'}</span> 
+                                    </li>
+                                    <li>
+                                        <span className="text-sm">{course.video_name || 'N/A'}</span> 
+                                    </li>
+                                    <li>
+                                        <span className="text-sm">Duration: {course.video_duration || 'N/A'}</span> 
                                     </li>
                                 </ul>
+                                <div className="mt-4 flex items-center justify-between">
+                                    <span className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                                        {course.price ? `$${course.price}` : 'Free'}
+                                    </span>
+                                    <button className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">Enroll Now</button>
+                                </div>
                             </div>
                         )}
                     </div>

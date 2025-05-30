@@ -1,12 +1,20 @@
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+} from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { Link, usePage, router } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Users, GraduationCap, Settings, FileText } from 'lucide-react';
-import AppLogo from './app-logo';
 import { PageProps } from '@inertiajs/core';
+import { Link, usePage } from '@inertiajs/react';
+import { BookOpen, FileText, Folder, GraduationCap, LayoutGrid, Users } from 'lucide-react';
+import AppLogo from './app-logo';
 
 interface AppPageProps extends PageProps {
     auth: {
@@ -91,12 +99,11 @@ const adminNavItems: NavItem[] = [
                         href: '/topics',
                         icon: Users,
                     },
-                     {
+                    {
                         title: 'Course Video',
                         href: '/videos',
                         icon: Users,
                     },
-                     
                 ],
             },
             {
@@ -114,7 +121,12 @@ const adminNavItems: NavItem[] = [
                         icon: Users,
                     },
                 ],
-            },           
+            },
+            {
+                title: 'Leads',
+                href: '/leads_index',
+                icon: Users,
+            },
         ],
     },
 ];
@@ -167,8 +179,6 @@ export function AppSidebar() {
     const { auth } = usePage<AppPageProps>().props;
     const userRoles = auth.roles || [];
 
-    console.log('User roles:', userRoles);
-
     const getNavItems = () => {
         if (userRoles.includes('admin')) {
             return adminNavItems;
@@ -180,12 +190,8 @@ export function AppSidebar() {
     };
 
     return (
-        <Sidebar 
-            collapsible="icon" 
-            variant="inset"
-            className="h-screen overflow-y-auto scrollbar-none"
-        >
-            <SidebarHeader className="sticky top-0 z-10 bg-background">
+        <Sidebar collapsible="icon" variant="inset" className="scrollbar-none h-screen overflow-y-auto">
+            <SidebarHeader className="bg-background sticky top-0 z-10">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
@@ -197,11 +203,11 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            <SidebarContent className="flex-1 overflow-y-auto scrollbar-none">
+            <SidebarContent className="scrollbar-none flex-1 overflow-y-auto">
                 <NavMain items={getNavItems()} />
             </SidebarContent>
 
-            <SidebarFooter className="sticky bottom-0 z-10 bg-background">
+            <SidebarFooter className="bg-background sticky bottom-0 z-10">
                 <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>

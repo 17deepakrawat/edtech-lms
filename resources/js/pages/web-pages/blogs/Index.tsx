@@ -13,7 +13,7 @@ type BlogPost = {
     name: string;
     slug: string;
     excerpt: string;
-    content: string;
+    short_description: string;
     image: string;
     created_at: string;
     category: string;

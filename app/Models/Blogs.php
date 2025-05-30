@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Blogs extends Model
 {
-    protected $fillable = ['name', 'author_image', 'content', 'author_name', 'blog_category_id', 'image', 'faq','slug'];
+    protected $fillable = ['name', 'author_image', 'content', 'author_name', 'blog_category_id', 'image', 'faq','slug','short_description'];
     
     protected $casts = [
         'faq' => 'array',

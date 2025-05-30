@@ -15,12 +15,10 @@ interface BannerSlide {
     description: string;
     bannerimage: string;
 }
-
 interface Department {
     id: number;
     name: string;
 }
-
 interface Course {
     id: number;
     name: string;
@@ -35,21 +33,18 @@ interface Course {
     course_keys?: string[];
     faqs?: any[];
 }
-
 interface ProgramWithCourses {
     id: number;
     name: string;
     department_id: number;
     courses: Course[];
 }
-
 interface Partner {
     id: number;
     link: string;
     image: string;
     name: string;
 }
-
 interface WebPlan {
     id: number;
     title: string;

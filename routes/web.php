@@ -7,6 +7,7 @@ use App\Http\Controllers\CKEditorController;
 use App\Http\Controllers\CoursesController;
 use App\Http\Controllers\DepartmentsController;
 use App\Http\Controllers\FeedbacksController;
+use App\Http\Controllers\LeadsController;
 use App\Http\Controllers\ProgramsController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\UniversityPartnersController;
@@ -23,7 +24,6 @@ use Inertia\Inertia;
 Route::get('/welcome', function () {
     return Inertia::render('welcome');
 })->name('home');
-
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         $user = auth()->user();
@@ -78,18 +78,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/videos/get-topics-by-unit/{unitId}', [VideoController::class, 'getTopicsByUnit'])->name('videos.get-topics');
         Route::resource('plans', WebPlanController::class)->names('plans');
         Route::get('/plans/{plan}/toggle-status', [WebPlanController::class, 'toggleStatus'])->name('plans.toggle-status');
+        Route::get('/leads_index', [LeadsController::class, 'index'])->name('leads_index');
     });
 });
-Route::get('/blogs', [BlogCategoriesController::class,'show'])->name('blogs');
+Route::get('/blogs', [BlogCategoriesController::class, 'show'])->name('blogs');
 // Route::get('/blogs', [BlogCategoriesController::class,'show'])->name('blogs');
-Route::get('/blog/{slug}',[BlogsController::class,'details'])->name('blog');
-Route::get('/category/{slug}',[BlogCategoriesController::class,'category'])->name('category');
-Route::get('course',[CoursesController::class,'courselist' ])->name('course');
+Route::get('/blog/{slug}', [BlogsController::class, 'details'])->name('blog');
+Route::get('/category/{slug}', [BlogCategoriesController::class, 'category'])->name('category');
+Route::get('course', [CoursesController::class, 'courselist'])->name('course');
 Route::get('/course/{slug}', [CoursesController::class, 'details'])->name('course-details');
 Route::get('/', [Webhomcontroller::class, 'home']);
 // Route::get('/course', function () {
 //     return Inertia::render('web-pages/course/Index');
 // })->name('course');
+
+Route::post('/leads', [LeadsController::class, 'store'])->name('leads.store');
+
 Route::get('/courses-details', function () {
     return Inertia::render('web-pages/course/Details');
 })->name('courses-details');

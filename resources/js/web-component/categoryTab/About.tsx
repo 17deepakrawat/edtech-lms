@@ -2,7 +2,7 @@ export default function About() {
     return (
         <>
             <div className="container">
-                <h3 className="custom_title custom_text_align">Edtech Education for Everyone</h3>
+                <h3 className="custom_title custom_text_align">EdTech Education for Everyone</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
                     <div className="">
                         <img src="/build/assets/web-assets/aboutsection.avif" className="w-sm h-sm" alt="" />

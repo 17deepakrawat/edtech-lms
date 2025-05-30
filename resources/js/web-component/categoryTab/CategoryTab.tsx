@@ -135,7 +135,7 @@ export default function CategoryTab({ categoryData }: CategoryTabProps) {
                             }}
                         >
                             {courses.map((course: any) => (
-                                <SwiperSlide key={course.id} className="p-4 custom_course_card">
+                                <SwiperSlide key={course.id} className="p-4 ">
                                     <CourseCard courses={course} />
                                 </SwiperSlide>
                             ))}

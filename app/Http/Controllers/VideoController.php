@@ -77,7 +77,6 @@ class VideoController extends Controller
 
     public function store(Request $request)
     {
-        //dd($request->all());
         try {
             $validated = $request->validate([
                 'course_id' => 'nullable|exists:courses,id',
@@ -85,32 +84,33 @@ class VideoController extends Controller
                 'topic_id' => 'nullable|exists:topics,id',
                 'name' => 'required|string|max:255',
                 'video_type' => 'required|in:local,embed',
-                'video_path' => 'required_if:video_type,local|file|mimes:mp4,mov,avi|max:102400',
+                'video_path' => 'nullable|file|mimes:mp4,mov,avi|max:102400',
                 'embed_url' => [
-                    'required_if:video_type,embed',
+                    'nullable',
                     'string',
-                    function ($attribute, $value, $fail) {
-                        if (!preg_match('/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/embed\/[a-zA-Z0-9_-]+(\?.*)?$/', $value)) {
+                    function ($attribute, $value, $fail) use ($request) {
+                        if ($request->video_type === 'embed' && empty($value)) {
+                            $fail('The ' . $attribute . ' is required for embed videos.');
+                        }
+
+                        if ($value && !preg_match('/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/embed\/[a-zA-Z0-9_-]+(\?.*)?$/', $value)) {
                             $fail('The ' . $attribute . ' must be a valid YouTube embed URL.');
                         }
                     }
                 ],
                 'duration' => 'required|string|regex:/^([0-9]{2}:)?[0-9]{2}:[0-9]{2}$/',
             ], [
-                'video_path.required_if' => 'Please upload a video file.',
-                'embed_url.required_if' => 'Please provide an embed URL.',
+                'video_path.mimes' => 'Only mp4, mov, avi formats are allowed.',
+                'embed_url.required_if' => 'Please provide a valid embed URL.',
                 'duration.regex' => 'Duration must be in format HH:MM:SS or MM:SS.',
             ]);
 
-            // echo "<pre>";
-            // print_r($validated);
-
+            // Assign optional foreign keys if filled
             $validated['course_id'] = $request->filled('course_id') ? $request->course_id : null;
             $validated['unit_id'] = $request->filled('unit_id') ? $request->unit_id : null;
             $validated['topic_id'] = $request->filled('topic_id') ? $request->topic_id : null;
 
-
-            // Handle video file or embed URL based on type
+            // File or embed video handling
             if ($request->video_type === 'local') {
                 if ($request->hasFile('video_path')) {
                     $file = $request->file('video_path');
@@ -132,7 +132,6 @@ class VideoController extends Controller
             }
 
             $video = Video::create($validated);
-            // dd($validated);
 
             if ($request->wantsJson()) {
                 return response()->json([
@@ -148,7 +147,6 @@ class VideoController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             $message = collect($e->errors())->first()[0];
 
-
             return redirect()->back()
                 ->withInput()
                 ->with('toast', [
@@ -159,8 +157,6 @@ class VideoController extends Controller
         } catch (\Exception $e) {
             Log::error('Video store error', ['error' => $e->getMessage()]);
 
-
-
             return redirect()->back()
                 ->withInput()
                 ->with('toast', [
@@ -169,6 +165,7 @@ class VideoController extends Controller
                 ]);
         }
     }
+
 
     public function update(Request $request, Video $video)
     {

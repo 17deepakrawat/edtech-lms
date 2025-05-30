@@ -47,6 +47,7 @@ class Webhomcontroller extends Controller
                         'image' => $course->image,
                         'rating' => $course->rating,
                         'price'=> $course->price,
+                        'slug' => $course->slug,
                     ];
                 })->toArray();
 

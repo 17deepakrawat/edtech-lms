@@ -127,7 +127,7 @@ class BlogCategoriesController extends Controller
                     'id' => $blog->id,
                     'name' => $blog->name ?? 'No Title', // consistent with frontend
                     'slug' => $blog->slug ?? 'no-title',
-                    'content' => $blog->content ?? 'No Content',
+                    'short_description' => $blog->short_description ?? 'No Content',
                     'image' => $blog->image ?? '',
                     'created_at' => $blog->created_at ? $blog->created_at->toDateString() : null,
                     'author_name' => $blog->author_name ?? 'Unknown Author',

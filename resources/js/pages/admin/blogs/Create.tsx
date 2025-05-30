@@ -1,15 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/Textarea';
 import RichTextEditor from '@/components/ui/RichTextEditor';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ChangeEvent } from 'react';
@@ -37,6 +30,7 @@ interface FormData {
     content: string;
     faq: FAQItem[];
     blog_category_id: string;
+    short_description?: string;
 }
 
 export default function Create({ blogCategories }: CreateProps) {
@@ -48,6 +42,7 @@ export default function Create({ blogCategories }: CreateProps) {
         content: '',
         faq: [{ question: '', answer: '' }],
         blog_category_id: '',
+        short_description: '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -104,10 +99,7 @@ export default function Create({ blogCategories }: CreateProps) {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
                         <Label>Blog Category</Label>
-                        <Select
-                            value={data.blog_category_id}
-                            onValueChange={(val: string) => setData('blog_category_id', val)}
-                        >
+                        <Select value={data.blog_category_id} onValueChange={(val: string) => setData('blog_category_id', val)}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select category" />
                             </SelectTrigger>
@@ -124,52 +116,42 @@ export default function Create({ blogCategories }: CreateProps) {
 
                     <div>
                         <Label>Blog Title</Label>
-                        <Input
-                            value={data.name}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                setData('name', e.target.value)
-                            }
-                        />
+                        <Input value={data.name} onChange={(e: ChangeEvent<HTMLInputElement>) => setData('name', e.target.value)} />
                         {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
                     </div>
 
                     <div>
+                        <Label>Short Description</Label>
+                        {/* <Input
+                            value={data.short_description}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setData('short_description', e.target.value)}
+                        /> */}
+                        <RichTextEditor value={data.short_description} onChange={(short_description) => setData('short_description', short_description)} />
+                        {errors.content && <p className="text-sm text-red-500">{errors.short_description}</p>}
+                        {errors.short_description && <p className="text-sm text-red-500">{errors.short_description}</p>}
+                    </div>
+
+                    <div>
                         <Label>Author Name</Label>
-                        <Input
-                            value={data.author_name}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                setData('author_name', e.target.value)
-                            }
-                        />
+                        <Input value={data.author_name} onChange={(e: ChangeEvent<HTMLInputElement>) => setData('author_name', e.target.value)} />
                         {errors.author_name && <p className="text-sm text-red-500">{errors.author_name}</p>}
                     </div>
 
                     <div>
                         <Label>Author Image</Label>
-                        <Input
-                            type="file"
-                            onChange={handleFileChange('author_image')}
-                            accept="image/*"
-                        />
+                        <Input type="file" onChange={handleFileChange('author_image')} accept="image/*" />
                         {errors.author_image && <p className="text-sm text-red-500">{errors.author_image}</p>}
                     </div>
 
                     <div>
                         <Label>Blog Image</Label>
-                        <Input
-                            type="file"
-                            onChange={handleFileChange('image')}
-                            accept="image/*"
-                        />
+                        <Input type="file" onChange={handleFileChange('image')} accept="image/*" />
                         {errors.image && <p className="text-sm text-red-500">{errors.image}</p>}
                     </div>
 
                     <div>
                         <Label>Blog Content</Label>
-                        <RichTextEditor
-                            value={data.content}
-                            onChange={(content) => setData('content', content)}
-                        />
+                        <RichTextEditor value={data.content} onChange={(content) => setData('content', content)} />
                         {errors.content && <p className="text-sm text-red-500">{errors.content}</p>}
                     </div>
 
@@ -179,12 +161,7 @@ export default function Create({ blogCategories }: CreateProps) {
                             {data.faq.map((faq, index) => (
                                 <div key={index} className="relative space-y-2 rounded-md">
                                     <div className="flex justify-end">
-                                        <Button
-                                            type="button"
-                                            size="sm"
-                                            variant="destructive"
-                                            onClick={() => handleRemoveFaq(index)}
-                                        >
+                                        <Button type="button" size="sm" variant="destructive" onClick={() => handleRemoveFaq(index)}>
                                             ✕
                                         </Button>
                                     </div>
@@ -192,17 +169,12 @@ export default function Create({ blogCategories }: CreateProps) {
                                         <Label>Question</Label>
                                         <Input
                                             value={faq.question}
-                                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                                handleFaqChange(index, 'question', e.target.value)
-                                            }
+                                            onChange={(e: ChangeEvent<HTMLInputElement>) => handleFaqChange(index, 'question', e.target.value)}
                                         />
                                     </div>
                                     <div>
                                         <Label>Answer</Label>
-                                        <RichTextEditor
-                                            value={faq.answer}
-                                            onChange={(content) => handleFaqChange(index, 'answer', content)}
-                                        />
+                                        <RichTextEditor value={faq.answer} onChange={(content) => handleFaqChange(index, 'answer', content)} />
                                     </div>
                                 </div>
                             ))}

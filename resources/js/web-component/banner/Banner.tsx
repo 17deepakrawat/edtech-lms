@@ -65,7 +65,6 @@ export default function Banner({ banners = [] }: BannerProps) {
                 '-=0.3',
             );
     };
-
     useEffect(() => {
         if (banners.length > 0) {
             animateContent(0);

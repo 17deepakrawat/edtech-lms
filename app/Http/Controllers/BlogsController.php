@@ -19,7 +19,6 @@ class BlogsController extends Controller
             'blogs' => $blogs,
         ]);
     }
-
     public function details($slug)
     {
         $blog = Blogs::with('category')
@@ -32,8 +31,8 @@ class BlogsController extends Controller
             ->where('id', '!=', $blog->id)
             ->where('status', 1)
             ->latest()
-            ->take(5)
-            ->get(['id', 'slug', 'name', 'image', 'created_at','content']);
+            ->take(4)
+            ->get(['id', 'slug', 'name', 'image', 'created_at','short_description']);
 
         return Inertia::render('web-pages/blogs/Details', [
             'blog' => [
@@ -54,15 +53,13 @@ class BlogsController extends Controller
                     'id' => $item->id,
                     'slug' => $item->slug,
                     'title' => $item->name,
-                    'content' => $item->content,
+                    'short_description' => $item->short_description,
                     'img' => $item->image,
                     'published' => $item->created_at->toDateString(),
                 ];
             }),
         ]);
     }
-
-
     public function create()
     {
         $blogCategories = BlogCategories::where('status', 1)->get(['id', 'name']);
@@ -71,7 +68,6 @@ class BlogsController extends Controller
             'blogCategories' => $blogCategories,
         ]);
     }
-
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -84,6 +80,7 @@ class BlogsController extends Controller
             'faq.*.question' => 'required|string|max:255',
             'faq.*.answer' => 'required|string',
             'blog_category_id' => 'required|exists:blog_categories,id',
+            'short_description' => 'nullable|string|max:500',
         ]);
 
         $authorImagePath = $request->file('author_image')->store('blogs/author', 'public');
@@ -98,11 +95,11 @@ class BlogsController extends Controller
             'content' => $validated['content'],
             'faq' => json_encode($validated['faq']),
             'blog_category_id' => $validated['blog_category_id'],
+            'short_description' => $validated['short_description'] ?? null,
         ]);
 
         return redirect()->route('adminblogs.index')->with('success', 'Blog created successfully!');
     }
-
     public function edit(Blogs $adminblog)
     {
         $blogCategories = BlogCategories::where('status', 1)->get(['id', 'name']);
@@ -112,7 +109,6 @@ class BlogsController extends Controller
             'blogCategories' => $blogCategories,
         ]);
     }
-
     public function update(Request $request, $blogId)
     {
         $validated = $request->validate([
@@ -125,6 +121,7 @@ class BlogsController extends Controller
             'blog_category_id' => 'required|exists:blog_categories,id',
             'author_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'short_description' => 'nullable|string|max:500',
         ]);
 
         $blog = Blogs::findOrFail($blogId);
@@ -150,11 +147,11 @@ class BlogsController extends Controller
             'content' => $validated['content'],
             'faq' => json_encode($validated['faq']),
             'blog_category_id' => $validated['blog_category_id'],
+            'short_description' => $validated['short_description'] ?? null,
         ]);
 
         return redirect()->route('adminblogs.index')->with('success', 'Blog updated successfully!');
     }
-
     public function destroy($id)
     {
         $blog = Blogs::findOrFail($id);
@@ -171,7 +168,6 @@ class BlogsController extends Controller
 
         return redirect()->route('adminblogs.index')->with('success', 'Blog deleted successfully!');
     }
-
     public function toggleStatus($id)
     {
         try {

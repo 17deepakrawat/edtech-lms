@@ -1,4 +1,5 @@
 export default function OtherBlogs({blogs}:{blogs:any}) {
+    console.log('OtherBlogs:', blogs);
     return (
         <>
         
@@ -9,7 +10,7 @@ export default function OtherBlogs({blogs}:{blogs:any}) {
                 <div className="col-span-4">
                     <p className="text-xs">{blogs.category}</p>
                     <p className="text-sm font-bold text-black">{blogs.title}</p>
-                    <p className="text-sm font-bold text-black" dangerouslySetInnerHTML={{ __html: blogs.content }}></p>
+                    <p className="text-sm font-bold text-black" dangerouslySetInnerHTML={{ __html:  blogs.short_description.substring(0,50) }}></p>
                     <p className="text-xs">Published: {blogs.published}</p>
                 </div>
             </div>

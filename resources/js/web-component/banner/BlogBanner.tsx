@@ -14,7 +14,7 @@ type BlogPost = {
   category: string;
   author_name: string;
   author_image: string;
-  content: string;
+  short_description: string;
 };
 
 function formatDate(dateStr: string): string {
@@ -29,6 +29,7 @@ function formatDate(dateStr: string): string {
 }
 
 export default function BlogBanner({ blogPosts }: { blogPosts: BlogPost[] }) {
+  console.log('BlogPosts:', blogPosts);
   return (
     <div className="relative my-16 mt-20 w-full bg-white dark:bg-gray-900">
       <Swiper
@@ -45,7 +46,7 @@ export default function BlogBanner({ blogPosts }: { blogPosts: BlogPost[] }) {
               <div className="flex h-auto w-full flex-col items-stretch transition-all duration-700 ease-in-out md:h-[500px] md:flex-row">
                 {/* Text Section */}
                 <div className="flex w-full flex-col justify-center rounded-l-sm bg-gray-100 p-6 md:w-1/2 md:p-10 dark:bg-gray-900">
-                  <p dangerouslySetInnerHTML={{ __html: post.content }}></p>
+                  <p dangerouslySetInnerHTML={{ __html: post.short_description }}></p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     {post.category} — {formatDate(post.created_at)}
                   </p>

@@ -21,14 +21,13 @@ export default function CourseCard({ courses }: { courses: any }) {
         }
         return stars;
     };
-
     return (
         <div className="mt-0 rounded-lg bg-white pt-0 text-gray-800 transition-all duration-300 hover:shadow-lg dark:bg-gray-900 dark:text-gray-100">
             <Card className="relative gap-3 pt-0 pb-0 shadow-md transition-all duration-300 hover:shadow-xl" style={{ minHeight: '360px' }}>
                 {/* <img src="{{ asset('storage/' . $courses->image) }}" alt="Course Banner" className="h-[200px] w-full rounded-t-lg object-cover" /> */}
                 <Link href={`/course/${courses.slug}`}>
                     <img src={`/storage/${courses.image}`} alt="Course Banner" className="h-[200px] w-full rounded-t-lg object-cover" />
-                    <CardHeader className="mt-0">
+                    <CardHeader className="mt-3">
                         {/* Only render rating section if courses.rating exists */}
                         {courses.rating !== undefined && (
                             <div className="mb-2 flex flex-row items-center">

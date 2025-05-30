@@ -53,7 +53,8 @@ export default function BlogDetails() {
                     <div className="col-span-6 md:col-span-2">
                         <div className="sticky top-28 space-y-4">
                             <div className="rounded-md bg-gray-100 p-4 text-gray-700 shadow-sm">
-                                {otherBlogs.map((blog) => (
+                                {                                
+                                otherBlogs.map((blog) => (
                                     <OtherBlogs key={blog.id} blogs={blog} />
                                 ))}
                             </div>
