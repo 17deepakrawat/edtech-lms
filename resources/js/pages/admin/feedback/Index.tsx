@@ -151,7 +151,7 @@ export default function FeedbackIndex({ feedbacks }: Props) {
                     <h1 className="text-2xl font-bold">Feed Back</h1>
                     <Link href="/feedback/create">
                         <Button>
-                            <Plus className="mr-2 h-4 w-4" /> Create Banner
+                            <Plus className="mr-2 h-4 w-4" /> Create Feed Back
                         </Button>
                     </Link>
                 </div>

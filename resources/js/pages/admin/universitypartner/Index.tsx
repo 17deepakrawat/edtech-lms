@@ -13,7 +13,6 @@ interface UniversityPartner {
     id: number;
     name: string;
     image: string;
-    link: string;
     status: boolean;
 }
 
@@ -59,11 +58,7 @@ export default function UniversityPartnerIndex({ universitypartners }: Props) {
         {
             header: 'Image',
             cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="University Partner" className=" rounded"  style={{ width: '80px', height: '40px' }} />,
-        },
-        {
-            accessorKey: 'link',
-            header: 'Link',
-        },
+        },        
         {
             accessorKey: 'status',
             header: 'Status',

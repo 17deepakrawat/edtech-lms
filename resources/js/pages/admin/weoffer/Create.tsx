@@ -34,9 +34,9 @@ export default function Create() {
 
     return (
         <AppLayout>
-            <Head title="Create University Partner" />
+            <Head title="What We Offer" />
             <div className="px-4">
-                <h1 className="mb-4 text-2xl font-bold">Create New University Partner</h1>
+                <h1 className="mb-4 text-2xl font-bold">Create What We Offer</h1>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="w-full">

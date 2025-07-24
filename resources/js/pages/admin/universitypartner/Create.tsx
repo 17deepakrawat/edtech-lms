@@ -7,16 +7,14 @@ import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
-        name: '',
-        link: '',
+        name: '',       
         image: null as File | null,
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const formData = new FormData();
-        formData.append('name', data.name);
-        formData.append('link', data.link);
+        formData.append('name', data.name);       
         if (data.image) formData.append('image', data.image);
 
         post('/universitypartner', {
@@ -47,17 +45,7 @@ export default function Create() {
                         />
                         {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
                     </div>
-
-                    <div className="w-full">
-                        <Label htmlFor="link">Link</Label>
-                        <Input
-                            id="link"
-                            value={data.link}
-                            onChange={e => setData('link', e.target.value)}
-                        />
-                        {errors.link && <p className="text-red-500 text-sm">{errors.link}</p>}
-                    </div>
-
+                   
                     <div className="w-full">
                         <Label htmlFor="image">University Image</Label>
                         <Input

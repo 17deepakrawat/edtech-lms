@@ -41,7 +41,6 @@ interface ProgramWithCourses {
 }
 interface Partner {
     id: number;
-    link: string;
     image: string;
     name: string;
 }
@@ -72,7 +71,6 @@ interface HomeProps {
         id: number;
         title: string;
         description: string;
-        link: string;
         image: string;
     }[];
 }

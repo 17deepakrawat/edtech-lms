@@ -12,7 +12,6 @@ class UniversityPartners extends Model
     protected $fillable = [
         'name',
         'image',
-        'link',
         'status'
     ];
 

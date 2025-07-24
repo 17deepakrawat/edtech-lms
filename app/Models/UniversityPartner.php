@@ -12,11 +12,10 @@ class UniversityPartner extends Model
     protected $fillable = [
         'name',
         'image',
-        'link',
         'status'
     ];
 
     protected $casts = [
         'status' => 'boolean'
     ];
-} 
+}

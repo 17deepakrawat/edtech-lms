@@ -25,13 +25,10 @@ class UniversityPartnersController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'link' => ['nullable', 'url', 'max:255'],
             'image' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
 
-        $validated['image'] = $request->file('image')->store('university_partner', 'public');
-        $validated['status'] = false; // Set default status to false
-
+        $validated['image'] = $request->file('image')->store('university_partner', 'public');       
         UniversityPartners::create($validated);
 
         return redirect()->route('universitypartner.index')->with('success', 'University Partner created successfully.');
@@ -47,8 +44,7 @@ class UniversityPartnersController extends Controller
     public function update(Request $request, UniversityPartners $universitypartner)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'link' => ['nullable', 'url', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],           
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
 
@@ -71,7 +67,7 @@ class UniversityPartnersController extends Controller
         if ($universitypartner->image && Storage::disk('public')->exists($universitypartner->image)) {
             Storage::disk('public')->delete($universitypartner->image);
         }
-        
+
         $universitypartner->delete();
         return redirect()->route('universitypartner.index')->with('success', 'University Partner deleted successfully.');
     }

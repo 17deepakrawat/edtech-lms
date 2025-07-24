@@ -13,7 +13,6 @@ interface Weoffer {
     id: number;
     title: string;
     description: string;
-    link: string;
     image: string;
     status: boolean;
 }
@@ -34,17 +33,13 @@ export default function WeOffersIndex({ weoffers }: Props) {
             {
                 preserveState: true,
                 onSuccess: () => {
-                    setData(prev =>
-                        prev.map(item =>
-                            item.id === id ? { ...item, status: !currentStatus } : item
-                        )
-                    );
+                    setData((prev) => prev.map((item) => (item.id === id ? { ...item, status: !currentStatus } : item)));
                     toast.success('We offer status updated');
                 },
                 onError: () => {
                     toast.error('Failed to update status.');
-                }
-            }
+                },
+            },
         );
     };
 
@@ -63,12 +58,10 @@ export default function WeOffersIndex({ weoffers }: Props) {
             cell: ({ row }) => <div className="line-clamp-3 max-w-xs text-sm" dangerouslySetInnerHTML={{ __html: row.original.description }} />,
         },
         {
-            accessorKey: 'link',
-            header: 'Link',
-        },
-        {
             header: 'Image',
-            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="We Offer" className="rounded"  style={{ width: '80px', height: '40px' }} />,
+            cell: ({ row }) => (
+                <img src={`/storage/${row.original.image}`} alt="We Offer" className="rounded" style={{ width: '80px', height: '40px' }} />
+            ),
         },
         {
             accessorKey: 'status',
@@ -76,7 +69,7 @@ export default function WeOffersIndex({ weoffers }: Props) {
             cell: ({ row }) => (
                 <Button
                     variant="outline"
-                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800 ' : 'bg-red-600 hover:bg-red-600 '} text-white hover:text-white`}
+                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800' : 'bg-red-600 hover:bg-red-600'} text-white hover:text-white`}
                     onClick={() => handleStatusToggle(row.original.id, row.original.status)}
                 >
                     {row.original.status ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
@@ -144,14 +137,14 @@ export default function WeOffersIndex({ weoffers }: Props) {
 
     return (
         <AppLayout>
-            <Head title="University Partner" />
+            <Head title="What We Offer" />
 
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">University Partner</h1>
+                    <h1 className="text-2xl font-bold">What We Offer</h1>
                     <Link href="/weoffers/create">
                         <Button>
-                            <Plus className="mr-2 h-4 w-4" /> Create University Partner
+                            <Plus className="mr-2 h-4 w-4" /> Create What We Offer
                         </Button>
                     </Link>
                 </div>

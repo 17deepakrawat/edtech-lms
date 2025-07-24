@@ -37,7 +37,7 @@ export default function Create() {
     return (
         <AppLayout>
             <div className="px-4">
-                <h1 className="text-2xl font-bold">Create New Banner</h1>
+                <h1 className="text-2xl font-bold">Create Feed Back</h1>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="w-full">

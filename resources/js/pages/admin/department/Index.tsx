@@ -8,6 +8,8 @@ import { CheckCircle, Edit, Plus, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
+import Create from '@/pages/admin/department/Create';
+import Edit from '@/pages/admin/department/Edit';
 
 interface Department {
     id: number;
@@ -23,6 +25,9 @@ export default function DepartmentIndex({ departments }: Props) {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
     const [data, setData] = useState<Department[]>(departments);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
 
     const handleStatusToggle = (id: number, currentStatus: boolean) => {
         router.get(
@@ -196,6 +201,23 @@ export default function DepartmentIndex({ departments }: Props) {
                     </Button>
                 </div>
             </div>
+
+            <Create
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                onSuccess={() => {
+                    // Refresh your department list
+                }}
+            />
+
+            <Edit
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                department={selectedDepartment!}
+                onSuccess={() => {
+                    // Refresh your department list
+                }}
+            />
         </AppLayout>
     );
 }

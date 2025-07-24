@@ -8,7 +8,6 @@ import { toast } from 'sonner';
 interface universityPartners {
     id: number;
     name: string;
-    link: string;
     image: string;
 }
 
@@ -21,7 +20,6 @@ export default function Edit({ universityPartners }: Props) {
     const { data, setData, post, processing, errors } = useForm({
         _method: 'PUT',
         name: universityPartners.name || '',
-        link: universityPartners.link || '',
         image: null,
     });
 
@@ -30,7 +28,6 @@ export default function Edit({ universityPartners }: Props) {
         const formData = new FormData();
         formData.append('_method', 'PUT');
         formData.append('name', data.name);
-        formData.append('link', data.link);
         if (data.image) {
             formData.append('image', data.image);
         }
@@ -61,18 +58,7 @@ console.log(data.name);
                             onChange={(e) => setData('name', e.target.value)}
                         />
                         {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
-                    </div>
-
-                    <div>
-                        <Label htmlFor="link">Link</Label>
-                        <Input
-                            id="link"
-                            value={data.link}
-                            onChange={(e) => setData('link', e.target.value)}
-                        />
-                        {errors.link && <p className="text-sm text-red-500">{errors.link}</p>}
-                    </div>
-
+                    </div>                   
                     <div>
                         <Label htmlFor="image">Image</Label>
                         <Input

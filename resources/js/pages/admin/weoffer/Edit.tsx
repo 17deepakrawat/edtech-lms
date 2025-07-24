@@ -51,7 +51,7 @@ export default function Edit({ weoffers }: Props) {
     return (
         <AppLayout>
             <div className="px-4">
-                <h1 className="mb-4 text-2xl font-bold">Edit University Partner</h1>
+                <h1 className="mb-4 text-2xl font-bold">Update What We Offer</h1>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <Label htmlFor="title">Title</Label>

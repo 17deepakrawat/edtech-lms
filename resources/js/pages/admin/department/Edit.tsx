@@ -1,48 +1,59 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/Textarea';
-import AppLayout from '@/layouts/app-layout';
-import { Link, useForm } from '@inertiajs/react';
-import { toast } from 'sonner'; // ✅ Import from sonner
+import { useForm } from '@inertiajs/react';
+import { toast } from 'sonner';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog";
 
-interface department {
+interface Department {
     id: number;
-    name: string;   
+    name: string;
 }
 
-interface Props {
-    department: department;
+interface EditProps {
+    isOpen: boolean;
+    onClose: () => void;
+    department: Department;
+    onSuccess?: () => void;
 }
 
-export default function Edit({ department }: Props) {
+export default function Edit({ isOpen, onClose, department, onSuccess }: EditProps) {
     const { data, setData, post, processing, errors } = useForm({
         _method: 'PUT',
-        name: department.name || '',        
+        name: department.name || '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const formData = new FormData();
         formData.append('_method', 'PUT');
-        formData.append('name', data.name);     
+        formData.append('name', data.name);
         post(`/department/${department.id}`, {
-            data: formData,
             forceFormData: true,
             preserveScroll: true,
             onSuccess: () => {
-                toast.success('Department updated successfully!'); // Success toast
+                toast.success('Department updated successfully!');
+                onClose();
+                if (onSuccess) onSuccess();
             },
             onError: () => {
-                toast.error('Failed to update Department. Please try again.'); // Error toast
+                toast.error('Failed to update Department. Please try again.');
             }
         });
     };
 
     return (
-        <AppLayout>
-            <div className="px-4">
-                <h1 className="text-2xl font-bold mb-4">Edit Feedback</h1>
+        <Dialog open={isOpen} onOpenChange={onClose}>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Edit Department</DialogTitle>
+                </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <Label htmlFor="name">Name</Label>
@@ -52,18 +63,18 @@ export default function Edit({ department }: Props) {
                             onChange={(e) => setData('name', e.target.value)}
                         />
                         {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
-                    </div>                                  
+                    </div>
 
-                    <div className="flex justify-end gap-2">
-                        <Link href="/department">
-                            <Button variant="outline">← Back</Button>
-                        </Link>
+                    <DialogFooter>
+                        <Button type="button" variant="outline" onClick={onClose}>
+                            Cancel
+                        </Button>
                         <Button type="submit" disabled={processing}>
                             {processing ? 'Saving...' : 'Update'}
                         </Button>
-                    </div>
+                    </DialogFooter>
                 </form>
-            </div>
-        </AppLayout>
+            </DialogContent>
+        </Dialog>
     );
 }

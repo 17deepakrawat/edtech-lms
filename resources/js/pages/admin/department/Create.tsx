@@ -1,24 +1,38 @@
-import AppLayout from '@/layouts/app-layout';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog";
 
-export default function Create() {
-    const { data, setData, post, processing, errors } = useForm({
-        name: '',       
+interface CreateProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSuccess?: () => void;
+}
+
+export default function Create({ isOpen, onClose, onSuccess }: CreateProps) {
+    const { data, setData, post, processing, errors, reset } = useForm({
+        name: '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const formData = new FormData();
-        formData.append('name', data.name);      
+        formData.append('name', data.name);
         post('/department', {
-            data: formData,
             preserveScroll: true,
             onSuccess: () => {
-                toast.success('University partner created successfully');
+                toast.success('Department created successfully');
+                reset();
+                onClose();
+                if (onSuccess) onSuccess();
             },
             onError: () => {
                 toast.error('Please check your input and try again.');
@@ -27,11 +41,11 @@ export default function Create() {
     };
 
     return (
-        <AppLayout>
-            <Head title="Create University Partner" />
-            <div className="px-4">
-                <h1 className="text-2xl font-bold mb-4">Create New Department</h1>
-
+        <Dialog open={isOpen} onOpenChange={onClose}>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Create New Department</DialogTitle>
+                </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="w-full">
                         <Label htmlFor="name">Name</Label>
@@ -41,18 +55,18 @@ export default function Create() {
                             onChange={e => setData('name', e.target.value)}
                         />
                         {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
-                    </div>                  
+                    </div>
 
-                    <div className="flex justify-end space-x-3">
-                        <Link href="/universitypartner">
-                            <Button variant="outline">← Back</Button>
-                        </Link>
+                    <DialogFooter>
+                        <Button type="button" variant="outline" onClick={onClose}>
+                            Cancel
+                        </Button>
                         <Button type="submit" disabled={processing}>
                             {processing ? 'Saving...' : 'Create'}
                         </Button>
-                    </div>
+                    </DialogFooter>
                 </form>
-            </div>
-        </AppLayout>
+            </DialogContent>
+        </Dialog>
     );
 }
