@@ -35,6 +35,28 @@ const adminNavItems: NavItem[] = [
         href: '/dashboard',
         icon: LayoutGrid,
     },
+     {
+        title: 'Role/Permission',
+        icon: Users,
+        children: [
+             {
+                title: 'Permissions',
+                href: '/permissions',
+                icon: Users,
+            },
+            {
+                title: 'Roles ',
+                href: 'roles',
+                icon: Users,
+            },
+            {
+                title: 'Users',
+                href: 'users',
+                icon: Users,
+            },          
+           
+        ],
+    },
     {
         title: 'Webpage',
         icon: Users,
@@ -128,9 +150,8 @@ const adminNavItems: NavItem[] = [
                 icon: Users,
             },
         ],
-    },
+    },   
 ];
-
 const mentorNavItems: NavItem[] = [
     {
         title: 'Dashboard',
@@ -148,7 +169,6 @@ const mentorNavItems: NavItem[] = [
         icon: GraduationCap,
     },
 ];
-
 const studentNavItems: NavItem[] = [
     {
         title: 'Dashboard',
@@ -161,18 +181,8 @@ const studentNavItems: NavItem[] = [
         icon: GraduationCap,
     },
 ];
-
 const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits',
-        icon: BookOpen,
-    },
+    
 ];
 
 export function AppSidebar() {
