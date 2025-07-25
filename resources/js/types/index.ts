@@ -18,4 +18,5 @@ export interface NavItem {
     href?: string;
     icon: React.ComponentType<{ className?: string }>;
     children?: NavItem[];
+    permissions?:string;
 } 

@@ -7,11 +7,13 @@ import { cn } from '@/lib/utils';
 
 export function NavMain({ items = [] }: { items: NavItem[] }) {
     const page = usePage();
+    const userPermissions: string[] = page.props.auth.permissions;
     const [openItems, setOpenItems] = useState<string[]>([]);
 
     // Function to find parent items of a given path
     const findParentItems = (items: NavItem[], targetPath: string, parents: string[] = []): string[] => {
         for (const item of items) {
+            
             if (item.children) {
                 if (item.children.some((child: NavItem) => child.href === targetPath)) {
                     return [...parents, item.title];
@@ -67,10 +69,19 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                             "space-y-1",
                             level === 0 ? "ml-4" : "ml-6"
                         )}>
-                            {item.children.map((child: NavItem) => (
-                                <div key={child.title} className="py-1">
-                                    {renderNavItem(child, level + 1)}
-                                </div>
+                            {item.children
+                                .filter((child: NavItem) => {
+                                    // Check permissions
+                                    if (!child.permissions) return true;
+                                    if (Array.isArray(child.permissions)) {
+                                        return child.permissions.some(p => userPermissions.includes(p));
+                                    }
+                                    return userPermissions.includes(child.permissions);
+                                })
+                                .map((child: NavItem) => (
+                                    <div key={child.title} className="py-1">
+                                        {renderNavItem(child, level + 1)}
+                                    </div>
                             ))}
                         </div>
                     </div>
@@ -84,7 +95,7 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                 isActive={item.href === page.url}
                 tooltip={{ children: item.title }}
                 className="w-full"
-            >
+            >   
                 <Link href={item.href} prefetch>
                     {item.icon && <item.icon className="h-5 w-5" />}
                     <span>{item.title}</span>

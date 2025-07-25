@@ -69,6 +69,7 @@ const adminNavItems: NavItem[] = [
                         title: 'Home Banner',
                         href: '/banner',
                         icon: Users,
+                        permissions: "view banner",
                     },
                     {
                         title: 'Feedback',
