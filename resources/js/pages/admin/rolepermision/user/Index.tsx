@@ -4,7 +4,7 @@ import { PageProps } from '@/types';
 import { Dialog } from '@headlessui/react';
 import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
-import { Edit, Plus, Trash2, XCircle, CheckCircle } from 'lucide-react';
+import { CheckCircle, CirclePlus, Edit, Plus, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
@@ -37,7 +37,9 @@ export default function Index({ users }: Props) {
                 setUserRole(data.userRoles[0] || '');
             });
     };
-
+const allotCourseFee=()=>{
+    
+}
     const submitRole = () => {
         if (!selectedUserId) return;
 
@@ -78,24 +80,20 @@ export default function Index({ users }: Props) {
             }
         });
     };
- const handleStatusToggle = (id: number, currentStatus: boolean) => {
+    const handleStatusToggle = (id: number, currentStatus: boolean) => {
         router.get(
             `/users/${id}/toggle-status`,
             {},
             {
                 preserveState: true,
                 onSuccess: () => {
-                    setData(prev =>
-                        prev.map(item =>
-                            item.id === id ? { ...item, status: !currentStatus } : item
-                        )
-                    );
+                    setData((prev) => prev.map((item) => (item.id === id ? { ...item, status: !currentStatus } : item)));
                     toast.success('Blog status updated');
                 },
                 onError: () => {
                     toast.error('Failed to update status.');
-                }
-            }
+                },
+            },
         );
     };
     const columns: ColumnDef<User>[] = [
@@ -111,13 +109,13 @@ export default function Index({ users }: Props) {
             accessorKey: 'email',
             header: 'Email',
         },
-       {
+        {
             accessorKey: 'status',
             header: 'Status',
             cell: ({ row }) => (
                 <Button
                     variant="outline"
-                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800 ' : 'bg-red-600 hover:bg-red-600 '} text-white hover:text-white`}
+                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800' : 'bg-red-600 hover:bg-red-600'} text-white hover:text-white`}
                     onClick={() => handleStatusToggle(row.original.id, row.original.status)}
                 >
                     {row.original.status ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
@@ -137,10 +135,13 @@ export default function Index({ users }: Props) {
             cell: ({ row }) => (
                 <div className="flex gap-2">
                     <Link href={`/users/${row.original.id}/edit`}>
-                        <Button variant="ghost" size="icon">
-                            <Edit className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" onClick={()=>allotCourseFee(row.crossOriginIsolated.id)}>
+                            <Edit className="h-4 w-4 text-blue-700"/>
                         </Button>
                     </Link>
+                    <Button variant="ghost" size="icon">
+                        <CirclePlus className="h-4 w-4 text-green-600" />
+                    </Button>
                     <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
                         <Trash2 className="h-4 w-4 text-red-600" />
                     </Button>

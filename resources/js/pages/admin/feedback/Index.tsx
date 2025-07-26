@@ -17,12 +17,18 @@ interface Feedback {
     image: string;
     status: boolean;
 }
-
+interface User {}
 interface Props extends PageProps {
     feedbacks: Feedback[];
+    users: User[];
+    can: {
+        create: boolean;
+        edit: boolean;
+        delete: boolean;
+    };
 }
 
-export default function FeedbackIndex({ feedbacks }: Props) {
+export default function FeedbackIndex({ feedbacks, can }: Props) {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
     const [data, setData] = useState<Feedback[]>(feedbacks);
@@ -34,17 +40,13 @@ export default function FeedbackIndex({ feedbacks }: Props) {
             {
                 preserveState: true,
                 onSuccess: () => {
-                    setData(prev =>
-                        prev.map(item =>
-                            item.id === id ? { ...item, status: !currentStatus } : item
-                        )
-                    );
+                    setData((prev) => prev.map((item) => (item.id === id ? { ...item, status: !currentStatus } : item)));
                     toast.success('Feedback status updated');
                 },
                 onError: () => {
                     toast.error('Failed to update status.');
-                }
-            }
+                },
+            },
         );
     };
 
@@ -68,7 +70,9 @@ export default function FeedbackIndex({ feedbacks }: Props) {
         },
         {
             header: 'Image',
-            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="Feedback" className=" rounded"  style={{ width: '80px', height: '40px' }} />,
+            cell: ({ row }) => (
+                <img src={`/storage/${row.original.image}`} alt="Feedback" className="rounded" style={{ width: '80px', height: '40px' }} />
+            ),
         },
         {
             accessorKey: 'status',
@@ -76,7 +80,7 @@ export default function FeedbackIndex({ feedbacks }: Props) {
             cell: ({ row }) => (
                 <Button
                     variant="outline"
-                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800 ' : 'bg-red-600 hover:bg-red-600 '} text-white hover:text-white`}
+                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800' : 'bg-red-600 hover:bg-red-600'} text-white hover:text-white`}
                     onClick={() => handleStatusToggle(row.original.id, row.original.status)}
                 >
                     {row.original.status ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
@@ -87,14 +91,18 @@ export default function FeedbackIndex({ feedbacks }: Props) {
             header: 'Actions',
             cell: ({ row }) => (
                 <div className="flex space-x-2">
-                    <Link href={`/feedback/${row.original.id}/edit`}>
-                        <Button variant="ghost" size="icon">
-                            <Edit className="h-4 w-4" />
+                    {can.edit && (
+                        <Link href={`/feedback/${row.original.id}/edit`}>
+                            <Button variant="ghost" size="icon">
+                                <Edit className="h-4 w-4" />
+                            </Button>
+                        </Link>
+                    )}
+                    {can.delete && (
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
+                            <Trash2 className="h-4 w-4 text-red-600" />
                         </Button>
-                    </Link>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
-                        <Trash2 className="h-4 w-4 text-red-600" />
-                    </Button>
+                    )}
                 </div>
             ),
         },
@@ -141,7 +149,7 @@ export default function FeedbackIndex({ feedbacks }: Props) {
             }
         });
     };
-    
+
     return (
         <AppLayout>
             <Head title="Banners" />
@@ -149,11 +157,13 @@ export default function FeedbackIndex({ feedbacks }: Props) {
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Feed Back</h1>
-                    <Link href="/feedback/create">
-                        <Button>
-                            <Plus className="mr-2 h-4 w-4" /> Create Feed Back
-                        </Button>
-                    </Link>
+                    {can.create && (
+                        <Link href="/feedback/create">
+                            <Button>
+                                <Plus className="mr-2 h-4 w-4" /> Create Feed Back
+                            </Button>
+                        </Link>
+                    )}
                 </div>
 
                 <div className="mb-4 flex items-center justify-between">

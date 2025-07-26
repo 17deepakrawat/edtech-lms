@@ -3,21 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Banners;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 
 class BannersController extends Controller
 {
-    public function show()
-    {
-       
-    }
+    public function show() {}
 
     public function index()
-    {
+    {      
+        
         return Inertia::render('admin/banner/Index', [
             'banners' => Banners::all(),
+            'users' => User::all(),
+            'can' => [
+                'create' => auth()->user()->can('create banner'),
+                'edit' => auth()->user()->can('edit banner'),
+                'delete' => auth()->user()->can('delete banner'),
+            ],
         ]);
     }
 

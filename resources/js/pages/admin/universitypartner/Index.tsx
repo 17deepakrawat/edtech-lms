@@ -15,12 +15,19 @@ interface UniversityPartner {
     image: string;
     status: boolean;
 }
+interface User {}
 
 interface Props extends PageProps {
     universitypartners: UniversityPartner[];
+    users: User[];
+    can: {
+        create: boolean;
+        edit: boolean;
+        delete: boolean;
+    };
 }
 
-export default function UniversityPartnerIndex({ universitypartners }: Props) {
+export default function UniversityPartnerIndex({ universitypartners, can }: Props) {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
     const [data, setData] = useState<UniversityPartner[]>(universitypartners);
@@ -32,17 +39,13 @@ export default function UniversityPartnerIndex({ universitypartners }: Props) {
             {
                 preserveState: true,
                 onSuccess: () => {
-                    setData(prev =>
-                        prev.map(item =>
-                            item.id === id ? { ...item, status: !currentStatus } : item
-                        )
-                    );
+                    setData((prev) => prev.map((item) => (item.id === id ? { ...item, status: !currentStatus } : item)));
                     toast.success('University partner status updated');
                 },
                 onError: () => {
                     toast.error('Failed to update status.');
-                }
-            }
+                },
+            },
         );
     };
 
@@ -57,15 +60,17 @@ export default function UniversityPartnerIndex({ universitypartners }: Props) {
         },
         {
             header: 'Image',
-            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="University Partner" className=" rounded"  style={{ width: '80px', height: '40px' }} />,
-        },        
+            cell: ({ row }) => (
+                <img src={`/storage/${row.original.image}`} alt="University Partner" className="rounded" style={{ width: '80px', height: '40px' }} />
+            ),
+        },
         {
             accessorKey: 'status',
             header: 'Status',
             cell: ({ row }) => (
                 <Button
                     variant="outline"
-                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800 ' : 'bg-red-600 hover:bg-red-600 '} text-white hover:text-white`}
+                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800' : 'bg-red-600 hover:bg-red-600'} text-white hover:text-white`}
                     onClick={() => handleStatusToggle(row.original.id, row.original.status)}
                 >
                     {row.original.status ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
@@ -76,14 +81,18 @@ export default function UniversityPartnerIndex({ universitypartners }: Props) {
             header: 'Actions',
             cell: ({ row }) => (
                 <div className="flex space-x-2">
-                    <Link href={`/universitypartner/${row.original.id}/edit`}>
-                        <Button variant="ghost" size="icon">
-                            <Edit className="h-4 w-4" />
+                    {can.edit && (
+                        <Link href={`/universitypartner/${row.original.id}/edit`}>
+                            <Button variant="ghost" size="icon">
+                                <Edit className="h-4 w-4" />
+                            </Button>
+                        </Link>
+                    )}
+                    {can.delete && (
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
+                            <Trash2 className="h-4 w-4 text-red-600" />
                         </Button>
-                    </Link>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
-                        <Trash2 className="h-4 w-4 text-red-600" />
-                    </Button>
+                    )}
                 </div>
             ),
         },
@@ -130,7 +139,7 @@ export default function UniversityPartnerIndex({ universitypartners }: Props) {
             }
         });
     };
-    
+
     return (
         <AppLayout>
             <Head title="University Partner" />
@@ -138,11 +147,13 @@ export default function UniversityPartnerIndex({ universitypartners }: Props) {
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">University Partner</h1>
-                    <Link href="/universitypartner/create">
-                        <Button>
-                            <Plus className="mr-2 h-4 w-4" /> Create University Partner
-                        </Button>
-                    </Link>
+                    {can.create && (
+                        <Link href="/universitypartner/create">
+                            <Button>
+                                <Plus className="mr-2 h-4 w-4" /> Create University Partner
+                            </Button>
+                        </Link>
+                    )}
                 </div>
 
                 <div className="mb-4 flex items-center justify-between">

@@ -38,21 +38,25 @@ const adminNavItems: NavItem[] = [
      {
         title: 'Role/Permission',
         icon: Users,
+        permissions: "view role permision" ,
         children: [
              {
                 title: 'Permissions',
                 href: '/permissions',
                 icon: Users,
+                permissions: "view permision" ,
             },
             {
                 title: 'Roles ',
                 href: 'roles',
                 icon: Users,
+                permissions: "view role" ,
             },
             {
-                title: 'Users',
+                title: 'Assign role to user',
                 href: 'users',
                 icon: Users,
+                permissions: "view user" ,
             },          
            
         ],
@@ -60,10 +64,13 @@ const adminNavItems: NavItem[] = [
     {
         title: 'Webpage',
         icon: Users,
+        permissions: "view web" ,
         children: [
             {
                 title: 'Home Components',
                 icon: Users,
+               permissions: "view home component" ,
+
                 children: [
                     {
                         title: 'Home Banner',
@@ -75,73 +82,87 @@ const adminNavItems: NavItem[] = [
                         title: 'Feedback',
                         href: '/feedback',
                         icon: Users,
+                        permissions: "view feedback",
                     },
                     {
                         title: 'University Partner',
                         href: '/universitypartner',
                         icon: Users,
+                        permissions: "view university partner" ,
                     },
                     {
                         title: 'What We Offer',
                         href: '/weoffers',
                         icon: Users,
+                        permissions: "view offer",
                     },
                     {
                         title: 'Course Plans',
                         href: '/plans',
                         icon: Users,
+                        permissions: "view course plans" ,
                     },
                 ],
             },
             {
-                title: 'Courses',
+                title: 'Academic Content',
                 icon: Users,
+                permissions: "view academic" ,
                 children: [
                     {
                         title: 'Departments',
                         href: '/department',
                         icon: Users,
+                        permissions: "view department" ,
                     },
                     {
                         title: 'Programs',
                         href: '/programs',
                         icon: Users,
+                        permissions: "view program" ,
                     },
                     {
                         title: 'Courses',
                         href: '/courses',
                         icon: Users,
+                        permissions: "view course" ,
                     },
                     {
                         title: 'Units',
                         href: '/units',
                         icon: Users,
+                        permissions: "view unit" ,
                     },
                     {
                         title: 'Topics',
                         href: '/topics',
                         icon: Users,
+                        permissions: "view topics" ,
                     },
                     {
                         title: 'Course Video',
                         href: '/videos',
                         icon: Users,
+                        permissions: "view course video" ,
                     },
                 ],
             },
             {
                 title: 'Blog',
                 icon: Users,
+                permissions: "view blogs module" ,
                 children: [
                     {
                         title: 'Blog Category',
                         href: '/blogcategories',
                         icon: Users,
+                        permissions: "view blogs category" ,
                     },
                     {
                         title: 'Blog',
                         href: '/adminblogs',
                         icon: Users,
+                        permissions: "view blogs" ,
                     },
                 ],
             },
@@ -149,6 +170,7 @@ const adminNavItems: NavItem[] = [
                 title: 'Leads',
                 href: '/leads',
                 icon: Users,
+                permissions: "view lead" ,
             },
         ],
     },   
@@ -183,7 +205,6 @@ const studentNavItems: NavItem[] = [
     },
 ];
 const footerNavItems: NavItem[] = [
-    
 ];
 
 export function AppSidebar() {

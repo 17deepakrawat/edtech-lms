@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\WebPlan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,16 +19,29 @@ class WebPlanController extends Controller
         $plans = WebPlan::all();
 
         // If the user is authenticated and is an admin, show the admin view
-        if (Auth::check() && Auth::user()->hasRole('admin')) {
-            return Inertia::render('admin/plans/Index', [
-                'plans' => $plans,
-            ]);
-        }
+
+        return Inertia::render('admin/plans/Index', [
+            'plans' => $plans,
+            'users' => User::all(),
+            'can' => [
+                'create' => auth()->user()->can('create course plans'),
+                'edit' => auth()->user()->can('edit course plans'),
+                'delete' => auth()->user()->can('delete course plans'),
+            ],
+        ]);
+
 
         // Otherwise show the public view
-        return Inertia::render('web-pages/Plans', [
-            'plans' => $plans,
-        ]);
+        // return Inertia::render('web-pages/Plans', [
+        //     'plans' => $plans,
+        //     'users' => User::all(),
+        //     'can' => [
+        //         'create' => auth()->user()->can('create course plans'),
+        //         'edit' => auth()->user()->can('edit course plans'),
+        //         'delete' => auth()->user()->can('delete course plans'),
+        //     ],
+
+        // ]);
     }
 
     /**
@@ -50,7 +64,7 @@ class WebPlanController extends Controller
             'features' => ['nullable', 'array'],
             'features.*' => ['string'],
             'disabled_features' => ['nullable', 'array'],
-            'disabled_features.*' => ['string'],            
+            'disabled_features.*' => ['string'],
         ]);
 
 

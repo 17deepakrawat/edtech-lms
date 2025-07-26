@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\UniversityPartners;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -13,6 +14,12 @@ class UniversityPartnersController extends Controller
     {
         return Inertia::render('admin/universitypartner/Index', [
             'universitypartners' => UniversityPartners::all(),
+            'users' => User::all(),
+            'can' => [
+                'create' => auth()->user()->can('create university partner'),
+                'edit' => auth()->user()->can('edit university partner'),
+                'delete' => auth()->user()->can('delete university partner'),
+            ],
         ]);
     }
 
@@ -28,7 +35,7 @@ class UniversityPartnersController extends Controller
             'image' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
 
-        $validated['image'] = $request->file('image')->store('university_partner', 'public');       
+        $validated['image'] = $request->file('image')->store('university_partner', 'public');
         UniversityPartners::create($validated);
 
         return redirect()->route('universitypartner.index')->with('success', 'University Partner created successfully.');
@@ -44,7 +51,7 @@ class UniversityPartnersController extends Controller
     public function update(Request $request, UniversityPartners $universitypartner)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],           
+            'name' => ['required', 'string', 'max:255'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
 

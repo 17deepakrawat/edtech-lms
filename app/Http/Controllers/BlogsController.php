@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BlogCategories;
 use App\Models\Blogs;
+use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -17,6 +18,12 @@ class BlogsController extends Controller
 
         return Inertia::render('admin/blogs/Index', [
             'blogs' => $blogs,
+             'users' => User::all(),
+            'can' => [
+                'create' => auth()->user()->can('create blogs'),
+                'edit' => auth()->user()->can('edit blogs'),
+                'delete' => auth()->user()->can('delete blogs'),
+            ],
         ]);
     }
     public function details($slug)

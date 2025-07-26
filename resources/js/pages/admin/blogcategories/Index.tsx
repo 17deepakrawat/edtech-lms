@@ -15,12 +15,19 @@ interface BlogCategory {
     department_name: string;
     status: boolean;
 }
+interface User {}
 
 interface Props extends PageProps {
     blogCategory: BlogCategory[];
+     users: User[];
+    can: {
+        create: boolean;
+        edit: boolean;
+        delete: boolean;
+    };
 }
 
-export default function DepartmentIndex({ blogCategory }: Props) {
+export default function DepartmentIndex({ blogCategory, can }: Props) {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
     const [data, setData] = useState<BlogCategory[]>(blogCategory);
@@ -98,14 +105,16 @@ export default function DepartmentIndex({ blogCategory }: Props) {
             header: 'Actions',
             cell: ({ row }) => (
                 <div className="flex space-x-2">
+                     {can.edit && (
                     <Link href={`/blogcategories/${row.original.id}/edit`}>
                         <Button variant="ghost" size="icon">
                             <Edit className="h-4 w-4" />
                         </Button>
-                    </Link>
+                    </Link>)}
+                     {can.delete && (
                     <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
                         <Trash2 className={`h-4 w-4 `} />
-                    </Button>
+                    </Button>)}
                 </div>
             ),
         },
@@ -134,11 +143,12 @@ export default function DepartmentIndex({ blogCategory }: Props) {
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Blog Category</h1>
+                    {can.create && (
                     <Link href="/blogcategories/create">
                         <Button>
                             <Plus className="mr-2 h-4 w-4" /> Create Blog Category
                         </Button>
-                    </Link>
+                    </Link>)}
                 </div>
 
                 <div className="mb-4 flex items-center justify-between">

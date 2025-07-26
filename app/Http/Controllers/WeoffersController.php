@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Weoffers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+
 class WeoffersController extends Controller
 {
     /**
@@ -15,6 +17,12 @@ class WeoffersController extends Controller
     {
         return Inertia::render('admin/weoffer/Index', [
             'weoffers' => Weoffers::all(),
+            'users' => User::all(),
+            'can' => [
+                'create' => auth()->user()->can('create offer'),
+                'edit' => auth()->user()->can('edit offer'),
+                'delete' => auth()->user()->can('delete offer'),
+            ],
         ]);
     }
     /**
@@ -32,7 +40,7 @@ class WeoffersController extends Controller
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'description' => [ 'string'],
+            'description' => ['string'],
             'image' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
 
@@ -46,19 +54,16 @@ class WeoffersController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Weoffers $weoffers)
-    {
-     
-    }
+    public function show(Weoffers $weoffers) {}
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Weoffers $weoffer)
     {
-      return Inertia::render('admin/weoffer/Edit', [
-        'weoffers'=> $weoffer,
-      ]);
+        return Inertia::render('admin/weoffer/Edit', [
+            'weoffers' => $weoffer,
+        ]);
     }
 
     /**
@@ -68,7 +73,7 @@ class WeoffersController extends Controller
     {
         $validated = $request->validate([
             'title' => ['string', 'max:255'],
-            'description' => [ 'string'],
+            'description' => ['string'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
 

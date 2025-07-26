@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\Courses;
 use App\Models\Unit;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -22,7 +23,14 @@ class UnitController extends Controller
             'units' => [
                 'data' => $units
             ],
-            'courses' => $courses
+            'courses' => $courses,
+            'users' => User::all(),
+            'can' => [
+                'create' => auth()->user()->can('create unit'),
+                'edit' => auth()->user()->can('edit unit'),
+                'delete' => auth()->user()->can('delete unit'),
+            ],
+
         ]);
     }
 

@@ -4,7 +4,6 @@ import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
-import { log } from 'console';
 import { CheckCircle, Edit, Plus, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -16,12 +15,19 @@ interface programs {
     department_name: string;
     status: boolean; // Add status field
 }
+interface User {}
 
 interface Props extends PageProps {
     programs: programs[];
+    users: User[];
+    can: {
+        create: boolean;
+        edit: boolean;
+        delete: boolean;
+    };
 }
 
-export default function departmentIndex({ programs }: Props) {
+export default function departmentIndex({ programs,can }: Props) {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
 
@@ -44,7 +50,7 @@ export default function departmentIndex({ programs }: Props) {
             cell: ({ row }) => (
                 <Button
                     variant="outline"
-                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800 ' : 'bg-red-600 hover:bg-red-600 '} text-white hover:text-white`}
+                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800' : 'bg-red-600 hover:bg-red-600'} text-white hover:text-white`}
                     onClick={() => handleStatusToggle(row.original.id, row.original.status)}
                 >
                     {row.original.status ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
@@ -55,15 +61,18 @@ export default function departmentIndex({ programs }: Props) {
             header: 'Actions',
             cell: ({ row }) => (
                 <div className="flex space-x-2">
-                    <Link href={`/programs/${row.original.id}/edit`}>
-                        <Button variant="ghost" size="icon">
-                            <Edit className="h-4 w-4" />
+                    {can.edit && (
+                        <Link href={`/programs/${row.original.id}/edit`}>
+                            <Button variant="ghost" size="icon">
+                                <Edit className="h-4 w-4" />
+                            </Button>
+                        </Link>
+                    )}
+                    {can.delete && (
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
+                            <Trash2 className={`h-4 w-4 ${programs.status == 1 ? 'text-green-600' : 'text-red-600'}`} />
                         </Button>
-                    </Link>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
-                        <Trash2 className={`h-4 w-4 ${programs.status== 1 ? 'text-green-600' : 'text-red-600'}`}
- />
-                    </Button>
+                    )}
                 </div>
             ),
         },
@@ -115,9 +124,9 @@ export default function departmentIndex({ programs }: Props) {
             {
                 onSuccess: (response) => {
                     // Update the status of the program locally for instant UI update
-                    programs = programs.map((program) => (program.id === id ? { ...program, status: response.status } : program));                  
+                    programs = programs.map((program) => (program.id === id ? { ...program, status: response.status } : program));
                     // Show success toast notification
-                    
+
                     toast.success('Program Status updated');
                 },
                 onError: (error) => {
@@ -135,11 +144,13 @@ export default function departmentIndex({ programs }: Props) {
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Programs</h1>
-                    <Link href="/programs/create">
-                        <Button>
-                            <Plus className="mr-2 h-4 w-4" /> Create Program
-                        </Button>
-                    </Link>
+                    {can.create && (
+                        <Link href="/programs/create">
+                            <Button>
+                                <Plus className="mr-2 h-4 w-4" /> Create Program
+                            </Button>
+                        </Link>
+                    )}
                 </div>
 
                 <div className="mb-4 flex items-center justify-between">

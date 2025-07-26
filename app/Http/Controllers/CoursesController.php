@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\Courses;
 use App\Models\Departments;
 use App\Models\Programs;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
@@ -33,8 +34,8 @@ class CoursesController extends Controller
     {
         $course = Courses::with('videos')->where('slug', $slug)->firstOrFail();
         $unit = Course::with([
-            'units.videos',           
-            'units.topics.videos'    
+            'units.videos',
+            'units.topics.videos'
         ])->where('slug', $slug)->firstOrFail();
         // dd($course);
         $firstVideo = $course->videos->first();
@@ -128,6 +129,7 @@ class CoursesController extends Controller
 
     public function index()
     {
+        $user = auth()->user();          
         $courses = Courses::with(['department:id,name', 'program:id,name'])->get()->map(function ($course) {
             return [
                 'id' => $course->id,
@@ -137,11 +139,20 @@ class CoursesController extends Controller
                 'price' => $course->price,
                 'image' => $course->image,
                 'status' => $course->status,
+
+
+
             ];
         });
 
         return Inertia::render('admin/courses/Index', [
             'courses' => $courses,
+            'users' => User::all(),
+            'can' => [
+                'create' => auth()->user()->can('create feedback'),
+                'edit' => auth()->user()->can('edit feedback'),
+                'delete' => auth()->user()->can('delete feedback'),
+            ],
         ]);
     }
     /**
@@ -162,6 +173,8 @@ class CoursesController extends Controller
     public function store(Request $request)
     {
         // Validate the incoming request data
+         $user = auth()->user();
+         dd($user); 
         $validated = $request->validate([
             'department_id' => 'required|exists:departments,id',
             'program_id' => 'required|exists:programs,id',
@@ -175,8 +188,6 @@ class CoursesController extends Controller
             'is_subject' => 'required|in:0,1',
             'course_keys' => 'required|array|min:1',
             'course_keys.*' => 'required|string',
-
-            // Correct nested validation for FAQs
             'faqs' => 'required|array|min:1',
             'faqs.*.question' => 'required|string|max:255',
             'faqs.*.answer' => 'required|string|max:1000',

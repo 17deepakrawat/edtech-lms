@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
@@ -8,7 +9,6 @@ import { CheckCircle, Edit as EditIcon, Plus, Trash2, XCircle } from 'lucide-rea
 import { useState } from 'react';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Create from './Create';
 import Edit from './Edit';
 
@@ -20,11 +20,12 @@ interface Course {
 interface Unit {
     id: number;
     course_id: number;
-    title: string;   
+    title: string;
     order: number;
     status: boolean;
     course: Course;
 }
+interface User {}
 
 interface Props extends PageProps {
     units: {
@@ -32,9 +33,15 @@ interface Props extends PageProps {
         links: any[];
     };
     courses: Course[];
+    users: User[];
+    can: {
+        create: boolean;
+        edit: boolean;
+        delete: boolean;
+    };
 }
 
-export default function Index({ units, courses }: Props) {
+export default function Index({ units, courses, can }: Props) {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
     const [data, setData] = useState<Unit[]>(units.data);
@@ -50,21 +57,17 @@ export default function Index({ units, courses }: Props) {
     const handleStatusToggle = (id: number, currentStatus: boolean) => {
         router.get(
             `/units/${id}/toggle-status`,
-            {},          
+            {},
             {
                 preserveState: true,
                 onSuccess: () => {
-                    setData(prev =>
-                        prev.map(item =>
-                            item.id === id ? { ...item, status: !currentStatus } : item
-                        )
-                    );
+                    setData((prev) => prev.map((item) => (item.id === id ? { ...item, status: !currentStatus } : item)));
                     toast.success('Course status updated');
                 },
                 onError: () => {
                     toast.error('Failed to update status.');
-                }
-            }
+                },
+            },
         );
     };
 
@@ -76,34 +79,30 @@ export default function Index({ units, courses }: Props) {
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
+            confirmButtonText: 'Yes, delete it!',
         }).then((result) => {
             if (result.isConfirmed) {
                 router.delete(`/units/${id}`, {
                     onSuccess: () => {
-                        setData(prev => prev.filter(item => item.id !== id));
+                        setData((prev) => prev.filter((item) => item.id !== id));
                         toast.success('Unit deleted successfully');
                     },
                     onError: () => {
                         toast.error('Failed to delete unit.');
-                    }
+                    },
                 });
             }
         });
     };
 
     const handleCreateSuccess = (newUnit: Unit) => {
-        setData(prev => [...prev, newUnit]);
+        setData((prev) => [...prev, newUnit]);
         setIsCreateModalOpen(false);
         toast.success('Unit created successfully');
     };
 
     const handleEditSuccess = (updatedUnit: Unit) => {
-        setData(prev =>
-            prev.map(item =>
-                item.id === updatedUnit.id ? updatedUnit : item
-            )
-        );
+        setData((prev) => prev.map((item) => (item.id === updatedUnit.id ? updatedUnit : item)));
         setIsEditModalOpen(false);
         toast.success('Unit updated successfully');
     };
@@ -131,7 +130,7 @@ export default function Index({ units, courses }: Props) {
             cell: ({ row }) => (
                 <Button
                     variant="outline"
-                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800 ' : 'bg-red-600 hover:bg-red-600 '} text-white hover:text-white`}
+                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800' : 'bg-red-600 hover:bg-red-600'} text-white hover:text-white`}
                     onClick={() => handleStatusToggle(row.original.id, row.original.status)}
                 >
                     {row.original.status ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
@@ -142,12 +141,16 @@ export default function Index({ units, courses }: Props) {
             header: 'Actions',
             cell: ({ row }) => (
                 <div className="flex space-x-2">
-                    <Button variant="ghost" size="icon" onClick={() => openEditModal(row.original)}>
-                        <EditIcon className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
-                        <Trash2 className="h-4 w-4 text-red-600" />
-                    </Button>
+                    {can.edit && (
+                        <Button variant="ghost" size="icon" onClick={() => openEditModal(row.original)}>
+                            <EditIcon className="h-4 w-4" />
+                        </Button>
+                    )}
+                    {can.delete && (
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
+                            <Trash2 className="h-4 w-4 text-red-600" />
+                        </Button>
+                    )}
                 </div>
             ),
         },
@@ -181,9 +184,11 @@ export default function Index({ units, courses }: Props) {
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Units</h1>
-                    <Button onClick={() => setIsCreateModalOpen(true)}>
-                        <Plus className="mr-2 h-4 w-4" /> Create Unit
-                    </Button>
+                    {can.create && (
+                        <Button onClick={() => setIsCreateModalOpen(true)}>
+                            <Plus className="mr-2 h-4 w-4" /> Create Unit
+                        </Button>
+                    )}
                 </div>
 
                 <div className="mb-4 flex items-center justify-between">
@@ -246,11 +251,7 @@ export default function Index({ units, courses }: Props) {
                     <DialogHeader>
                         <DialogTitle>Create Unit</DialogTitle>
                     </DialogHeader>
-                    <Create 
-                        courses={courses} 
-                        onClose={() => setIsCreateModalOpen(false)} 
-                        onSuccess={handleCreateSuccess}
-                    />
+                    <Create courses={courses} onClose={() => setIsCreateModalOpen(false)} onSuccess={handleCreateSuccess} />
                 </DialogContent>
             </Dialog>
 
@@ -261,12 +262,7 @@ export default function Index({ units, courses }: Props) {
                         <DialogTitle>Edit Unit</DialogTitle>
                     </DialogHeader>
                     {selectedUnit && (
-                        <Edit 
-                            unit={selectedUnit} 
-                            courses={courses} 
-                            onClose={() => setIsEditModalOpen(false)}
-                            onSuccess={handleEditSuccess}
-                        />
+                        <Edit unit={selectedUnit} courses={courses} onClose={() => setIsEditModalOpen(false)} onSuccess={handleEditSuccess} />
                     )}
                 </DialogContent>
             </Dialog>

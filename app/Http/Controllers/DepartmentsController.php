@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Departments;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -15,6 +16,13 @@ class DepartmentsController extends Controller
     {
         return Inertia::render('admin/department/Index', [
             'departments' => Departments::all(),
+             'users' => User::all(),
+            'can' => [
+                'create' => auth()->user()->can('create department'),
+                'edit' => auth()->user()->can('edit department'),
+                'delete' => auth()->user()->can('delete department'),
+            ],
+
         ]);
     }
 

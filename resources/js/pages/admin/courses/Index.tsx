@@ -18,12 +18,19 @@ interface Course {
     image: string;
     status: boolean;
 }
+interface User {}
 
 interface Props extends PageProps {
     courses: Course[];
+    users: User[];
+    can: {
+        create: boolean;
+        edit: boolean;
+        delete: boolean;
+    };
 }
 
-export default function CourseIndex({ courses }: Props) {
+export default function CourseIndex({ courses, can }: Props) {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
     const [data, setData] = useState<Course[]>(courses);
@@ -35,17 +42,13 @@ export default function CourseIndex({ courses }: Props) {
             {
                 preserveState: true,
                 onSuccess: () => {
-                    setData(prev =>
-                        prev.map(item =>
-                            item.id === id ? { ...item, status: !currentStatus } : item
-                        )
-                    );
+                    setData((prev) => prev.map((item) => (item.id === id ? { ...item, status: !currentStatus } : item)));
                     toast.success('Course status updated');
                 },
                 onError: () => {
                     toast.error('Failed to update status.');
-                }
-            }
+                },
+            },
         );
     };
 
@@ -57,17 +60,17 @@ export default function CourseIndex({ courses }: Props) {
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
+            confirmButtonText: 'Yes, delete it!',
         }).then((result) => {
             if (result.isConfirmed) {
                 router.delete(`/courses/${id}`, {
                     onSuccess: () => {
-                        setData(prev => prev.filter(item => item.id !== id));
+                        setData((prev) => prev.filter((item) => item.id !== id));
                         toast.success('Course deleted successfully');
                     },
                     onError: () => {
                         toast.error('Failed to delete course.');
-                    }
+                    },
                 });
             }
         });
@@ -97,7 +100,9 @@ export default function CourseIndex({ courses }: Props) {
         },
         {
             header: 'Image',
-            cell: ({ row }) => <img src={`/storage/${row.original.image}`} alt="Course" className=" rounded"   style={{ width: '80px', height: '40px' }} />,
+            cell: ({ row }) => (
+                <img src={`/storage/${row.original.image}`} alt="Course" className="rounded" style={{ width: '80px', height: '40px' }} />
+            ),
         },
         {
             accessorKey: 'status',
@@ -105,7 +110,7 @@ export default function CourseIndex({ courses }: Props) {
             cell: ({ row }) => (
                 <Button
                     variant="outline"
-                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800 ' : 'bg-red-600 hover:bg-red-600 '} text-white hover:text-white`}
+                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800' : 'bg-red-600 hover:bg-red-600'} text-white hover:text-white`}
                     onClick={() => handleStatusToggle(row.original.id, row.original.status)}
                 >
                     {row.original.status ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
@@ -116,14 +121,18 @@ export default function CourseIndex({ courses }: Props) {
             header: 'Actions',
             cell: ({ row }) => (
                 <div className="flex space-x-2">
-                    <Link href={`/courses/${row.original.id}/edit`}>
-                        <Button variant="ghost" size="icon">
-                            <Edit className="h-4 w-4" />
+                    {can.edit && (
+                        <Link href={`/courses/${row.original.id}/edit`}>
+                            <Button variant="ghost" size="icon">
+                                <Edit className="h-4 w-4" />
+                            </Button>
+                        </Link>
+                    )}
+                    {can.delete && (
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
+                            <Trash2 className="h-4 w-4 text-red-600" />
                         </Button>
-                    </Link>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
-                        <Trash2 className="h-4 w-4 text-red-600" />
-                    </Button>
+                    )}                   
                 </div>
             ),
         },
@@ -157,11 +166,13 @@ export default function CourseIndex({ courses }: Props) {
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Courses</h1>
-                    <Link href="/courses/create">
-                        <Button>
-                            <Plus className="mr-2 h-4 w-4" /> Create Course
-                        </Button>
-                    </Link>
+                    {can.create && (
+                        <Link href="/courses/create">
+                            <Button>
+                                <Plus className="mr-2 h-4 w-4" /> Create Course
+                            </Button>
+                        </Link>
+                    )}
                 </div>
 
                 <div className="mb-4 flex items-center justify-between">

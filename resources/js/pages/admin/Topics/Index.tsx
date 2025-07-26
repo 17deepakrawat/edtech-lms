@@ -31,16 +31,23 @@ interface Topic {
     status: boolean;
     unit: Unit;
 }
-
+interface User {}
+ 
 interface Props extends PageProps {
     topics: {
         data: Topic[];
         links: any[];
     };
     units: Unit[];
+    users: User[];
+    can: {
+        create: boolean;
+        edit: boolean;
+        delete: boolean;
+    };
 }
 
-export default function Index({ topics, units }: Props) {
+export default function Index({ topics, units, can }: Props) {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
     const [data, setData] = useState<Topic[]>(topics.data);
@@ -148,12 +155,14 @@ export default function Index({ topics, units }: Props) {
             header: 'Actions',
             cell: ({ row }) => (
                 <div className="flex space-x-2">
+                     {can.edit && (
                     <Button variant="ghost" size="icon" onClick={() => openEditModal(row.original)}>
                         <EditIcon className="h-4 w-4" />
-                    </Button>
+                    </Button>)}
+                     {can.delete && (
                     <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
                         <Trash2 className="h-4 w-4 text-red-600" />
-                    </Button>
+                    </Button>)}
                 </div>
             ),
         },
@@ -187,9 +196,10 @@ export default function Index({ topics, units }: Props) {
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Topics</h1>
+                     {can.create && (
                     <Button onClick={() => setIsCreateModalOpen(true)}>
                         <Plus className="mr-2 h-4 w-4" /> Create Topic
-                    </Button>
+                    </Button>)}
                 </div>
 
                 <div className="mb-4 flex items-center justify-between">

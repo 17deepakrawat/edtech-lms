@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Programs;
 use App\Models\Departments;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -12,7 +13,7 @@ class ProgramsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    
+
     public function index()
     {
         $programs = Programs::with('department')->get()->map(function ($program) {
@@ -21,13 +22,20 @@ class ProgramsController extends Controller
                 'name' => $program->name,
                 'department_id' => $program->department_id,
                 'department_name' => $program->department ? $program->department->name : null,
-                'status' => $program-> status,
+                'status' => $program->status,
+
 
             ];
         });
 
         return Inertia::render('admin/Programs/Index', [
             'programs' => $programs,
+            'users' => User::all(),
+            'can' => [
+                'create' => auth()->user()->can('create program'),
+                'edit' => auth()->user()->can('edit program'),
+                'delete' => auth()->user()->can('delete program'),
+            ],
         ]);
     }
 
@@ -42,21 +50,21 @@ class ProgramsController extends Controller
         ]);
     }
     public function toggleStatus($id)
-{
-    try {
-        $program = Programs::findOrFail($id);
-        $program->status = $program->status == 1 ? 0 : 1;
-        $program->save();
-        //  dd(($program->status == 1 ? 'Active' : 'Inactive'));
-        return redirect()->back()->with('success', 'Status updated Successfull!');
-    } catch (\Exception $e) {
-        return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());
+    {
+        try {
+            $program = Programs::findOrFail($id);
+            $program->status = $program->status == 1 ? 0 : 1;
+            $program->save();
+            //  dd(($program->status == 1 ? 'Active' : 'Inactive'));
+            return redirect()->back()->with('success', 'Status updated Successfull!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());
+        }
     }
-}
 
-    
-    
-    
+
+
+
 
     /**
      * Store a newly created resource in storage.

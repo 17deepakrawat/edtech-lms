@@ -21,15 +21,22 @@ interface Video {
     unit: { id: number; title: string } | null;
     topic: { id: number; name: string } | null;
 }
+interface User {}
 
 interface Props {
     videos: {
         data: Video[];
     };
     courses: { id: number; name: string }[];
+    users: User[];
+    can: {
+        create: boolean;
+        edit: boolean;
+        delete: boolean;
+    };
 }
 
-export default function VideoIndex({ videos, courses }: Props) {
+export default function VideoIndex({ videos, courses, can }: Props) {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
     const [data, setData] = useState<Video[]>(videos.data);
@@ -125,14 +132,16 @@ export default function VideoIndex({ videos, courses }: Props) {
             header: 'Actions',
             cell: ({ row }) => (
                 <div className="flex space-x-2">
+                    {can.edit && (
                     <Link href={`/videos/${row.original.id}/edit`}>
                         <Button variant="ghost" size="icon">
                             <EditIcon className="h-4 w-4" />
                         </Button>
-                    </Link>
+                    </Link>)}
+                     {can.delete && (
                     <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
                         <Trash2 className="h-4 w-4 text-red-600" />
-                    </Button>
+                    </Button>)}
                 </div>
             ),
         },
@@ -161,12 +170,13 @@ export default function VideoIndex({ videos, courses }: Props) {
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-semibold">Videos</h1>
+                     {can.create && (
                     <Link href="/videos/create">
                         <Button>
                             <Plus className="mr-2 h-4 w-4" />
                             Add Video
                         </Button>
-                    </Link>
+                    </Link>)}
                 </div>
 
                 {/* 🔍 Search Input */}

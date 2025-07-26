@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Topic;
 use App\Models\Unit;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -16,7 +17,13 @@ class TopicController extends Controller
 
         return Inertia::render('admin/Topics/Index', [
             'topics' => ['data' => $topics],
-            'units' => $units
+            'units' => $units,
+            'users' => User::all(),
+            'can' => [
+                'create' => auth()->user()->can('create topics'),
+                'edit' => auth()->user()->can('edit topics'),
+                'delete' => auth()->user()->can('delete topics'),
+            ],
         ]);
     }
 

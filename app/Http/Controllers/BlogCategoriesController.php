@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BlogCategories;
 use App\Models\Blogs;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
@@ -24,43 +25,49 @@ class BlogCategoriesController extends Controller
             return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());
         }
     }
-  public function category($slug)
-{
-    // Fetch category and its active blogs
-    $blogCategory = BlogCategories::where('slug', $slug)
-        ->where('status', 1)
-        ->with(['blogs' => function ($query) {
-            $query->where('status', 1)->with('category');
-        }])
-        ->firstOrFail();
+    public function category($slug)
+    {
+        // Fetch category and its active blogs
+        $blogCategory = BlogCategories::where('slug', $slug)
+            ->where('status', 1)
+            ->with(['blogs' => function ($query) {
+                $query->where('status', 1)->with('category');
+            }])
+            ->firstOrFail();
 
-    return Inertia::render('web-pages/blogs/Index', [
-        'category' => [
-            'slug' => $blogCategory->slug,
-            'name' => $blogCategory->name,
-        ],
-        'blogs' => $blogCategory->blogs->map(function ($blog) use ($blogCategory) {
-            return [
-                'id' => $blog->id,
-                'name' => $blog->name ?? 'No Title', // consistent naming
-                'slug' => $blog->slug ?? 'no-title',
-                'excerpt' => $blog->excerpt ?? '',
-                'content' => $blog->content ?? 'No Content',
-                'image' => $blog->image ?? '',
-                'created_at' => $blog->created_at ? $blog->created_at->toDateString() : null,
-                'author_name' => $blog->author_name ?? 'Unknown Author',
-                'author_image' => $blog->author_image ?? '',
-                'category' => $blog->category ? $blog->category->name : $blogCategory->name,
-            ];
-        }),
-    ]);
-}
+        return Inertia::render('web-pages/blogs/Index', [
+            'category' => [
+                'slug' => $blogCategory->slug,
+                'name' => $blogCategory->name,
+            ],
+            'blogs' => $blogCategory->blogs->map(function ($blog) use ($blogCategory) {
+                return [
+                    'id' => $blog->id,
+                    'name' => $blog->name ?? 'No Title', // consistent naming
+                    'slug' => $blog->slug ?? 'no-title',
+                    'excerpt' => $blog->excerpt ?? '',
+                    'content' => $blog->content ?? 'No Content',
+                    'image' => $blog->image ?? '',
+                    'created_at' => $blog->created_at ? $blog->created_at->toDateString() : null,
+                    'author_name' => $blog->author_name ?? 'Unknown Author',
+                    'author_image' => $blog->author_image ?? '',
+                    'category' => $blog->category ? $blog->category->name : $blogCategory->name,
+                ];
+            }),
+        ]);
+    }
 
 
     public function index()
     {
         return Inertia::render('admin/blogcategories/Index', [
             'blogCategory' => BlogCategories::all(),
+            'users' => User::all(),
+            'can' => [
+                'create' => auth()->user()->can('create blogs category'),
+                'edit' => auth()->user()->can('edit blogs category'),
+                'delete' => auth()->user()->can('delete blogs category'),
+            ],
         ]);
     }
 

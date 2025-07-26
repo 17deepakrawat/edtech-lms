@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Leads;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -17,6 +18,12 @@ class LeadsController extends Controller
         $leads = Leads::latest()->get();
         return Inertia::render('admin/Leads/Index', [
             'leads' => $leads,
+            'users' => User::all(),
+            'can' => [
+                'viewpdf' => auth()->user()->can('view-pdf lead'),
+                'viewexcel' => auth()->user()->can('view-excel lead'),                
+            ],
+
         ]);
     }
 

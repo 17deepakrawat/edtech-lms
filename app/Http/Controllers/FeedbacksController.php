@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Feedbacks;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
@@ -16,6 +17,12 @@ class FeedbacksController extends Controller
     {
         return Inertia::render('admin/feedback/Index', [
             'feedbacks' => Feedbacks::all(),
+            'users' => User::all(),
+            'can' => [
+                'create' => auth()->user()->can('create feedback'),
+                'edit' => auth()->user()->can('edit feedback'),
+                'delete' => auth()->user()->can('delete feedback'),
+            ],
         ]);
     }
 
