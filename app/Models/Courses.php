@@ -10,8 +10,8 @@ class Courses extends Model
     protected $fillable = ['department_id', 'program_id', 'name', 'short_description', 'image', 'content', 'modes', 'duration', 'rating', 'price', 'is_subject', 'course_keys', 'faqs', 'status', 'slug'];
     protected $casts = [
         'is_subject' => 'boolean',
-        'course_keys' => 'array',  
-        'faqs' => 'array',         
+        'course_keys' => 'array',
+        'faqs' => 'array',
     ];
 
     /**
@@ -26,9 +26,16 @@ class Courses extends Model
     {
         return $this->belongsTo(Departments::class, 'department_id');
     }
-    
+
     public function program()
     {
         return $this->belongsTo(Programs::class, 'program_id');
+    }
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'course_user_fee')
+            ->using(CourseUserFee::class)
+            ->withPivot('fee')
+            ->withTimestamps();
     }
 }

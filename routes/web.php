@@ -11,6 +11,7 @@ use App\Http\Controllers\{
     DepartmentsController,
     FeedbacksController,
     LeadsController,
+    mentorController,
     ProgramsController,
     TopicController,
     UniversityPartnersController,
@@ -65,12 +66,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return redirect()->route('home');
     })->name('dashboard');
     Route::middleware(['role:admin'])->group(function () {
+        Route::resource('mentors',mentorController::class);
+        Route::post('/mentor-allot/{user}/assign-course', [mentorController::class, 'assignCourse']);
         Route::resource('roles', RoleController::class);
         Route::resource('permissions', PermissionController::class);
         Route::resource('users', userController::class);
         Route::get('/users/{id}/roles', [UserController::class, 'getRolesAndUserRole']);
         Route::post('/api/users/{id}/roles', [UserController::class, 'assignRole']);
-         Route::get('/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+        Route::get('/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
         Route::get('/roles', [UserRolePermssionController::class, 'index'])->name('roles.index');
         Route::post('roles/{role}/permissions', [UserRolePermssionController::class, 'assignPermissiontorole'])->name('roles.assign.permissions');
         Route::post('/api/roles/{role}/update-permissions', [UserRolePermssionController::class, 'storePermissions']);

@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
 import { CheckCircle, Edit, Plus, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
@@ -28,6 +28,7 @@ interface Props extends PageProps {
 }
 
 export default function BannerIndex({ banners, can }: Props) {
+    
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
     const [data, setData] = useState<Banner[]>(banners);

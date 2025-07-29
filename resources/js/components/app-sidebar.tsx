@@ -53,11 +53,16 @@ const adminNavItems: NavItem[] = [
                 permissions: "view role" ,
             },
             {
-                title: 'Assign role to user',
+                title: 'Users',
                 href: 'users',
                 icon: Users,
                 permissions: "view user" ,
-            },          
+            },
+            {
+                title: 'Mentor',
+                href: 'mentors',
+                icon: Users,               
+            },           
            
         ],
     },

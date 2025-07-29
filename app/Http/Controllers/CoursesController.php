@@ -129,7 +129,7 @@ class CoursesController extends Controller
 
     public function index()
     {
-        $user = auth()->user();          
+        $user = auth()->user();
         $courses = Courses::with(['department:id,name', 'program:id,name'])->get()->map(function ($course) {
             return [
                 'id' => $course->id,
@@ -173,8 +173,8 @@ class CoursesController extends Controller
     public function store(Request $request)
     {
         // Validate the incoming request data
-         $user = auth()->user();
-         dd($user); 
+        $user = auth()->user();
+        
         $validated = $request->validate([
             'department_id' => 'required|exists:departments,id',
             'program_id' => 'required|exists:programs,id',
@@ -330,5 +330,22 @@ class CoursesController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());
         }
+    }
+    public function assignCourse(Request $request, Course $course)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+        $user = User::findOrFail($request->user_id);
+
+        // ✅ Check if user is mentor
+        if (!$user->hasRole('mentor')) {
+            return back()->with('error', 'Only mentors can be assigned to courses.');
+        }
+
+        // Attach the course
+        $course->users()->syncWithoutDetaching([$user->id]);
+
+        return back()->with('success', 'Course assigned to mentor successfully.');
     }
 }

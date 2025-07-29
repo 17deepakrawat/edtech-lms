@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -15,8 +16,10 @@ class UserController extends Controller
     public function index(): Response
     {
         $users = User::all()->makeVisible(['password']);;
+        
         return Inertia::render('admin/rolepermision/user/Index', [
             'users' => $users,
+           
         ]);
     }
 
@@ -101,7 +104,7 @@ class UserController extends Controller
         // return response()->json(['message' => 'Role assigned successfully']);
         return redirect()->route('users.index')->with('success', 'Permissions updated successfully.');
     }
-      public function toggleStatus($id)
+    public function toggleStatus($id)
     {
         try {
             $user = User::findOrFail($id);
@@ -113,4 +116,16 @@ class UserController extends Controller
             return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());
         }
     }
+    // public function assignCourseForm($courseId)
+    // {
+    //     return Inertia::render('admin/courses/Assign', [
+    //         'course' => Course::findOrFail($courseId),
+    //         'mentors' => User::role('mentor')->get(), // ✅ only mentors
+    //     ]);
+    // }
+
+
+    // UserController.php
+
+    
 }

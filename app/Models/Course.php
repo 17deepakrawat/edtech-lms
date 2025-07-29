@@ -31,4 +31,16 @@ class Course extends Model
     {
         return $this->hasMany(Video::class);
     }
-} 
+    // public function users()
+    // {
+    //     return $this->belongsToMany(User::class, 'course_user_fee')
+    //         ->using(CourseUserFee::class)
+    //         ->withPivot('fee')
+    //         ->withTimestamps();
+    // }
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'course_user_fee')
+            ->withTimestamps(); // No withPivot for now
+    }
+}
