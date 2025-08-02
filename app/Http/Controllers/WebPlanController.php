@@ -22,12 +22,7 @@ class WebPlanController extends Controller
 
         return Inertia::render('admin/plans/Index', [
             'plans' => $plans,
-            'users' => User::all(),
-            'can' => [
-                'create' => auth()->user()->can('create course plans'),
-                'edit' => auth()->user()->can('edit course plans'),
-                'delete' => auth()->user()->can('delete course plans'),
-            ],
+           
         ]);
 
 

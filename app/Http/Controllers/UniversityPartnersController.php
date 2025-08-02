@@ -14,12 +14,7 @@ class UniversityPartnersController extends Controller
     {
         return Inertia::render('admin/universitypartner/Index', [
             'universitypartners' => UniversityPartners::all(),
-            'users' => User::all(),
-            'can' => [
-                'create' => auth()->user()->can('create university partner'),
-                'edit' => auth()->user()->can('edit university partner'),
-                'delete' => auth()->user()->can('delete university partner'),
-            ],
+          
         ]);
     }
 

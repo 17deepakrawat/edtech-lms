@@ -10,7 +10,7 @@ import { FileDown, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
-
+import { usePermission } from    '@/pages/admin/pagepermision';
 interface Lead {
     id: number;
     name: string;
@@ -21,14 +21,11 @@ interface Lead {
 interface User {}
 interface Props extends PageProps {
     leads: Lead[];
-    users: User[];
-    can: {
-        viewpdf: boolean;
-        viewexcel: boolean;
-    };
+    users: User[];    
 }
 
-export default function LeadIndex({ leads, can }: Props) {
+export default function LeadIndex({ leads}: Props) {
+    const { hasPermission } = usePermission();
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
     const [data, setData] = useState<Lead[]>(leads);
@@ -150,12 +147,12 @@ export default function LeadIndex({ leads, can }: Props) {
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Leads</h1>
                     <div className="flex gap-2">
-                      {can.viewpdf && (
+                       {hasPermission('view-pdf lead') && (
                         <Button onClick={exportToPDF} variant="outline" className="flex items-center gap-2">
                             <FileDown className="h-4 w-4" />
                             Export PDF
                         </Button>)}
-                        {can.viewexcel && (
+                       {hasPermission('view-excel lead') && (
                         <Button onClick={exportToExcel} variant="outline" className="flex items-center gap-2">
                             <FileDown className="h-4 w-4" />
                             Export Excel

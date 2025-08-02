@@ -16,12 +16,7 @@ class DepartmentsController extends Controller
     {
         return Inertia::render('admin/department/Index', [
             'departments' => Departments::all(),
-             'users' => User::all(),
-            'can' => [
-                'create' => auth()->user()->can('create department'),
-                'edit' => auth()->user()->can('edit department'),
-                'delete' => auth()->user()->can('delete department'),
-            ],
+            
 
         ]);
     }

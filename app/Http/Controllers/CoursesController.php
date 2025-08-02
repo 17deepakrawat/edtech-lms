@@ -73,15 +73,6 @@ class CoursesController extends Controller
 
         ]);
     }
-
-
-
-
-
-
-
-
-
     public function courselist()
     {
         $departments = Departments::where('status', 1)
@@ -123,10 +114,6 @@ class CoursesController extends Controller
             'maxAmount' => $maxAmount,
         ]);
     }
-
-
-
-
     public function index()
     {
         $user = auth()->user();
@@ -147,12 +134,6 @@ class CoursesController extends Controller
 
         return Inertia::render('admin/courses/Index', [
             'courses' => $courses,
-            'users' => User::all(),
-            'can' => [
-                'create' => auth()->user()->can('create feedback'),
-                'edit' => auth()->user()->can('edit feedback'),
-                'delete' => auth()->user()->can('delete feedback'),
-            ],
         ]);
     }
     /**
@@ -174,7 +155,7 @@ class CoursesController extends Controller
     {
         // Validate the incoming request data
         $user = auth()->user();
-        
+
         $validated = $request->validate([
             'department_id' => 'required|exists:departments,id',
             'program_id' => 'required|exists:programs,id',
@@ -191,7 +172,6 @@ class CoursesController extends Controller
             'faqs' => 'required|array|min:1',
             'faqs.*.question' => 'required|string|max:255',
             'faqs.*.answer' => 'required|string|max:1000',
-
             'image' => 'required|image|max:2048',
         ]);
 

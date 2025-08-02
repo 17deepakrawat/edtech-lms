@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import Swal from 'sweetalert2';
 import Create from './Create';
 import Edit from './Edit';
-
+import { usePermission } from    '@/pages/admin/pagepermision';
 interface Course {
     id: number;
     name: string;
@@ -33,15 +33,11 @@ interface Props extends PageProps {
         links: any[];
     };
     courses: Course[];
-    users: User[];
-    can: {
-        create: boolean;
-        edit: boolean;
-        delete: boolean;
-    };
+    users: User[];    
 }
 
-export default function Index({ units, courses, can }: Props) {
+export default function Index({ units, courses}: Props) {
+    const { hasPermission } = usePermission();
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
     const [data, setData] = useState<Unit[]>(units.data);
@@ -141,12 +137,12 @@ export default function Index({ units, courses, can }: Props) {
             header: 'Actions',
             cell: ({ row }) => (
                 <div className="flex space-x-2">
-                    {can.edit && (
+                    {hasPermission('edit unit') && (
                         <Button variant="ghost" size="icon" onClick={() => openEditModal(row.original)}>
                             <EditIcon className="h-4 w-4" />
                         </Button>
                     )}
-                    {can.delete && (
+                    {hasPermission('delete unit') && (
                         <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
                             <Trash2 className="h-4 w-4 text-red-600" />
                         </Button>
@@ -184,7 +180,7 @@ export default function Index({ units, courses, can }: Props) {
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Units</h1>
-                    {can.create && (
+                    {hasPermission('create unit') && (
                         <Button onClick={() => setIsCreateModalOpen(true)}>
                             <Plus className="mr-2 h-4 w-4" /> Create Unit
                         </Button>

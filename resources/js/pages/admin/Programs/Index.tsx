@@ -8,7 +8,7 @@ import { CheckCircle, Edit, Plus, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
-
+import { usePermission } from    '@/pages/admin/pagepermision';
 interface programs {
     id: number;
     name: string;
@@ -20,14 +20,10 @@ interface User {}
 interface Props extends PageProps {
     programs: programs[];
     users: User[];
-    can: {
-        create: boolean;
-        edit: boolean;
-        delete: boolean;
-    };
-}
+    }
 
-export default function departmentIndex({ programs,can }: Props) {
+export default function departmentIndex({ programs}: Props) {
+    const { hasPermission } = usePermission();
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
 
@@ -61,14 +57,14 @@ export default function departmentIndex({ programs,can }: Props) {
             header: 'Actions',
             cell: ({ row }) => (
                 <div className="flex space-x-2">
-                    {can.edit && (
+                   {hasPermission('edit program') && (
                         <Link href={`/programs/${row.original.id}/edit`}>
                             <Button variant="ghost" size="icon">
                                 <Edit className="h-4 w-4" />
                             </Button>
                         </Link>
                     )}
-                    {can.delete && (
+                   {hasPermission('delete program') && (
                         <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
                             <Trash2 className={`h-4 w-4 ${programs.status == 1 ? 'text-green-600' : 'text-red-600'}`} />
                         </Button>
@@ -144,7 +140,7 @@ export default function departmentIndex({ programs,can }: Props) {
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Programs</h1>
-                    {can.create && (
+                    {hasPermission('create program') && (
                         <Link href="/programs/create">
                             <Button>
                                 <Plus className="mr-2 h-4 w-4" /> Create Program

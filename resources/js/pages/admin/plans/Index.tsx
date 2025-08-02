@@ -8,7 +8,7 @@ import { CheckCircle, Edit, Plus, Trash2, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
-
+import { usePermission } from    '@/pages/admin/pagepermision';
 interface Plan {
     id: number;
     title: string;
@@ -26,14 +26,11 @@ interface Props extends PageProps {
         success?: string;
         error?: string;
     };
-    can: {
-        create: boolean;
-        edit: boolean;
-        delete: boolean;
-    };
+    
 }
 
-export default function PlanIndex({ plans, flash, can }: Props) {
+export default function PlanIndex({ plans, flash}: Props) {
+    const { hasPermission } = usePermission();
     const [data, setData] = useState<Plan[]>(plans);
     const [globalFilter, setGlobalFilter] = useState('');
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -78,14 +75,14 @@ export default function PlanIndex({ plans, flash, can }: Props) {
             header: 'Actions',
             cell: ({ row }) => (
                 <div className="flex space-x-2">
-                    {can.edit && (
+                   {hasPermission('edit course plans') && (
                         <Link href={`/plans/${row.original.id}/edit`}>
                             <Button variant="ghost" size="icon">
                                 <Edit className="h-4 w-4" />
                             </Button>
                         </Link>
                     )}
-                    {can.delete && (
+                     {hasPermission('delete course plans') && (
                         <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
                             <Trash2 className="h-4 w-4 text-red-600" />
                         </Button>
@@ -155,7 +152,7 @@ export default function PlanIndex({ plans, flash, can }: Props) {
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Plans</h1>
-                    {can.create && (
+                    {hasPermission('create course plans') && (
                         <Link href="/plans/create">
                             <Button>
                                 <Plus className="mr-2 h-4 w-4" /> Add New Plan

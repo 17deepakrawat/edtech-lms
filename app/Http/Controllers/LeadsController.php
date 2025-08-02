@@ -18,12 +18,6 @@ class LeadsController extends Controller
         $leads = Leads::latest()->get();
         return Inertia::render('admin/Leads/Index', [
             'leads' => $leads,
-            'users' => User::all(),
-            'can' => [
-                'viewpdf' => auth()->user()->can('view-pdf lead'),
-                'viewexcel' => auth()->user()->can('view-excel lead'),                
-            ],
-
         ]);
     }
 
@@ -60,8 +54,8 @@ class LeadsController extends Controller
      */
     public function show(Leads $leads)
     {
-        $leads= Leads::all();
-       return Inertia::render('admin/Leads/Index', [
+        $leads = Leads::all();
+        return Inertia::render('admin/Leads/Index', [
             'leads' => $leads,
         ]);
     }

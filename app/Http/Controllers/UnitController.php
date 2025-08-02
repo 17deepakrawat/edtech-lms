@@ -24,12 +24,7 @@ class UnitController extends Controller
                 'data' => $units
             ],
             'courses' => $courses,
-            'users' => User::all(),
-            'can' => [
-                'create' => auth()->user()->can('create unit'),
-                'edit' => auth()->user()->can('edit unit'),
-                'delete' => auth()->user()->can('delete unit'),
-            ],
+           
 
         ]);
     }

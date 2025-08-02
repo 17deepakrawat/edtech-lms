@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import Create from '@/pages/admin/department/Create';
 import Edits from '@/pages/admin/department/Edit'; // ✅ FIXED: You had this commented
+import { usePermission } from '@/pages/admin/pagepermision';
 import { PageProps } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
@@ -10,7 +11,6 @@ import { CheckCircle, Edit, Plus, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
-
 interface Department {
     id: number;
     name: string;
@@ -21,14 +21,10 @@ interface User {}
 interface Props extends PageProps {
     departments: Department[];
     users: User[];
-    can: {
-        create: boolean;
-        edit: boolean;
-        delete: boolean;
-    };
-}
+    }
 
-export default function DepartmentIndex({ departments, can }: Props) {
+export default function DepartmentIndex({ departments}: Props) {
+    const { hasPermission } = usePermission();
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
     const [pageIndex, setPageIndex] = useState(0);
@@ -104,7 +100,7 @@ export default function DepartmentIndex({ departments, can }: Props) {
             header: 'Actions',
             cell: ({ row }) => (
                 <div className="flex space-x-2">
-                    {can.edit && (
+                    {hasPermission('edit department') && (
                         <Button
                             variant="ghost"
                             size="icon"
@@ -116,7 +112,7 @@ export default function DepartmentIndex({ departments, can }: Props) {
                             <Edit className="h-4 w-4" />
                         </Button>
                     )}
-                    {can.delete && (
+                    {hasPermission('delete department') && (
                         <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
                             <Trash2 className="h-4 w-4 text-red-600" />
                         </Button>
@@ -154,9 +150,11 @@ export default function DepartmentIndex({ departments, can }: Props) {
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Departments</h1>
-                    <Button onClick={() => setIsCreateModalOpen(true)}>
-                        <Plus className="mr-2 h-4 w-4" /> Create Department
-                    </Button>
+                    {hasPermission('create department') && (
+                        <Button onClick={() => setIsCreateModalOpen(true)}>
+                            <Plus className="mr-2 h-4 w-4" /> Create Department
+                        </Button>
+                    )}
                 </div>
 
                 <div className="mb-4 flex items-center justify-between">

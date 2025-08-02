@@ -12,6 +12,7 @@ use App\Http\Controllers\{
     FeedbacksController,
     LeadsController,
     mentorController,
+    PaymentGatewaysController,
     ProgramsController,
     TopicController,
     UniversityPartnersController,
@@ -23,9 +24,11 @@ use App\Http\Controllers\{
     WebPlanController,
     RoleController,
     PermissionController,
+    StudentsController,
     userController,
     UserRolePermssionController
 };
+
 
 // Public Routes
 Route::get('/', [Webhomcontroller::class, 'home']);
@@ -66,7 +69,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return redirect()->route('home');
     })->name('dashboard');
     Route::middleware(['role:admin'])->group(function () {
-        Route::resource('mentors',mentorController::class);
+        Route::resource('students', StudentsController::class);
+        Route::get('/students/{id}/toggle-status', [StudentsController::class, 'toggleStatus'])->name('students.toggle-status');
+        Route::resource('payment-gateways', PaymentGatewaysController::class);
+        Route::get('payment-history', [PaymentGatewaysController::class, 'paymenthistory'])->name('payment-history');
+        Route::get('/payment-gateways/{id}/toggle-status', [PaymentGatewaysController::class, 'toggleStatus'])->name('payment-gateways.toggle-status');
+        Route::resource('mentors', mentorController::class);
         Route::post('/mentor-allot/{user}/assign-course', [mentorController::class, 'assignCourse']);
         Route::resource('roles', RoleController::class);
         Route::resource('permissions', PermissionController::class);

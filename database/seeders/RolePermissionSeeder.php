@@ -76,6 +76,7 @@ class RolePermissionSeeder extends Seeder
             'edit blogs',
             'delete blogs',
             'view lead','view-pdf lead','view-excel lead',
+            'view course mentor','allot course mentor','delete course mentor'
         ];
 
         // Create permissions

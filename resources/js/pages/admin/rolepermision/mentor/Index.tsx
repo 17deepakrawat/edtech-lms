@@ -1,16 +1,16 @@
 // ... imports
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
+import { usePermission } from '@/pages/admin/pagepermision';
 import { PageProps } from '@/types';
 import { Dialog } from '@headlessui/react';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
-import { CheckCircle, CirclePlus, Plus, Trash2, XCircle } from 'lucide-react';
+import { CheckCircle, CirclePlus, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import Select from 'react-select';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
-
 interface User {
     id: number;
     name: string;
@@ -27,6 +27,7 @@ interface Props extends PageProps {
     courses: Course[];
 }
 export default function Index({ mentor, courses }: Props) {
+    const { hasPermission } = usePermission();
     const [data, setData] = useState<User[]>(mentor);
     const [globalFilter, setGlobalFilter] = useState('');
     const [isCourseOpen, setIsCourseOpen] = useState(false);
@@ -79,50 +80,50 @@ export default function Index({ mentor, courses }: Props) {
     //         }
     //     );
     // };
-const submitCourse = () => {
-    if (!selectedUserId) return;
+    const submitCourse = () => {
+        if (!selectedUserId) return;
 
-    router.post(
-        `/mentor-allot/${selectedUserId}/assign-course`,
-        {
-            courses: selectedCourses,
-            removed: removedCourseIds,
-        },
-        {
-            preserveScroll: true,
-            onSuccess: (page) => {
-                const flash = page.props.flash;
-                if (flash?.success) toast.success(flash.success);
-                if (flash?.msg) toast.error(flash.msg);
-
-                // ✅ Update local data without reload
-                setData((prevData) =>
-                    prevData.map((mentor) => {
-                        if (mentor.id === selectedUserId) {
-                            const updatedCourses = selectedCourses.map((c) => {
-                                const course = courses.find((co) => co.id === c.id);
-                                return {
-                                    id: c.id,
-                                    name: course?.name || '',
-                                    fee: c.fee.toString(),
-                                };
-                            });
-                            return {
-                                ...mentor,
-                                courses: updatedCourses,
-                            };
-                        }
-                        return mentor;
-                    })
-                );
-
-                setIsCourseOpen(false);
-                setRemovedCourseIds([]);
+        router.post(
+            `/mentor-allot/${selectedUserId}/assign-course`,
+            {
+                courses: selectedCourses,
+                removed: removedCourseIds,
             },
-            onError: () => toast.error('Course assignment failed'),
-        }
-    );
-};
+            {
+                preserveScroll: true,
+                onSuccess: (page) => {
+                    const flash = page.props.flash;
+                    if (flash?.success) toast.success(flash.success);
+                    if (flash?.msg) toast.error(flash.msg);
+
+                    // ✅ Update local data without reload
+                    setData((prevData) =>
+                        prevData.map((mentor) => {
+                            if (mentor.id === selectedUserId) {
+                                const updatedCourses = selectedCourses.map((c) => {
+                                    const course = courses.find((co) => co.id === c.id);
+                                    return {
+                                        id: c.id,
+                                        name: course?.name || '',
+                                        fee: c.fee.toString(),
+                                    };
+                                });
+                                return {
+                                    ...mentor,
+                                    courses: updatedCourses,
+                                };
+                            }
+                            return mentor;
+                        }),
+                    );
+
+                    setIsCourseOpen(false);
+                    setRemovedCourseIds([]);
+                },
+                onError: () => toast.error('Course assignment failed'),
+            },
+        );
+    };
 
     const handleDelete = (id: number) => {
         Swal.fire({
@@ -143,16 +144,16 @@ const submitCourse = () => {
     };
 
     const handleStatusToggle = (id: number, currentStatus: boolean) => {
-        router.get(`/mentors/${id}/toggle-status`, {}, {
-            preserveState: true,
-            onSuccess: () => {
-                setData((prev) =>
-                    prev.map((user) =>
-                        user.id === id ? { ...user, status: !currentStatus } : user
-                    )
-                );
+        router.get(
+            `/mentors/${id}/toggle-status`,
+            {},
+            {
+                preserveState: true,
+                onSuccess: () => {
+                    setData((prev) => prev.map((user) => (user.id === id ? { ...user, status: !currentStatus } : user)));
+                },
             },
-        });
+        );
     };
 
     const columns: ColumnDef<User>[] = [
@@ -181,12 +182,16 @@ const submitCourse = () => {
             header: 'Actions',
             cell: ({ row }) => (
                 <div className="flex gap-2">
-                    <Button variant="ghost" size="icon" onClick={() => openCourseModal(row.original.id)}>
-                        <CirclePlus className="h-4 w-4 text-green-600" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
-                        <Trash2 className="h-4 w-4 text-red-600" />
-                    </Button>
+                    {hasPermission('allot course mentor') && (
+                        <Button variant="ghost" size="icon" onClick={() => openCourseModal(row.original.id)}>
+                            <CirclePlus className="h-4 w-4 text-green-600" />
+                        </Button>
+                    )}
+                    {hasPermission('delete course mentor') && (
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
+                            <Trash2 className="h-4 w-4 text-red-600" />
+                        </Button>
+                    )}
                 </div>
             ),
         },
@@ -207,9 +212,12 @@ const submitCourse = () => {
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-semibold">Mentors</h1>
+                    {/* {hasPermission('create mentor') && (
                     <Link href="/users/create">
-                        <Button><Plus className="mr-2 h-4 w-4" /> Add User</Button>
-                    </Link>
+                        <Button>
+                            <Plus className="mr-2 h-4 w-4" /> Add User
+                        </Button>
+                    </Link>)} */}
                 </div>
 
                 <input
@@ -284,9 +292,7 @@ const submitCourse = () => {
                                 })}
                                 onChange={(selectedOptions) => {
                                     const selectedIds = selectedOptions.map((opt) => opt.value);
-                                    const removed = selectedCourses
-                                        .filter((c) => !selectedIds.includes(c.id))
-                                        .map((c) => c.id);
+                                    const removed = selectedCourses.filter((c) => !selectedIds.includes(c.id)).map((c) => c.id);
 
                                     setRemovedCourseIds((prev) => [...prev, ...removed]);
 

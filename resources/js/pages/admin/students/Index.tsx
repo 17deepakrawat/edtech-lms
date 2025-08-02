@@ -2,58 +2,46 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
-import { Head, Link, router,} from '@inertiajs/react';
-import { usePermission } from    '@/pages/admin/pagepermision';
-import {
-    ColumnDef,
-    flexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    useReactTable,
-} from '@tanstack/react-table';
+import { Head, Link, router } from '@inertiajs/react';
+import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
 import { CheckCircle, Edit, Plus, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
 
-interface Banner {
+interface Student {
     id: number;
-    title: string;
-    description: string;
-    bannerimage: string;
+    first_name: string;
+    middle_name: string;
+    last_name: string;
+    email: string;
+    mobile: string;
     status: boolean;
 }
 
 interface Props extends PageProps {
-    banners: Banner[];
-    
+    student: Student[];
 }
 
-export default function BannerIndex({ banners, }: Props) { 
-    const { hasPermission } = usePermission(); 
+export default function StudentIndex({ student }: Props) {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
-    const [data, setData] = useState<Banner[]>(banners);
+    const [data, setData] = useState<Student[]>(student);
 
     const handleStatusToggle = (id: number, currentStatus: boolean) => {
         router.get(
-            `/banner/${id}/toggle-status`,
+            `/students/${id}/toggle-status`,
             {},
             {
                 preserveState: true,
                 onSuccess: () => {
-                    setData((prev) =>
-                        prev.map((item) =>
-                            item.id === id ? { ...item, status: !currentStatus } : item
-                        )
-                    );
-                    toast.success('Banner status updated');
+                    setData((prev) => prev.map((item) => (item.id === id ? { ...item, status: !currentStatus } : item)));
+                    toast.success('Student status updated');
                 },
                 onError: () => {
                     toast.error('Failed to update status.');
                 },
-            }
+            },
         );
     };
 
@@ -68,47 +56,35 @@ export default function BannerIndex({ banners, }: Props) {
             confirmButtonText: 'Yes, delete it!',
         }).then((result) => {
             if (result.isConfirmed) {
-                router.delete(`/banner/${id}`, {
+                router.delete(`/students/${id}`, {
                     onSuccess: () => {
-                        setData((prev) => prev.filter((banner) => banner.id !== id));
-                        toast.success('Banner deleted');
+                        setData((prev) => prev.filter((student) => student.id !== id));
+                        toast.success('Student deleted');
                     },
                     onError: () => {
-                        toast.error('Failed to delete banner.');
+                        toast.error('Failed to delete student.');
                     },
                 });
             }
         });
     };
 
-    const columns: ColumnDef<Banner>[] = [
+    const columns: ColumnDef<Student>[] = [
         {
             header: 'S.No',
             cell: (info) => info.row.index + 1,
         },
         {
-            accessorKey: 'title',
-            header: 'Title',
+            header: 'Name',
+            cell: ({ row }) => `${row.original.first_name} ${row.original.middle_name ?? ''} ${row.original.last_name}`.trim().toUpperCase(),
         },
         {
-            accessorKey: 'description',
-            header: 'Description',
-            cell: ({ row }) => (
-                <div
-                    className="line-clamp-3 max-w-xs text-sm"
-                    dangerouslySetInnerHTML={{ __html: row.original.description }}
-                />
-            ),
+            accessorKey: 'email',
+            header: 'Email',
         },
         {
-            header: 'Image',
-            cell: ({ row }) => (
-                <img
-                    src={`/storage/${row.original.bannerimage}`}
-                    alt="Banner"
-                    style={{ width: '80px', height: '40px' }}
-                />
-            ),
+            accessorKey: 'mobile',
+            header: 'Mobile No',
         },
         {
             accessorKey: 'status',
@@ -116,20 +92,10 @@ export default function BannerIndex({ banners, }: Props) {
             cell: ({ row }) => (
                 <Button
                     variant="outline"
-                    className={`${
-                        row.original.status
-                            ? 'bg-green-800 hover:bg-green-800'
-                            : 'bg-red-600 hover:bg-red-600'
-                    } text-white hover:text-white`}
-                    onClick={() =>
-                        handleStatusToggle(row.original.id, row.original.status)
-                    }
+                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800' : 'bg-red-600 hover:bg-red-600'} text-white`}
+                    onClick={() => handleStatusToggle(row.original.id, row.original.status)}
                 >
-                    {row.original.status ? (
-                        <CheckCircle className="h-4 w-4" />
-                    ) : (
-                        <XCircle className="h-4 w-4" />
-                    )}
+                    {row.original.status ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
                 </Button>
             ),
         },
@@ -137,22 +103,14 @@ export default function BannerIndex({ banners, }: Props) {
             header: 'Actions',
             cell: ({ row }) => (
                 <div className="flex space-x-2">
-                    {hasPermission('edit banner') && (
-                        <Link href={`/banner/${row.original.id}/edit`}>
-                            <Button variant="ghost" size="icon">
-                                <Edit className="h-4 w-4" />
-                            </Button>
-                        </Link>
-                    )}
-                    {hasPermission('delete banner') && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDelete(row.original.id)}
-                        >
-                            <Trash2 className="h-4 w-4 text-red-600" />
+                    <Link href={`/students/${row.original.id}/edit`}>
+                        <Button variant="ghost" size="icon">
+                            <Edit className="h-4 w-4" />
                         </Button>
-                    )}
+                    </Link>
+                    <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
+                        <Trash2 className="h-4 w-4 text-red-600" />
+                    </Button>
                 </div>
             ),
         },
@@ -173,10 +131,7 @@ export default function BannerIndex({ banners, }: Props) {
         getPaginationRowModel: getPaginationRowModel(),
         onGlobalFilterChange: setGlobalFilter,
         onPaginationChange: (updater) => {
-            const newState =
-                typeof updater === 'function'
-                    ? updater(table.getState().pagination)
-                    : updater;
+            const newState = typeof updater === 'function' ? updater(table.getState().pagination) : updater;
             table.setPageIndex(newState.pageIndex);
         },
         manualPagination: false,
@@ -184,25 +139,22 @@ export default function BannerIndex({ banners, }: Props) {
 
     return (
         <AppLayout>
-            <Head title="Home Banner" />
+            <Head title="Student Management" />
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
-                    <h1 className="text-2xl font-semibold">Home Banner</h1>
-                    {hasPermission('create banner') && (
-                        <Link href="/banner/create">
-                            <Button>
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add Home Banner
-                            </Button>
-                        </Link>
-                    )}
+                    <h1 className="text-2xl font-semibold">Students</h1>
+                    <Link href="/students/create">
+                        <Button>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Student
+                        </Button>
+                    </Link>
                 </div>
 
-                {/* 🔍 Search + Page Size Controls */}
                 <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <input
                         type="text"
-                        placeholder="Search banners..."
+                        placeholder="Search students..."
                         value={table.getState().globalFilter ?? ''}
                         onChange={(e) => table.setGlobalFilter(e.target.value)}
                         className="w-full max-w-sm rounded-md border px-3 py-2 shadow-sm"
@@ -229,12 +181,7 @@ export default function BannerIndex({ banners, }: Props) {
                         <TableHeader>
                             <TableRow>
                                 {table.getHeaderGroups()[0].headers.map((header) => (
-                                    <TableHead key={header.id}>
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
-                                    </TableHead>
+                                    <TableHead key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</TableHead>
                                 ))}
                             </TableRow>
                         </TableHeader>
@@ -242,12 +189,7 @@ export default function BannerIndex({ banners, }: Props) {
                             {table.getRowModel().rows.map((row) => (
                                 <TableRow key={row.id}>
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </TableCell>
+                                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                                     ))}
                                 </TableRow>
                             ))}

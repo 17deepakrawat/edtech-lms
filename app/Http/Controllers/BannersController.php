@@ -17,12 +17,8 @@ class BannersController extends Controller
         
         return Inertia::render('admin/banner/Index', [
             'banners' => Banners::all(),
-            'users' => User::all(),
-            'can' => [
-                'create' => auth()->user()->can('create banner'),
-                'edit' => auth()->user()->can('edit banner'),
-                'delete' => auth()->user()->can('delete banner'),
-            ],
+            
+           
         ]);
     }
 

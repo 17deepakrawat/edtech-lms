@@ -17,12 +17,7 @@ class FeedbacksController extends Controller
     {
         return Inertia::render('admin/feedback/Index', [
             'feedbacks' => Feedbacks::all(),
-            'users' => User::all(),
-            'can' => [
-                'create' => auth()->user()->can('create feedback'),
-                'edit' => auth()->user()->can('edit feedback'),
-                'delete' => auth()->user()->can('delete feedback'),
-            ],
+            
         ]);
     }
 

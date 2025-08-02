@@ -8,7 +8,7 @@ import { CheckCircle, Edit, Plus, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
-
+import { usePermission } from    '@/pages/admin/pagepermision';
 interface Blog {
     id: number;
     name: string;
@@ -24,15 +24,11 @@ interface User {}
 
 interface Props extends PageProps {
     blogs: Blog[];
-    users: User[];
-    can: {
-        create: boolean;
-        edit: boolean;
-        delete: boolean;
-    };
+    users: User[];    
 }
 
-export default function BlogIndex({ blogs,can }: Props) {
+export default function BlogIndex({ blogs}: Props) {
+    const { hasPermission } = usePermission();
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
     const [data, setData] = useState<Blog[]>(blogs);
@@ -125,14 +121,14 @@ export default function BlogIndex({ blogs,can }: Props) {
             header: 'Actions',
             cell: ({ row }) => (
                 <div className="flex space-x-2">
-                    {can.edit && (
+                   {hasPermission('edit blogs') && (
                         <Link href={`/adminblogs/${row.original.id}/edit`}>
                             <Button variant="ghost" size="icon">
                                 <Edit className="h-4 w-4" />
                             </Button>
                         </Link>
                     )}
-                    {can.delete && (
+                     {hasPermission('delete blogs') && (
                         <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
                             <Trash2 className="h-4 w-4 text-red-600" />
                         </Button>
@@ -170,7 +166,7 @@ export default function BlogIndex({ blogs,can }: Props) {
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Blogs</h1>
-                    {can.create && (
+                     {hasPermission('create blogs') && (
                         <Link href="/adminblogs/create">
                             <Button>
                                 <Plus className="mr-2 h-4 w-4" /> Create Blog

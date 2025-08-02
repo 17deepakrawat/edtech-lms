@@ -30,12 +30,7 @@ class ProgramsController extends Controller
 
         return Inertia::render('admin/Programs/Index', [
             'programs' => $programs,
-            'users' => User::all(),
-            'can' => [
-                'create' => auth()->user()->can('create program'),
-                'edit' => auth()->user()->can('edit program'),
-                'delete' => auth()->user()->can('delete program'),
-            ],
+           
         ]);
     }
 

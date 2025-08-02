@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/react';
 import { FaRegStar, FaRupeeSign, FaStar, FaStarHalfAlt } from 'react-icons/fa';
 
 export default function CourseCard({ courses }: { courses: any }) {
+    console.log(courses);
     const renderStars = (rating: number) => {
         const stars = [];
         if (rating !== 0) {
@@ -20,7 +21,7 @@ export default function CourseCard({ courses }: { courses: any }) {
             }
         }
         return stars;
-    };
+    };    
     return (
         <div className="mt-0 rounded-lg bg-white pt-0 text-gray-800 transition-all duration-300 hover:shadow-lg dark:bg-gray-900 dark:text-gray-100">
             <Card className="relative gap-3 pt-0 pb-0 shadow-md transition-all duration-300 hover:shadow-xl" style={{ minHeight: '360px' }}>

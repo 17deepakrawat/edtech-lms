@@ -22,12 +22,7 @@ class VideoController extends Controller
         return Inertia::render('admin/Videos/Index', [
             'videos' => ['data' => $videos],
             'courses' => $courses,
-            'users' => User::all(),
-            'can' => [
-                'create' => auth()->user()->can('create course video'),
-                'edit' => auth()->user()->can('edit course video'),
-                'delete' => auth()->user()->can('delete course video'),
-            ],
+           
 
         ]);
     }

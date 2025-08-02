@@ -8,6 +8,7 @@ import { CheckCircle, Edit, Plus, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
+import { usePermission } from    '@/pages/admin/pagepermision';
 
 interface UniversityPartner {
     id: number;
@@ -20,14 +21,11 @@ interface User {}
 interface Props extends PageProps {
     universitypartners: UniversityPartner[];
     users: User[];
-    can: {
-        create: boolean;
-        edit: boolean;
-        delete: boolean;
-    };
+    
 }
 
-export default function UniversityPartnerIndex({ universitypartners, can }: Props) {
+export default function UniversityPartnerIndex({ universitypartners}: Props) {
+    const { hasPermission } = usePermission();
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
     const [data, setData] = useState<UniversityPartner[]>(universitypartners);
@@ -81,14 +79,14 @@ export default function UniversityPartnerIndex({ universitypartners, can }: Prop
             header: 'Actions',
             cell: ({ row }) => (
                 <div className="flex space-x-2">
-                    {can.edit && (
+                   {hasPermission('edit university partner') && (
                         <Link href={`/universitypartner/${row.original.id}/edit`}>
                             <Button variant="ghost" size="icon">
                                 <Edit className="h-4 w-4" />
                             </Button>
                         </Link>
                     )}
-                    {can.delete && (
+                     {hasPermission('delete university partner') && (
                         <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
                             <Trash2 className="h-4 w-4 text-red-600" />
                         </Button>
@@ -147,7 +145,7 @@ export default function UniversityPartnerIndex({ universitypartners, can }: Prop
             <div className="container mx-auto p-4">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">University Partner</h1>
-                    {can.create && (
+                   {hasPermission('create university partner') && (
                         <Link href="/universitypartner/create">
                             <Button>
                                 <Plus className="mr-2 h-4 w-4" /> Create University Partner

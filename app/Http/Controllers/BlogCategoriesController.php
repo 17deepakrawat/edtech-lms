@@ -62,12 +62,7 @@ class BlogCategoriesController extends Controller
     {
         return Inertia::render('admin/blogcategories/Index', [
             'blogCategory' => BlogCategories::all(),
-            'users' => User::all(),
-            'can' => [
-                'create' => auth()->user()->can('create blogs category'),
-                'edit' => auth()->user()->can('edit blogs category'),
-                'delete' => auth()->user()->can('delete blogs category'),
-            ],
+            
         ]);
     }
 

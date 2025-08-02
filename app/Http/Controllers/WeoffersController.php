@@ -17,12 +17,7 @@ class WeoffersController extends Controller
     {
         return Inertia::render('admin/weoffer/Index', [
             'weoffers' => Weoffers::all(),
-            'users' => User::all(),
-            'can' => [
-                'create' => auth()->user()->can('create offer'),
-                'edit' => auth()->user()->can('edit offer'),
-                'delete' => auth()->user()->can('delete offer'),
-            ],
+            
         ]);
     }
     /**

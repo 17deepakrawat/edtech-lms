@@ -1,19 +1,11 @@
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-} from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { PageProps } from '@inertiajs/core';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, FileText, Folder, GraduationCap, LayoutGrid, Users } from 'lucide-react';
+import { FileText, GraduationCap, LayoutGrid, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
 interface AppPageProps extends PageProps {
@@ -35,139 +27,139 @@ const adminNavItems: NavItem[] = [
         href: '/dashboard',
         icon: LayoutGrid,
     },
-     {
+    {
         title: 'Role/Permission',
         icon: Users,
-        permissions: "view role permision" ,
+        permissions: 'view role permision',
         children: [
-             {
+            {
                 title: 'Permissions',
                 href: '/permissions',
                 icon: Users,
-                permissions: "view permision" ,
+                permissions: 'view permision',
             },
             {
                 title: 'Roles ',
                 href: 'roles',
                 icon: Users,
-                permissions: "view role" ,
+                permissions: 'view role',
             },
             {
                 title: 'Users',
                 href: 'users',
                 icon: Users,
-                permissions: "view user" ,
+                permissions: 'view user',
             },
             {
                 title: 'Mentor',
                 href: 'mentors',
-                icon: Users,               
-            },           
-           
+                icon: Users,
+                permissions: 'view course mentor',
+            },
         ],
     },
     {
         title: 'Webpage',
         icon: Users,
-        permissions: "view web" ,
+        permissions: 'view web',
         children: [
             {
                 title: 'Home Components',
                 icon: Users,
-               permissions: "view home component" ,
+                permissions: 'view home component',
 
                 children: [
                     {
                         title: 'Home Banner',
                         href: '/banner',
                         icon: Users,
-                        permissions: "view banner",
+                        permissions: 'view banner',
                     },
                     {
                         title: 'Feedback',
                         href: '/feedback',
                         icon: Users,
-                        permissions: "view feedback",
+                        permissions: 'view feedback',
                     },
                     {
                         title: 'University Partner',
                         href: '/universitypartner',
                         icon: Users,
-                        permissions: "view university partner" ,
+                        permissions: 'view university partner',
                     },
                     {
                         title: 'What We Offer',
                         href: '/weoffers',
                         icon: Users,
-                        permissions: "view offer",
+                        permissions: 'view offer',
                     },
                     {
                         title: 'Course Plans',
                         href: '/plans',
                         icon: Users,
-                        permissions: "view course plans" ,
+                        permissions: 'view course plans',
                     },
                 ],
             },
             {
                 title: 'Academic Content',
                 icon: Users,
-                permissions: "view academic" ,
+                permissions: 'view academic',
                 children: [
                     {
                         title: 'Departments',
                         href: '/department',
                         icon: Users,
-                        permissions: "view department" ,
+                        permissions: 'view department',
                     },
                     {
                         title: 'Programs',
                         href: '/programs',
                         icon: Users,
-                        permissions: "view program" ,
+                        permissions: 'view program',
                     },
                     {
                         title: 'Courses',
                         href: '/courses',
                         icon: Users,
-                        permissions: "view course" ,
+                        permissions: 'view course',
                     },
                     {
                         title: 'Units',
                         href: '/units',
                         icon: Users,
-                        permissions: "view unit" ,
+                        permissions: 'view unit',
                     },
                     {
                         title: 'Topics',
                         href: '/topics',
                         icon: Users,
-                        permissions: "view topics" ,
+                        permissions: 'view topics',
                     },
                     {
                         title: 'Course Video',
                         href: '/videos',
                         icon: Users,
-                        permissions: "view course video" ,
+                        permissions: 'view course video',
                     },
                 ],
             },
             {
                 title: 'Blog',
                 icon: Users,
-                permissions: "view blogs module" ,
+                permissions: 'view blogs module',
                 children: [
                     {
                         title: 'Blog Category',
                         href: '/blogcategories',
                         icon: Users,
-                        permissions: "view blogs category" ,
+                        permissions: 'view blogs category',
                     },
                     {
                         title: 'Blog',
                         href: '/adminblogs',
                         icon: Users,
-                        permissions: "view blogs" ,
+                        permissions: 'view blogs',
                     },
                 ],
             },
@@ -175,10 +167,36 @@ const adminNavItems: NavItem[] = [
                 title: 'Leads',
                 href: '/leads',
                 icon: Users,
-                permissions: "view lead" ,
+                permissions: 'view lead',
             },
         ],
-    },   
+    },
+    {
+        title: 'Payments',
+        icon: Users,
+        // permissions: 'view role permision',
+        children: [
+            {
+                title: 'Payment Gateway',
+                href: 'payment-gateways',
+                icon: Users,
+                // permissions: 'view permision',
+            },
+        ],
+    },
+     {
+        title: 'Academics',
+        icon: Users,
+        // permissions: 'view role permision',
+        children: [
+            {
+                title: 'Students',
+                href: 'students',
+                icon: Users,
+                // permissions: 'view permision',
+            },
+        ],
+    },
 ];
 const mentorNavItems: NavItem[] = [
     {
@@ -209,8 +227,7 @@ const studentNavItems: NavItem[] = [
         icon: GraduationCap,
     },
 ];
-const footerNavItems: NavItem[] = [
-];
+const footerNavItems: NavItem[] = [];
 
 export function AppSidebar() {
     const { auth } = usePage<AppPageProps>().props;
