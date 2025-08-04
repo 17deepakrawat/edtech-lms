@@ -239,6 +239,7 @@ export function AppSidebar() {
         } else if (userRoles.includes('mentor')) {
             return mentorNavItems;
         } else {
+            console.log(userRoles);
             return studentNavItems;
         }
     };

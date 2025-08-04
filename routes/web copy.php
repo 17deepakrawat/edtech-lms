@@ -124,7 +124,7 @@ Route::get('/student/login', [StudentAuthController::class, 'showLoginForm'])->n
 Route::post('/student/logins', [StudentAuthController::class, 'login']);
 Route::middleware('auth:student')->group(function () {
     Route::post('/student/logout', [StudentAuthController::class, 'logout'])->name('student.logout');
-    Route::get('/student-dashboard', [StudentsController::class, 'studentDashboard'])->name('student.dashboard.index');
+    Route::get('/student/dashboard', [StudentsController::class, 'studentDashboard'])->name('student.dashboard.index');
 });
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

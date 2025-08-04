@@ -46,6 +46,7 @@ class StudentsController extends Controller
         // $validated['password'] = Hash::make($validated['password']);
 
         $user = students::create($validated);
+        $user->guard('student')->assignRole('student');
         return redirect()->route('students.index')->with('success', 'User created successfully');
     }
 
@@ -109,5 +110,10 @@ class StudentsController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());
         }
+    }
+    public function studentDashboard(){
+        // dd('helo');
+        // dd('hello');
+        return Inertia::render('student/dashboard/Index');
     }
 }
