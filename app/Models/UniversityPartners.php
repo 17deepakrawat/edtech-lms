@@ -10,12 +10,10 @@ class UniversityPartners extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'image',
-        'status'
+        'name','image','status'
     ];
 
-    protected $casts = [
-        'status' => 'boolean'
-    ];
+    // protected $casts = [
+    //     'status' => 'boolean'
+    // ];
 }

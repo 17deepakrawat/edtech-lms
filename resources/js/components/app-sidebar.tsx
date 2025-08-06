@@ -5,7 +5,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { type NavItem } from '@/types';
 import { PageProps } from '@inertiajs/core';
 import { Link, usePage } from '@inertiajs/react';
-import { FileText, GraduationCap, LayoutGrid, Users } from 'lucide-react';
+import { FileText, GraduationCap, LayoutGrid, Users, Video } from 'lucide-react';
 import AppLogo from './app-logo';
 
 interface AppPageProps extends PageProps {
@@ -218,14 +218,37 @@ const mentorNavItems: NavItem[] = [
 const studentNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
+        href: '/student-dashboard',
         icon: LayoutGrid,
+        permissions: 'view dashboard',
     },
     {
         title: 'My Learning',
         href: '/my-learning',
         icon: GraduationCap,
+        permissions: 'view my-learning',
     },
+    {
+        title: 'My Courses',
+        href: '/my-courses',
+        icon: Video,
+        permissions: 'view my-courses',
+    },
+    {
+        title: 'Certificates',
+        href: '/certificates',
+        icon: GraduationCap,
+        permissions: 'view my-certificates',
+
+    },
+     {
+        title: 'Support',
+        href: '/support',
+        icon: GraduationCap,
+        permissions: 'view my-support',
+
+    },
+
 ];
 const footerNavItems: NavItem[] = [];
 
@@ -239,7 +262,7 @@ export function AppSidebar() {
         } else if (userRoles.includes('mentor')) {
             return mentorNavItems;
         } else {
-            console.log(userRoles);
+            // console.log(userRoles);
             return studentNavItems;
         }
     };

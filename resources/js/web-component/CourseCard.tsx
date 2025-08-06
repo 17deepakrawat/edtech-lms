@@ -1,52 +1,51 @@
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
-import { Link } from '@inertiajs/react';
 import { FaRegStar, FaRupeeSign, FaStar, FaStarHalfAlt } from 'react-icons/fa';
+import Lead from '@/web-component/lead/Lead';
 
 export default function CourseCard({ courses }: { courses: any }) {
-    console.log(courses);
     const renderStars = (rating: number) => {
         const stars = [];
         if (rating !== 0) {
             for (let i = 1; i <= 5; i++) {
                 if (rating >= i) {
-                    // Full Star
                     stars.push(<FaStar key={i} className="text-yellow-400" />);
                 } else if (rating >= i - 0.5) {
-                    // Half Star (also yellow colored)
                     stars.push(<FaStarHalfAlt key={i} className="text-yellow-400" />);
                 } else {
-                    // Empty Star
                     stars.push(<FaRegStar key={i} className="text-gray-300" />);
                 }
             }
         }
         return stars;
-    };    
-    return (
-        <div className="mt-0 rounded-lg bg-white pt-0 text-gray-800 transition-all duration-300 hover:shadow-lg dark:bg-gray-900 dark:text-gray-100">
-            <Card className="relative gap-3 pt-0 pb-0 shadow-md transition-all duration-300 hover:shadow-xl" style={{ minHeight: '360px' }}>
-                {/* <img src="{{ asset('storage/' . $courses->image) }}" alt="Course Banner" className="h-[200px] w-full rounded-t-lg object-cover" /> */}
-                <Link href={`/course/${courses.slug}`}>
-                    <img src={`/storage/${courses.image}`} alt="Course Banner" className="h-[200px] w-full rounded-t-lg object-cover" />
-                    <CardHeader className="mt-3">
-                        {/* Only render rating section if courses.rating exists */}
-                        {courses.rating !== undefined && (
-                            <div className="mb-2 flex flex-row items-center">
-                                <p className="mr-2 text-sm font-semibold">{courses.rating} rating:</p>
-                                <div className="flex space-x-1">{renderStars(courses.rating)}</div>
-                            </div>
-                        )}
+    };
 
-                        <CardTitle className="text-xl font-semibold">{courses.name}</CardTitle>
-                        <p className="pb-1 text-sm text-gray-500 dark:text-gray-300">
-                            {courses.courseDescription ? courses.courseDescription.substring(0, 25) + '...' : ''}
-                        </p>
-                        <div className="mt-2 flex items-center justify-end text-lg font-semibold">
-                            <FaRupeeSign className="" />
+    return (
+        <div className="rounded-lg bg-white pt-0 text-gray-800 transition-all duration-300 hover:shadow-lg dark:bg-gray-900 dark:text-gray-100">
+            <Card className="relative shadow-md transition-all duration-300 hover:shadow-xl min-h-[360px] pt-0">
+                <img
+                    src={`/storage/${courses.image}`}
+                    alt="Course Banner"
+                    className="h-[200px] w-full rounded-t-lg object-cover"
+                />
+                <CardHeader className="mt-3 space-y-2">
+                    {courses.rating !== undefined && (
+                        <div className="flex items-center gap-2">
+                            <p className="text-sm font-semibold">{courses.rating} rating:</p>
+                            <div className="flex space-x-1">{renderStars(courses.rating)}</div>
+                        </div>
+                    )}
+                    <CardTitle className="text-xl font-semibold">{courses.name}</CardTitle>
+                    <p className="text-sm text-gray-500 dark:text-gray-300">
+                        {courses.courseDescription?.substring(0, 25)}...
+                    </p>
+                    <div className="mt-2 flex items-center justify-between text-lg font-semibold">
+                        <div className="flex items-center gap-1">
+                            <FaRupeeSign />
                             <p>{courses.price}</p>
                         </div>
-                    </CardHeader>
-                </Link>
+                        <Lead slug={courses.slug} /> {/* Optional: Pass course ID if needed */}
+                    </div>
+                </CardHeader>
             </Card>
         </div>
     );

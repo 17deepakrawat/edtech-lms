@@ -74,13 +74,13 @@ export default function Create() {
                     </div>
 
                     <div>
-                        <Label>Webhook URL</Label>
+                        <Label>Success URL</Label>
                         <Input value={data.webhook_url} onChange={(e) => setData('webhook_url', e.target.value)} />
                         {errors.webhook_url && <p className="text-sm text-red-500">{errors.webhook_url}</p>}
                     </div>
 
                     <div>
-                        <Label>Redirect URL</Label>
+                        <Label>Error URL</Label>
                         <Input value={data.redirect_url} onChange={(e) => setData('redirect_url', e.target.value)} />
                         {errors.redirect_url && <p className="text-sm text-red-500">{errors.redirect_url}</p>}
                     </div>

@@ -2,10 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\StudentWelcomeMail;
+use Illuminate\Support\Facades\Mail;
 use App\Models\students;
+// use Illuminate\Container\Attributes\Auth;
+use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class StudentsController extends Controller
 {
@@ -32,23 +40,94 @@ class StudentsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    // public function store(Request $request)
+    // {
+    //     try {
+    //         $validated = $request->validate([
+    //             'first_name'   => 'required|string|max:255',
+    //             'middle_name'  => 'nullable|string|max:255',
+    //             'last_name'    => 'required|string|max:255',
+    //             'email'        => 'required|email|unique:users,email',
+    //             'dob'          => 'required|date',
+    //             'mobile'       => 'required|string|max:15',
+    //             'country'      => 'nullable|string|max:100',
+    //             'state'        => 'nullable|string|max:100',
+    //             'city'         => 'nullable|string|max:100',
+    //             'gender'       => 'nullable|in:male,female,other',
+    //             'password'     => 'required|string|min:8',
+    //             're_password'  => 'required|string|min:8|same:password',
+    //             'photo'        => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //         ]);
+    //         if ($request->hasFile('photo')) {
+    //             $image = $request->file('photo');
+    //             $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+    //             $image->move(public_path('uploads/students'), $imageName);
+    //             $validated['photo'] = 'uploads/students/' . $imageName;
+    //         }
+    //         $rawPassword = $validated['password'];
+    //         $validated['password'] = Crypt::encrypt($validated['password']);
+    //         unset($validated['re_password']);
+    //         $user = students::create($validated);
+    //         $user->assignRole('student');
+    //         Auth::login($user);
+    //         session(['student_data' => $user->toArray()]);
+    //         Mail::to($user->email)->send(new StudentWelcomeMail($user->toArray(), $rawPassword));
+    //         return redirect()->back()->with('success', 'User created successfully');
+    //     } catch (\Exception $e) {
+    //         Log::error('Student Creation Error: ' . $e->getMessage());
+    //         return back()->withInput()->with('error', 'Something went wrong. Please try again.');
+    //     }
+    // }
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'first_name'   => 'required|string|max:255',
-            'middle_name'  => 'nullable|string|max:255',
-            'last_name'    => 'required|string|max:255',
-            'email'        => 'required|email|unique:users,email',
-            'dob'          => 'required|date',
-            'mobile'       => 'required|string|max:15',
-        ]);
-        $validated['password'] = Hash::make($validated['mobile']);
-        // $validated['password'] = Hash::make($validated['password']);
+        try {
+            $validated = $request->validate([
+                'first_name'   => 'required|string|max:255',
+                'middle_name'  => 'nullable|string|max:255',
+                'last_name'    => 'required|string|max:255',
+                'email'        => 'required|email|max:255|unique:students,email',
+                'dob'          => 'required|date',
+                'mobile'       => 'required|string|max:15',
+                'country'      => 'nullable|string|max:100',
+                'state'        => 'nullable|string|max:100',
+                'city'         => 'nullable|string|max:100',
+                'gender'       => 'nullable|in:male,female,other',
+                'password'     => 'required|string|min:8',
+                're_password'  => 'required|string|min:8|same:password',
+                'photo'        => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+            $rawPassword = $validated['password'];
+            $encryptedPassword = Crypt::encrypt($rawPassword);          
+            // 📸 Handle photo upload
+            if ($request->hasFile('photo')) {
+                $image = $request->file('photo');
+                $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('uploads/students'), $imageName);
+                $validated['photo'] = 'uploads/students/' . $imageName;
+            }
 
-        $user = students::create($validated);
-        $user->guard('student')->assignRole('student');
-        return redirect()->route('students.index')->with('success', 'User created successfully');
+            // 🔐 Save encrypted password
+            $validated['password'] = $encryptedPassword;
+            unset($validated['re_password']);
+
+            // 👤 Create student and assign role
+            $user = students::create($validated);
+            $user->assignRole('student');
+
+            // 🔑 Login and store session
+            Auth::login($user);
+            session(['student_data' => $user->toArray()]);
+
+            // 📧 Send welcome email
+            Mail::to($user->email)->send(new StudentWelcomeMail($user->toArray(), $rawPassword));
+
+            return redirect()->back()->with('success', 'User created successfully and welcome email sent.');
+        } catch (\Exception $e) {
+            Log::error('Student Creation Error: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'A student with this email and password already exists.');
+        }
     }
+
 
     /**
      * Display the specified resource.
@@ -64,8 +143,8 @@ class StudentsController extends Controller
     public function edit(students $student)
     {
 
-        return Inertia::render('admin/students/Edit',[
-            'student'=> $student,
+        return Inertia::render('admin/students/Edit', [
+            'student' => $student,
         ]);
     }
 
@@ -78,20 +157,27 @@ class StudentsController extends Controller
             'first_name'   => 'sometimes|required|string|max:255',
             'middle_name'  => 'nullable|string|max:255',
             'last_name'    => 'sometimes|required|string|max:255',
-            'email'        => 'sometimes|required|email|unique:users,email,' . $students->id,
-            'password'     => 'nullable|min:6',
+            'email'        => 'sometimes|required|email|unique:students,email,' . $students->id,
+            'password'     => 'nullable|string|min:6',
             'dob'          => 'sometimes|required|date',
             'mobile'       => 'sometimes|required|string|max:15',
+            'country'      => 'nullable|string|max:100',
+            'state'        => 'nullable|string|max:100',
+            'city'         => 'nullable|string|max:100',
+            'gender'       => 'nullable|in:male,female,other',
         ]);
 
-        if (isset($validated['password'])) {
-            $validated['password'] = Hash::make($validated['password']);
+        // Encrypt password only if it is present
+        if (!empty($validated['password'])) {
+            $validated['password'] = Crypt::encrypt($validated['password']);
+        } else {
+            unset($validated['password']); // Don't update if not passed
         }
 
         $students->update($validated);
-        return redirect()->route('students.index')->with('success', 'User update successfully');
-    }
 
+        return redirect()->route('students.index')->with('success', 'User updated successfully');
+    }
     /**
      * Remove the specified resource from storage.
      */
@@ -111,9 +197,18 @@ class StudentsController extends Controller
             return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());
         }
     }
-    public function studentDashboard(){
-        // dd('helo');
-        // dd('hello');
+    public function studentDashboard()
+    {
         return Inertia::render('student/dashboard/Index');
+    }
+    public function studentlogout(Request $request)
+    {
+
+        Auth::guard('student')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
     }
 }

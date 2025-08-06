@@ -19,8 +19,20 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    // public function boot(): void
+    // {
+    //     Inertia::share('auth', function () {
+    //         $user = Auth::user();
+    //         return [
+    //             'user' => $user,
+    //             'roles' => $user ? $user->getRoleNames()->toArray() : [],
+    //             'permissions' => $user ? $user->getAllPermissions()->pluck('name')->toArray() : [],
+    //         ];
+    //     });
+    // }
+     public function boot(): void
     {
+        // Share auth user with roles & permissions
         Inertia::share('auth', function () {
             $user = Auth::user();
             return [
@@ -28,6 +40,11 @@ class AppServiceProvider extends ServiceProvider
                 'roles' => $user ? $user->getRoleNames()->toArray() : [],
                 'permissions' => $user ? $user->getAllPermissions()->pluck('name')->toArray() : [],
             ];
+        });
+
+        // ✅ Share student data from session
+        Inertia::share('student_data', function () {
+            return session('student_data');
         });
     }
 }

@@ -13,7 +13,7 @@ class UserRolePermssionController extends Controller
 {
     public function index()
     {
-        $roles = Role::select('id', 'name')->get();
+        $roles = Role::select('id', 'name','guard_name')->get();
         $permissions = Permission::pluck('name');
         $rolePermissions = [];
 

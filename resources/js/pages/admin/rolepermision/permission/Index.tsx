@@ -17,6 +17,7 @@ import Create from './Create';
 interface Permission {
     id: number;
     name: string;
+    guard_name: string;
 }
 
 interface Props {
@@ -41,6 +42,10 @@ export default function PermissionIndex({ permissions }: Props) {
         {
             accessorKey: 'name',
             header: 'Name',
+        },
+         {
+            accessorKey: 'guard_name',
+            header: 'Visible To',
         },
     ];
 

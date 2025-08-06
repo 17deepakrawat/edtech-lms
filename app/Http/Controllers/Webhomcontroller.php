@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Banners;
 use App\Models\Departments;
 use App\Models\Feedbacks;
+use App\Models\students;
 use App\Models\UniversityPartners;
 use App\Models\Weoffers;
 use App\Models\WebPlan;
@@ -57,7 +58,7 @@ class Webhomcontroller extends Controller
         //category end
         //university partner
         $universityPartner = UniversityPartners::where('status', 1)
-            ->select('id', 'name', 'image', 'link')
+            ->select('id', 'name', 'image')
             ->get();
         //end university partner
         $webplan = WebPlan::where('status', 1)->limit(3)->get();

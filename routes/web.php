@@ -26,7 +26,9 @@ use App\Http\Controllers\{
     PermissionController,
     StudentsController,
     userController,
-    UserRolePermssionController
+    UserRolePermssionController,
+    GoogleAuthController,
+    PaymentsController
 };
 use App\Http\Controllers\Auth\StudentAuthController;
 
@@ -48,6 +50,7 @@ Route::get('/all-blogs', fn() => Inertia::render('web-pages/blogs/Index'))->name
 Route::get('/blog-details', fn() => Inertia::render('web-pages/blogs/Details'))->name('blog-details');
 
 Route::post('/leads', [LeadsController::class, 'store'])->name('leads.store');
+Route::post('/web-lead', [StudentsController::class, 'store'])->name('web-leads.store');
 Route::post('ckeditor/upload', [CKEditorController::class, 'upload'])->name('ckeditor.upload');
 
 require __DIR__ . '/auth.php';
@@ -126,5 +129,9 @@ Route::middleware('auth:student')->group(function () {
     Route::post('/student/logout', [StudentAuthController::class, 'logout'])->name('student.logout');
     Route::get('/student-dashboard', [StudentsController::class, 'studentDashboard'])->name('student.dashboard.index');
 });
+// Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
+// Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('google.redirect');
+// Route::post('/enroll-submit', [PaymentsController::class, 'gatewayCredential'])->name('enroll.submit');
+Route::post('/student-logout', [StudentsController::class, 'studentlogout'])->name('student-logout');
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

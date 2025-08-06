@@ -1,4 +1,5 @@
 import WebLayout from '@/layouts/web-layout';
+import Enroll from '@/web-component/enroll/Enroll';
 import FAQ from '@/web-component/FAQ';
 import RelatedCourseBlog from '@/web-component/RelatedCourseBlog';
 import { useRef, useState } from 'react';
@@ -375,7 +376,7 @@ export default function CourseDetails({
                                     <span className="text-lg font-bold text-gray-800 dark:text-gray-200">
                                         {course.price ? `$${course.price}` : 'Free'}
                                     </span>
-                                    <button className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">Enroll Now</button>
+                                   <Enroll enrollCourse={{ price: course.price, image: course.image ,name: course.name}} />
                                 </div>
                             </div>
                         )}

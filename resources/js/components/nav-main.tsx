@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 
 export function NavMain({ items = [] }: { items: NavItem[] }) {
     const page = usePage();
-    // console.log(page);
+    console.log(page.props.auth.permissions);
     const userPermissions: string[] = page.props.auth.permissions;
     const [openItems, setOpenItems] = useState<string[]>([]);
 

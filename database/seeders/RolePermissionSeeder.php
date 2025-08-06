@@ -6,6 +6,8 @@ use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\User;
+use App\Models\Student;
+use App\Models\students;
 
 class RolePermissionSeeder extends Seeder
 {
@@ -14,7 +16,7 @@ class RolePermissionSeeder extends Seeder
         // Clear cache
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Define permissions
+        // Define permissions for web guard (admin, mentor)
         $permissions = [
             'view role permision',
             'view permision',
@@ -75,41 +77,57 @@ class RolePermissionSeeder extends Seeder
             'create blogs',
             'edit blogs',
             'delete blogs',
-            'view lead','view-pdf lead','view-excel lead',
-            'view course mentor','allot course mentor','delete course mentor'
+            'view lead',
+            'view-pdf lead',
+            'view-excel lead',
+            'view course mentor',
+            'allot course mentor',
+            'delete course mentor'
         ];
 
-        // Create permissions
+        // Define student-only permissions (separate guard: student)
+        $studentPermissions = [
+            'view dashboard','view my-learning','view my-courses','view my-certificates','view my-support'
+        ];
+
+        // Create permissions for web guard
         foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
+            Permission::firstOrCreate(
+                ['name' => $permission, 'guard_name' => 'web']
+            );
         }
 
-        // Create roles
-        $adminRole = Role::firstOrCreate(['name' => 'admin']);
-        $mentorRole = Role::firstOrCreate(['name' => 'mentor']);
-        $studentRole = Role::firstOrCreate(['name' => 'student']);
+        // Create permissions for student guard
+        foreach ($studentPermissions as $permission) {
+            Permission::firstOrCreate(
+                ['name' => $permission, 'guard_name' => 'student']
+            );
+        }
 
-        // Assign all permissions to admin only
-        $adminRole->syncPermissions(Permission::all());
+        // Create roles with specific guards
+        $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $mentorRole = Role::firstOrCreate(['name' => 'mentor', 'guard_name' => 'web']);
+        $studentRole = Role::firstOrCreate(['name' => 'student', 'guard_name' => 'student']);
 
-        // Mentor and student roles should have no permissions
-        $mentorRole->syncPermissions([]); // explicitly empty
-        $studentRole->syncPermissions([]);
+        // Assign permissions to roles
+        $adminRole->syncPermissions(Permission::where('guard_name', 'web')->get());
+        $mentorRole->syncPermissions([]); // assign later if needed
+        $studentRole->syncPermissions(Permission::where('guard_name', 'student')->get());
 
-        // Optionally assign roles to users by ID
+        // Assign roles to users (make sure User uses 'web' and Student uses 'student' guard)
         $adminUser = User::find(1);
         if ($adminUser) {
-            $adminUser->assignRole($adminRole);
+            $adminUser->assignRole('admin'); // uses web guard
         }
 
         $mentorUser = User::find(2);
         if ($mentorUser) {
-            $mentorUser->assignRole($mentorRole);
+            $mentorUser->assignRole('mentor'); // uses web guard
         }
 
-        $studentUser = User::find(3);
+        $studentUser = students::find(6); // assuming this is your student model
         if ($studentUser) {
-            $studentUser->assignRole($studentRole);
+            $studentUser->assignRole(Role::findByName('student', 'student'));
         }
     }
 }

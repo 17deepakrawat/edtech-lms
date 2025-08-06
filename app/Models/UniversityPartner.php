@@ -15,7 +15,7 @@ class UniversityPartner extends Model
         'status'
     ];
 
-    protected $casts = [
-        'status' => 'boolean'
-    ];
+    // protected $casts = [
+    //     'status' => 'boolean'
+    // ];
 }

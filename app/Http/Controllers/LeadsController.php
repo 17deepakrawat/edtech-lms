@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Courses;
 use App\Models\Leads;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -48,6 +49,30 @@ class LeadsController extends Controller
 
         return redirect()->back()->with('success', 'Lead created successfully!');
     }
+    public function web_store(Request $request, $courseId): RedirectResponse
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'nullable|string|max:20',
+            'country' => 'nullable|string|max:100',
+            'state' => 'nullable|string|max:100',
+            'city' => 'nullable|string|max:100',
+            'gender' => 'nullable|in:male,female,other',
+        ]);
+
+        Leads::create($request->only([
+            'name',
+            'email',
+            'phone',
+            'country',
+            'state',
+            'city',
+            'gender'
+        ]));
+        return redirect()->back()->with(['success' => 'Lead created successfully!']);
+    }
+
 
     /**
      * Display the specified resource.
