@@ -97,30 +97,20 @@ class StudentsController extends Controller
                 'photo'        => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
             $rawPassword = $validated['password'];
-            $encryptedPassword = Crypt::encrypt($rawPassword);          
-            // 📸 Handle photo upload
+            $encryptedPassword = Crypt::encrypt($rawPassword);
             if ($request->hasFile('photo')) {
                 $image = $request->file('photo');
                 $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path('uploads/students'), $imageName);
                 $validated['photo'] = 'uploads/students/' . $imageName;
             }
-
-            // 🔐 Save encrypted password
             $validated['password'] = $encryptedPassword;
             unset($validated['re_password']);
-
-            // 👤 Create student and assign role
             $user = students::create($validated);
             $user->assignRole('student');
-
-            // 🔑 Login and store session
             Auth::login($user);
             session(['student_data' => $user->toArray()]);
-
-            // 📧 Send welcome email
             Mail::to($user->email)->send(new StudentWelcomeMail($user->toArray(), $rawPassword));
-
             return redirect()->back()->with('success', 'User created successfully and welcome email sent.');
         } catch (\Exception $e) {
             Log::error('Student Creation Error: ' . $e->getMessage());

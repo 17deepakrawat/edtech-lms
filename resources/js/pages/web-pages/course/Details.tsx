@@ -57,6 +57,7 @@ export default function CourseDetails({
     other_courses?: OtherCourse[];
     units: UnitType[];
 }) {
+    // console.log(course);
     const renderStars = (ratingInput: string | number | null) => {
         if (ratingInput == null) return null;
 
@@ -76,39 +77,33 @@ export default function CourseDetails({
         }
         return stars;
     };
-
     const [openUnitId, setOpenUnitId] = useState<number | null>(null);
     const [showMoreUnits, setShowMoreUnits] = useState(false);
     const [showMoreSubtopics, setShowMoreSubtopics] = useState<{ [key: number]: boolean }>({});
     const [showAllFeatures, setShowAllFeatures] = useState(false);
     const [activeVideo, setActiveVideo] = useState<number | null>(null);
     const videoRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
-
     const toggleUnit = (unitId: number) => {
         setOpenUnitId(openUnitId === unitId ? null : unitId);
     };
-
     const toggleSubtopicsVisibility = (unitId: number) => {
         setShowMoreSubtopics((prev) => ({
             ...prev,
             [unitId]: !prev[unitId],
         }));
     };
-
     const handlePlay = (id: number | null) => {
         if (id == null) return;
         setActiveVideo(id);
         const vid = videoRefs.current[id];
         if (vid) vid.play();
     };
-
     const handlePause = (id: number | null) => {
         if (id == null) return;
         setActiveVideo(null);
         const vid = videoRefs.current[id];
         if (vid) vid.pause();
     };
-
     // Process course keys
     const keysRaw = course.course_keys;
     const items = Array.isArray(keysRaw) ? keysRaw : typeof keysRaw === 'string' ? JSON.parse(keysRaw) : [];
@@ -323,7 +318,7 @@ export default function CourseDetails({
                         )}
                     </div>
 
-                    <div className="relative sticky mt-4 top-18 col-span-12 h-fit lg:col-span-3">
+                    <div className="relative sticky top-18 col-span-12 mt-4 h-fit lg:col-span-3">
                         {course.video_path && (
                             <div className="w-full rounded-lg border bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                                 {activeVideo !== course.videoid ? (
@@ -363,20 +358,30 @@ export default function CourseDetails({
                                 )}
                                 <ul className="mt-4 space-y-2">
                                     <li>
-                                        <span className="text-xl mb-0 font-bold">{course.name || 'N/A'}</span> 
+                                        <span className="mb-0 text-xl font-bold">{course.name || 'N/A'}</span>
                                     </li>
                                     <li>
-                                        <span className="text-sm">{course.video_name || 'N/A'}</span> 
+                                        <span className="text-sm">{course.video_name || 'N/A'}</span>
                                     </li>
                                     <li>
-                                        <span className="text-sm">Duration: {course.video_duration || 'N/A'}</span> 
+                                        <span className="text-sm">Duration: {course.video_duration || 'N/A'}</span>
                                     </li>
                                 </ul>
                                 <div className="mt-4 flex items-center justify-between">
                                     <span className="text-lg font-bold text-gray-800 dark:text-gray-200">
                                         {course.price ? `$${course.price}` : 'Free'}
                                     </span>
-                                   <Enroll enrollCourse={{ price: course.price, image: course.image ,name: course.name}} />
+                                    <Enroll
+                                        enrollCourse={{
+                                            price: course.price,
+                                            image: course.image,
+                                            name: course.name,
+                                            short_description: course.short_description,
+                                            id: course.id,
+                                            duration: course.duration,
+                                            video_duration: course.video_duration
+                                        }}
+                                    />
                                 </div>
                             </div>
                         )}

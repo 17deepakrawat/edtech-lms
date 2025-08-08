@@ -62,13 +62,13 @@ export default function Lead({ slug }: { slug?: string }) {
         return Object.keys(errors).length === 0;
     };
     useEffect(() => {
-    if (flash?.success) {
-        toast.success(flash.success);
-    }
-    if (flash?.error) {
-        toast.error(flash.error);
-    }
-}, [flash]);
+        if (flash?.success) {
+            toast.success(flash.success);
+        }
+        if (flash?.error) {
+            toast.error(flash.error);
+        }
+    }, [flash]);
     useEffect(() => {
         axios.get('https://countriesnow.space/api/v0.1/countries/positions').then((res) => {
             const countryNames = res.data.data.map((c: any) => c.name);
@@ -110,10 +110,10 @@ export default function Lead({ slug }: { slug?: string }) {
             forceFormData: true,
             onSuccess: () => {
                 // toast.success('Lead submitted successfully. Redirecting...');
-                // localStorage.setItem(`lead_submitted_${slug}`, 'true');
-                // setTimeout(() => {
-                //     window.location.href = `/course/${slug}`;
-                // }, 100);
+                localStorage.setItem(`lead_submitted_${slug}`, 'true');
+                setTimeout(() => {
+                    window.location.href = `/course/${slug}`;
+                }, 100);
                 setIsOpen(false);
                 reset();
             },
@@ -127,9 +127,11 @@ export default function Lead({ slug }: { slug?: string }) {
                 size="sm"
                 onClick={() => {
                     const hasSubmitted = localStorage.getItem(`lead_submitted_${slug}`);
-                    if (student_data == '') {
+                    if (student_data) {
+                        // Student already exists → redirect to course
                         window.location.href = `/course/${slug}`;
                     } else {
+                        // Student not found → open lead form
                         setIsOpen(true);
                     }
                 }}

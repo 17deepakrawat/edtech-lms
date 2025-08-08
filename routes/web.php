@@ -9,6 +9,7 @@ use App\Http\Controllers\{
     CKEditorController,
     CoursesController,
     DepartmentsController,
+    EnrollsController,
     FeedbacksController,
     LeadsController,
     mentorController,
@@ -28,6 +29,7 @@ use App\Http\Controllers\{
     userController,
     UserRolePermssionController,
     GoogleAuthController,
+    PaymentController,
     PaymentsController
 };
 use App\Http\Controllers\Auth\StudentAuthController;
@@ -133,5 +135,11 @@ Route::middleware('auth:student')->group(function () {
 // Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('google.redirect');
 // Route::post('/enroll-submit', [PaymentsController::class, 'gatewayCredential'])->name('enroll.submit');
 Route::post('/student-logout', [StudentsController::class, 'studentlogout'])->name('student-logout');
+// Route::post('/payment/submit', [EnrollsController::class, 'submit'])->name('payment.submit');
+// Route::post('/payment/success', [EnrollsController::class, 'success'])->name('payment.success');
+// Route::post('/payment/failed', [EnrollsController::class, 'failed'])->name('payment.failed');
+Route::post('/payment/submit', [EnrollsController::class, 'submit'])->name('payment.submit');
+
+
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
