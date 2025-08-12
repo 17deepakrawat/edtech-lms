@@ -182,6 +182,12 @@ const adminNavItems: NavItem[] = [
                 icon: Users,
                 // permissions: 'view permision',
             },
+             {
+                title: 'Payment History',
+                href: '/payments',
+                icon: Users,
+                // permissions: 'view permision',
+            },
         ],
     },
      {

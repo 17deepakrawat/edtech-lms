@@ -35,7 +35,7 @@ use App\Http\Controllers\{
 use App\Http\Controllers\Auth\StudentAuthController;
 
 // Public Routes
-Route::get('/', [Webhomcontroller::class, 'home']);
+Route::get('/', [Webhomcontroller::class, 'home'])->name('webHome');
 Route::get('/welcome', fn() => Inertia::render('welcome'))->name('home');
 Route::get('/blogs', [BlogCategoriesController::class, 'show'])->name('blogs');
 Route::get('/blog/{slug}', [BlogsController::class, 'details'])->name('blog');
@@ -120,6 +120,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('plans', WebPlanController::class)->names('plans');
         Route::get('/plans/{id}/toggle-status', [WebPlanController::class, 'toggleStatus'])->name('plans.toggle-status');
         Route::resource('leads', LeadsController::class);
+        Route::get('/payments', [PaymentController::class, 'show'])->name('admin.payments');
     });
     Route::middleware(['role:mentor'])->prefix('mentor')->group(function () {});
     Route::middleware(['role:student'])->prefix('student')->group(function () {});
@@ -139,7 +140,6 @@ Route::post('/student-logout', [StudentsController::class, 'studentlogout'])->na
 // Route::post('/payment/success', [EnrollsController::class, 'success'])->name('payment.success');
 // Route::post('/payment/failed', [EnrollsController::class, 'failed'])->name('payment.failed');
 Route::post('/payment/submit', [EnrollsController::class, 'submit'])->name('payment.submit');
-
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

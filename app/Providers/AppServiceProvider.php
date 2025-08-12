@@ -46,5 +46,8 @@ class AppServiceProvider extends ServiceProvider
         Inertia::share('student_data', function () {
             return session('student_data');
         });
+         Inertia::share('payment_status', function () {
+            return session('payment_status');
+        });
     }
 }

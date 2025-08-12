@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('payment_gateways', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); 
-            $table->string('code')->nullable();
+            $table->string('name'); // e.g., easebuzz, razorpay        
             $table->enum('mode', ['sandbox', 'live'])->default('sandbox');
-            $table->string('public_key')->nullable();
-            $table->string('secret_key')->nullable();
+            $table->string('access_key')->nullable(); // Access/public key
+            $table->string('secret_key')->nullable(); // Secret key           
             $table->string('webhook_url')->nullable();
-            $table->string('redirect_url')->nullable();
+            $table->string('success_url')->nullable();
+            $table->string('error_url')->nullable();
             $table->string('api_url')->nullable();
-            $table->boolean('status')->default(1);
+            $table->boolean('status')->default('1');
             $table->timestamps();
         });
     }

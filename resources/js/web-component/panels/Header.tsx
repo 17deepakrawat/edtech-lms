@@ -98,7 +98,7 @@ export default function Header() {
                                     {/* Dropdown Menu */}
                                     {open && (
                                         <div className="ring-opacity-5 absolute right-0 z-50 mt-2 w-48 rounded-md bg-white shadow-lg ring-1 ring-gray-300">
-                                            <Link href="/student-dashboard" className="block px-4 font-bold py-2 text-sm text-gray-900 hover:bg-gray-100">
+                                            <Link href={route('student.dashboard.index')} className="block px-4 font-bold py-2 text-sm text-gray-900 hover:bg-gray-100">
                                                 Student Dashboard
                                             </Link>
                                             {/* <Link href="/my-learning" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -117,15 +117,15 @@ export default function Header() {
                                 </div>
                             ) : (
                                 <>
-                                    <Link href={route('login')} className="rounded-sm px-2 py-1 text-sm font-medium text-gray-800 hover:bg-gray-50">
+                                    <Link href={route('student.login')} className="rounded-sm px-2 py-1 text-sm font-medium text-gray-800 hover:bg-gray-50">
                                         Login
                                     </Link>
-                                    <Link
+                                    {/* <Link
                                         href={route('register')}
                                         className="rounded-sm bg-[#669c76] px-2 py-1 text-sm font-medium text-white hover:bg-green-900"
                                     >
                                         Sign up
-                                    </Link>
+                                    </Link> */}
                                 </>
                             )}
                         </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Enrolls;
 use App\Models\Payment;
+use App\Models\PaymentGateways;
 use App\Models\PaymentLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +29,9 @@ class EnrollsController extends Controller
             'email' => 'required|email',
             'mobile_no' => 'required|string|max:15',
         ]);
-        $transactionid = Str::uuid()->toString();
+        $uuid      = str_replace('-', '', Str::uuid()->toString());
+        $uuidPart  = strtoupper(substr($uuid, 0, 15));
+        $transactionid = 'TXN' . $uuidPart;
         DB::transaction(function () use ($request, $transactionid) {
             $enroll = Enrolls::create([
                 'student_id' => $request->student_id,
@@ -49,13 +52,14 @@ class EnrollsController extends Controller
             ]);
         });
 
-        $accessKey = '3XDM1KLGSE';
-        $salt = '5XFZ6OOLBF';
-
+        $paymentGateway = PaymentGateways::where('status', 1)->first();
+        // dd($paymentGateway);
+        $accessKey = $paymentGateway['access_key'];
+        $salt = $paymentGateway['secret_key'];
         $txnid = $transactionid;
         // $amount = $request->price;
-        $amount = '1';
-        $productinfo = trim($request->course_name.' Course');
+        $amount = 1;
+        $productinfo = trim($request->course_name . ' Course');
         $firstname = $request->name;
         $email = $request->email;
         $phone = $request->mobile_no;
@@ -83,8 +87,8 @@ class EnrollsController extends Controller
             'enroll_id' => Enrolls::where('transaction_id', $txnid)->value('id'),
         ]);
 
-        $response = Http::asForm()->post('https://pay.easebuzz.in/payment/initiateLink', $paymentData);
-        // dd($response->json());
+        $response = Http::asForm()->post($paymentGateway['api_url'], $paymentData);
+
         PaymentLog::create([
             'type' => 'response',
             'payload' => $response->json(),
@@ -94,8 +98,16 @@ class EnrollsController extends Controller
 
         if ($response->successful() && isset($response['data'])) {
             $token = $response['data'];
+            // Store pending status in session
+            // session([
+            //     'payment_status' => [
+            //         'status' => 'pending',
+            //         'transaction_id' => $txnid,
+            //         'amount' => $amount
+            //     ]
+            // ]);
             return response()->json([
-                'payment_link' => "https://pay.easebuzz.in/pay/{$token}"
+                'payment_link' => "{$paymentGateway['pay_link']}{$token}"
             ]);
         }
 
@@ -103,7 +115,7 @@ class EnrollsController extends Controller
     }
     public function paymentSuccess(Request $request)
     {
-        // dd($request->all());
+
         Enrolls::where('transaction_id', $request->txnid)->update([
             'status' => 'paid'
         ]);
@@ -124,7 +136,6 @@ class EnrollsController extends Controller
     }
     public function paymentFailed(Request $request)
     {
-        // dd($request->all());
         Enrolls::where('transaction_id', $request->txnid)->update([
             'status' => 'failed',
         ]);
@@ -139,6 +150,7 @@ class EnrollsController extends Controller
             'easepayid' => $request->easepayid,
             'productinfo' => $request->productinfo,
         ];
+        // session(['payment_status' => $error_response]);
         return Inertia::render('gateway_response/Response', [
             'error' => $error_response,
         ]);

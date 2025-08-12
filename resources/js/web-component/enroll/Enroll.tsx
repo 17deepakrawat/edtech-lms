@@ -4,7 +4,6 @@ import { useForm, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { X } from 'lucide-react';
 import { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 interface EnrollProps {
     enrollCourse: {
         id: number;
@@ -15,12 +14,13 @@ interface EnrollProps {
         duration?: string;
         short_description?: string;
     };
+    enrollStatus?: number;
 }
 
-export default function Enroll({ enrollCourse }: EnrollProps) {
+export default function Enroll({ enrollCourse, enrollStatus }: EnrollProps) {
+    console.log(enrollStatus);
     const [paymentLink, setPaymentLink] = useState<string | null>(null);
     const [showRedirectModal, setShowRedirectModal] = useState(false);
-
     const { student_data } = usePage().props;
 
     const [isOpen, setIsOpen] = useState(false);
@@ -33,7 +33,7 @@ export default function Enroll({ enrollCourse }: EnrollProps) {
         price: enrollCourse.price,
         course_name: enrollCourse.name,
         mobile_no: student_data.mobile,
-        email: student_data.email,      
+        email: student_data.email,
         name: fullname,
     });
 
@@ -56,9 +56,15 @@ export default function Enroll({ enrollCourse }: EnrollProps) {
     };
     return (
         <>
-            <Button className="bg-green-600 text-white" size="sm" onClick={() => setIsOpen(true)}>
-                Enroll
-            </Button>
+            {enrollStatus == 0 ? (
+                <Button className="bg-green-600 text-white" size="sm" onClick={() => setIsOpen(true)}>
+                    Enroll
+                </Button>
+            ) : (
+                <Button className="text-gray bg-white shadow-none hover:bg-white" size="sm">
+                    Enrolled
+                </Button>
+            )}
 
             <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
                 <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true" />

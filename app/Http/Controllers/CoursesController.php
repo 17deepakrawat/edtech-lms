@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\Courses;
 use App\Models\Departments;
+use App\Models\Enrolls;
 use App\Models\Programs;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -66,11 +68,15 @@ class CoursesController extends Controller
             'video_duration' => $firstVideo->duration ?? '1:00',
 
         ];
+        $student = Auth::guard('student')->user();
+        // dd($student->id);
+        $payment_status = Enrolls::where('student_id', $student)->where('status','paid')->count();
+        // dd($payment_status);
         return Inertia::render('web-pages/course/Details', [
             'course' => $data,
             'other_courses' => $otherCourses ?? [],
             'units' => $unit,
-
+            'enroll_status' => $payment_status
         ]);
     }
     public function courselist()

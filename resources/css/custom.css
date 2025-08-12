@@ -1,4 +1,4 @@
-.custom_border{
+.custom_border {
     border: dotted 1px rgb(197, 195, 195);
     border-radius: 10px;
 }
@@ -10,8 +10,8 @@
     color: oklch(0.73 0.16 201.46);
 }
 .custom_testimonial .swiper-pagination {
-        position: relative !important;
-        margin-top: 12px;
+    position: relative !important;
+    margin-top: 12px;
 }
 .custom_testimonial .swiper-pagination .swiper-pagination-bullet-active {
     opacity: var(--swiper-pagination-bullet-opacity, 1) !important;
@@ -20,28 +20,24 @@
     height: 11px !important;
     border-radius: 5px !important;
 }
-input[type="range"] {
+input[type='range'] {
     --range-progress: 0%;
     -webkit-appearance: none;
     width: 100%;
     height: 8px;
-    background: linear-gradient(
-        to right,
-        #669c76 var(--range-progress),
-        #d1d5db var(--range-progress)
-    );
+    background: linear-gradient(to right, #669c76 var(--range-progress), #d1d5db var(--range-progress));
     border-radius: 8px;
     cursor: pointer;
 }
 
 /* Track */
-input[type="range"]::-webkit-slider-runnable-track {
+input[type='range']::-webkit-slider-runnable-track {
     height: 8px;
     background: transparent;
 }
 
 /* Thumb */
-input[type="range"]::-webkit-slider-thumb {
+input[type='range']::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     height: 18px;
@@ -55,12 +51,12 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* Firefox */
-input[type="range"]::-moz-range-track {
+input[type='range']::-moz-range-track {
     height: 8px;
     background: transparent;
 }
 
-input[type="range"]::-moz-range-thumb {
+input[type='range']::-moz-range-thumb {
     height: 18px;
     width: 18px;
     background: #3b82f6;
@@ -81,4 +77,32 @@ input[type="range"]::-moz-range-thumb {
 .ckeditor-container .ck-editor__editable.ck-focused {
     border-color: #86b7fe;
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+.custom_bg {
+    background-image: url('/build/assets/web-assets/bgstudentlogin.jpg');
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.custom_bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.301); /* overlay */
+    z-index: 1;
+}
+.student_login_hero {
+    width: 450px;
+    height: 450px;
+    border-radius: 10px;
+}
+.app_custom_header {
+    position: fixed;
+    overflow: hidden;
+    width: 100%;
+    background: white;
+    top: 0px;
 }

@@ -2,6 +2,7 @@ import WebLayout from '@/layouts/web-layout';
 import Enroll from '@/web-component/enroll/Enroll';
 import FAQ from '@/web-component/FAQ';
 import RelatedCourseBlog from '@/web-component/RelatedCourseBlog';
+import { usePage } from '@inertiajs/react';
 import { useRef, useState } from 'react';
 import { FaRegStar, FaStar, FaStarHalfAlt } from 'react-icons/fa';
 import { HiCheckCircle } from 'react-icons/hi';
@@ -52,12 +53,15 @@ export default function CourseDetails({
     course,
     other_courses = [],
     units = [],
+    enroll_status,
 }: {
     course: Course;
     other_courses?: OtherCourse[];
     units: UnitType[];
+    enroll_status: any;
 }) {
-    // console.log(course);
+    // const enroll_status = usePage().props?.payment_status?.status ?? 'null';
+    // console.log(enroll_status);
     const renderStars = (ratingInput: string | number | null) => {
         if (ratingInput == null) return null;
 
@@ -379,8 +383,9 @@ export default function CourseDetails({
                                             short_description: course.short_description,
                                             id: course.id,
                                             duration: course.duration,
-                                            video_duration: course.video_duration
+                                            video_duration: course.video_duration,
                                         }}
+                                         enrollStatus={enroll_status}
                                     />
                                 </div>
                             </div>

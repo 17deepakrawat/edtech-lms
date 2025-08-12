@@ -9,14 +9,14 @@ import { toast } from 'sonner';
 export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
-        code: '',
         mode: 'sandbox',
-        public_key: '',
+        access_key: '',
         secret_key: '',
         webhook_url: '',
-        redirect_url: '',
+        success_url: '',
+        error_url: '',
         api_url: '',
-        status: true,
+        pay_link: '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -43,12 +43,6 @@ export default function Create() {
                     </div>
 
                     <div>
-                        <Label>Code</Label>
-                        <Input value={data.code} onChange={(e) => setData('code', e.target.value)} />
-                        {errors.code && <p className="text-sm text-red-500">{errors.code}</p>}
-                    </div>
-
-                    <div>
                         <Label>Mode</Label>
                         <Select value={data.mode} onValueChange={(value) => setData('mode', value)}>
                             <SelectTrigger className="w-full">
@@ -61,34 +55,46 @@ export default function Create() {
                         </Select>
                         {errors.mode && <p className="text-sm text-red-500">{errors.mode}</p>}
                     </div>
+
                     <div>
-                        <Label>Public Key</Label>
-                        <Input value={data.public_key} onChange={(e) => setData('public_key', e.target.value)} />
-                        {errors.public_key && <p className="text-sm text-red-500">{errors.public_key}</p>}
+                        <Label>Access Key</Label>
+                        <Input value={data.access_key} onChange={(e) => setData('access_key', e.target.value)} />
+                        {errors.access_key && <p className="text-sm text-red-500">{errors.access_key}</p>}
                     </div>
 
                     <div>
-                        <Label>Secret Key</Label>
+                        <Label>Salt/Secret Key</Label>
                         <Input value={data.secret_key} onChange={(e) => setData('secret_key', e.target.value)} />
                         {errors.secret_key && <p className="text-sm text-red-500">{errors.secret_key}</p>}
                     </div>
 
                     <div>
-                        <Label>Success URL</Label>
+                        <Label>Webhook URL</Label>
                         <Input value={data.webhook_url} onChange={(e) => setData('webhook_url', e.target.value)} />
                         {errors.webhook_url && <p className="text-sm text-red-500">{errors.webhook_url}</p>}
                     </div>
 
                     <div>
+                        <Label>Success URL</Label>
+                        <Input value={data.success_url} onChange={(e) => setData('success_url', e.target.value)} />
+                        {errors.success_url && <p className="text-sm text-red-500">{errors.success_url}</p>}
+                    </div>
+
+                    <div>
                         <Label>Error URL</Label>
-                        <Input value={data.redirect_url} onChange={(e) => setData('redirect_url', e.target.value)} />
-                        {errors.redirect_url && <p className="text-sm text-red-500">{errors.redirect_url}</p>}
+                        <Input value={data.error_url} onChange={(e) => setData('error_url', e.target.value)} />
+                        {errors.error_url && <p className="text-sm text-red-500">{errors.error_url}</p>}
                     </div>
 
                     <div>
                         <Label>API URL</Label>
                         <Input value={data.api_url} onChange={(e) => setData('api_url', e.target.value)} />
                         {errors.api_url && <p className="text-sm text-red-500">{errors.api_url}</p>}
+                    </div>
+                    <div>
+                        <Label>Payment Url</Label>
+                        <Input value={data.pay_link} onChange={(e) => setData('api_url', e.target.value)} />
+                        {errors.pay_link && <p className="text-sm text-red-500">{errors.pay_link}</p>}
                     </div>
 
                     <div className="flex justify-end gap-2">

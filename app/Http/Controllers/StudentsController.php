@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Mail\StudentWelcomeMail;
+use App\Models\Courses;
+use App\Models\Enrolls;
 use Illuminate\Support\Facades\Mail;
 use App\Models\students;
 // use Illuminate\Container\Attributes\Auth;
@@ -189,8 +191,45 @@ class StudentsController extends Controller
     }
     public function studentDashboard()
     {
-        return Inertia::render('student/dashboard/Index');
+        // Get authenticated student from 'student' guard
+        $student = Auth::guard('student')->user();
+
+        if (!$student) {
+            return redirect()->route('login');
+        }
+
+        // Eager load enrollments with related courses, filtering only paid enrollments
+        $enrolls = Enrolls::with('course')
+            ->where('student_id', $student->id)
+            ->where('status', 'paid')
+            ->get();
+
+        // Agar koi paid enrollments nahi hain toh redirect
+        if ($enrolls->isEmpty()) {
+            return redirect()->route('webHome');
+        }
+
+        // Prepare student info for dashboard
+        $studentDashboard = [
+            'name' => trim("{$student->first_name} {$student->middle_name} {$student->last_name}"),
+            'email' => $student->email,
+            'dob' => $student->dob,
+            'phone_no' => $student->mobile,
+            'address' => trim("{$student->city} {$student->state} {$student->country}"),
+            'user_profile_pic' => $student->photo ?? '',
+        ];
+
+        // Extract courses directly from enrollments to avoid extra query
+        $courses = $enrolls->pluck('course');
+
+        // Return data to Inertia view
+        return Inertia::render('student/dashboard/Index', [
+            'studentDashboard' => $studentDashboard,
+            'courses' => $courses,
+        ]);
     }
+
+
     public function studentlogout(Request $request)
     {
 

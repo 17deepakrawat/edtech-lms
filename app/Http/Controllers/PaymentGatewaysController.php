@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PaymentGateways;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Inertia\Inertia;
 
 class PaymentGatewaysController extends Controller
@@ -34,21 +35,35 @@ class PaymentGatewaysController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:255',
-            'mode' => 'required|in:sandbox,live',
-            'public_key' => 'nullable|string|max:255',
-            'secret_key' => 'nullable|string|max:255',
-            'webhook_url' => 'nullable|url',
-            'redirect_url' => 'nullable|url',
-            'api_url' => 'nullable|url',
+            'name'         => 'required|string|max:255',
+            'mode'         => 'required|in:sandbox,live',
+            'access_key'   => 'required|string|max:255',
+            'secret_key'   => 'nullable|string|max:255',
+            'webhook_url'  => 'nullable|url',
+            'success_url'  => 'nullable|url',
+            'error_url'    => 'nullable|url',
+            'api_url'      => 'nullable|url',
+            'pay_link'     => 'nullable|url'
         ]);
 
-        PaymentGateways::create($validated);
+        PaymentGateways::create([
+            'name'        => $validated['name'],
+            'mode'        => $validated['mode'],
+            'access_key'  => Crypt::encryptString($validated['access_key']),
+            'secret_key'  => Crypt::encryptString($validated['secret_key']),
+            'webhook_url' => $validated['webhook_url'] ?? null,
+            'redirect_url' => $validated['success_url'] ?? null,  // renamed to redirect_url
+            'api_url'     => $validated['api_url'] ?? null,
+            'success_url' => $validated['success_url'] ?? null,
+            'error_url'  => $validated['error_url'] ?? null,
+            'pay_link'   => $validated['pay_link'] ?? null,
+        ]);
 
-        return to_route('payment-gateways.index')->with('success', 'Payment gateway created.');
+        return to_route('payment-gateways.index')->with('success', 'Payment gateway created with encryption.');
     }
+
 
     /**
      * Display the specified resource.
@@ -71,7 +86,7 @@ class PaymentGatewaysController extends Controller
     /**
      * Update the specified resource in storage.
      */
-   
+
     public function update(Request $request, $id)
     {
         $paymentGateway = PaymentGateways::findOrFail($id);
@@ -98,11 +113,11 @@ class PaymentGatewaysController extends Controller
      */
     public function destroy(PaymentGateways $paymentGateways)
     {
-         $paymentGateways->delete();
+        $paymentGateways->delete();
 
         return redirect()->route('payment-gateways.index');
     }
-     public function toggleStatus($id)
+    public function toggleStatus($id)
     {
         try {
             $paymentGateways = PaymentGateways::findOrFail($id);
