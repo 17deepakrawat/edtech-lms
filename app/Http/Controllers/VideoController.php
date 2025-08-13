@@ -22,7 +22,7 @@ class VideoController extends Controller
         return Inertia::render('admin/Videos/Index', [
             'videos' => ['data' => $videos],
             'courses' => $courses,
-           
+
 
         ]);
     }
@@ -80,6 +80,7 @@ class VideoController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
         try {
             $validated = $request->validate([
                 'course_id' => 'nullable|exists:courses,id',
@@ -87,7 +88,20 @@ class VideoController extends Controller
                 'topic_id' => 'nullable|exists:topics,id',
                 'name' => 'required|string|max:255',
                 'video_type' => 'required|in:local,embed',
-                'video_path' => 'nullable|file|mimes:mp4,mov,avi|max:102400',
+                'video_path' => 'nullable|file|mimes:mp4,mov,avi',
+                // 'embed_url' => [
+                //     'nullable',
+                //     'string',
+                //     function ($attribute, $value, $fail) use ($request) {
+                //         if ($request->video_type === 'embed' && empty($value)) {
+                //             $fail('The ' . $attribute . ' is required for embed videos.');
+                //         }
+
+                //         if ($value && !preg_match('/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/embed\/[a-zA-Z0-9_-]+(\?.*)?$/', $value)) {
+                //             $fail('The ' . $attribute . ' must be a valid YouTube embed URL.');
+                //         }
+                //     }
+                // ],
                 'embed_url' => [
                     'nullable',
                     'string',
@@ -96,8 +110,13 @@ class VideoController extends Controller
                             $fail('The ' . $attribute . ' is required for embed videos.');
                         }
 
-                        if ($value && !preg_match('/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/embed\/[a-zA-Z0-9_-]+(\?.*)?$/', $value)) {
-                            $fail('The ' . $attribute . ' must be a valid YouTube embed URL.');
+                        if ($value) {
+                            $youtubePattern = '/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(embed\/|watch\?v=)?[a-zA-Z0-9_-]+(\?.*)?$/';
+                            $drivePattern = '/^(https?:\/\/)?(drive\.google\.com)\/(file\/d\/[a-zA-Z0-9_-]+\/(preview|view)|uc\?id=[a-zA-Z0-9_-]+)(&?.*)?$/';
+
+                            if (!preg_match($youtubePattern, $value) && !preg_match($drivePattern, $value)) {
+                                $fail('The ' . $attribute . ' must be a valid YouTube embed URL or Google Drive video link.');
+                            }
                         }
                     }
                 ],
@@ -180,13 +199,31 @@ class VideoController extends Controller
                 'name' => 'required|string|max:255',
                 'video_type' => 'required|in:local,embed',
                 'video_path' => 'nullable|file|mimes:mp4,mov,avi|max:102400',
+                // 'embed_url' => [
+                //     'nullable',
+                //     'required_if:video_type,embed',
+                //     'string',
+                //     function ($attribute, $value, $fail) {
+                //         if ($value && !preg_match('/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/embed\/[a-zA-Z0-9_-]+(\?.*)?$/', $value)) {
+                //             $fail('The ' . $attribute . ' must be a valid YouTube embed URL.');
+                //         }
+                //     }
+                // ],
                 'embed_url' => [
                     'nullable',
-                    'required_if:video_type,embed',
                     'string',
-                    function ($attribute, $value, $fail) {
-                        if ($value && !preg_match('/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/embed\/[a-zA-Z0-9_-]+(\?.*)?$/', $value)) {
-                            $fail('The ' . $attribute . ' must be a valid YouTube embed URL.');
+                    function ($attribute, $value, $fail) use ($request) {
+                        if ($request->video_type === 'embed' && empty($value)) {
+                            $fail('The ' . $attribute . ' is required for embed videos.');
+                        }
+
+                        if ($value) {
+                            $youtubePattern = '/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(embed\/|watch\?v=)?[a-zA-Z0-9_-]+(\?.*)?$/';
+                            $drivePattern = '/^(https?:\/\/)?(drive\.google\.com)\/(file\/d\/[a-zA-Z0-9_-]+\/(preview|view)|uc\?id=[a-zA-Z0-9_-]+)(&?.*)?$/';
+
+                            if (!preg_match($youtubePattern, $value) && !preg_match($drivePattern, $value)) {
+                                $fail('The ' . $attribute . ' must be a valid YouTube embed URL or Google Drive video link.');
+                            }
                         }
                     }
                 ],

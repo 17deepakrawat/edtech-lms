@@ -2,7 +2,6 @@ import WebLayout from '@/layouts/web-layout';
 import Enroll from '@/web-component/enroll/Enroll';
 import FAQ from '@/web-component/FAQ';
 import RelatedCourseBlog from '@/web-component/RelatedCourseBlog';
-import { usePage } from '@inertiajs/react';
 import { useRef, useState } from 'react';
 import { FaRegStar, FaStar, FaStarHalfAlt } from 'react-icons/fa';
 import { HiCheckCircle } from 'react-icons/hi';
@@ -62,6 +61,7 @@ export default function CourseDetails({
 }) {
     // const enroll_status = usePage().props?.payment_status?.status ?? 'null';
     // console.log(enroll_status);
+    console.log(course);
     const renderStars = (ratingInput: string | number | null) => {
         if (ratingInput == null) return null;
 
@@ -323,43 +323,154 @@ export default function CourseDetails({
                     </div>
 
                     <div className="relative sticky top-18 col-span-12 mt-4 h-fit lg:col-span-3">
-                        {course.video_path && (
+                        {(course.video_path || course.embed_url) && (
                             <div className="w-full rounded-lg border bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                                {activeVideo !== course.videoid ? (
-                                    <div
-                                        className="relative h-48 w-full rounded-lg bg-cover bg-center"
-                                        style={{ backgroundImage: `url(${course.image || '/placeholder.jpg'})` }}
-                                    >
-                                        <button
-                                            onClick={() => handlePlay(course.videoid)}
-                                            className="bg-opacity-50 absolute inset-0 flex items-center justify-center bg-black text-4xl text-white"
+                                {/* If we have a local video */}
+                                {/* {course.video_path ? (
+                                    activeVideo !== course.videoid ? (
+                                        <div
+                                            className="relative h-48 w-full rounded-lg bg-cover bg-center"
+                                            style={{ backgroundImage: `url(${course.image || '/placeholder.jpg'})` }}
                                         >
-                                            ▶
-                                        </button>
+                                            <button
+                                                onClick={() => handlePlay(course.videoid)}
+                                                className="bg-opacity-50 absolute inset-0 flex items-center justify-center bg-black text-4xl text-white"
+                                            >
+                                                ▶
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="relative">
+                                            <video
+                                                ref={(el) => {
+                                                    if (course.videoid) {
+                                                        videoRefs.current[course.videoid] = el;
+                                                    }
+                                                }}
+                                                controls
+                                                autoPlay
+                                                className="mb-4 w-full rounded-lg"
+                                            >
+                                                <source src={`/storage/${course.video_path}`} type="video/mp4" />
+                                                Your browser does not support the video tag.
+                                            </video>
+                                            <button
+                                                onClick={() => handlePause(course.videoid)}
+                                                className="bg-opacity-70 absolute top-2 right-2 rounded bg-black px-3 py-1 text-white"
+                                            >
+                                                ❚❚ Pause
+                                            </button>
+                                        </div>
+                                    )
+                                ) : (
+                                    // If no local video, show embed iframe
+                                    <div className="relative">
+                                        <iframe
+                                            className="mb-4 w-full rounded-lg"
+                                            height="250"
+                                            src={`${course.embed_url}?modestbranding=1&rel=0&showinfo=0&controls=1`}
+                                            title={course.video_name || 'Course video'}
+                                            frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                        />
+                                    </div>
+                                )} */}
+                                {course.video_path ? (
+                                    // Local uploaded video
+                                    activeVideo !== course.videoid ? (
+                                        <div
+                                            className="relative h-48 w-full rounded-lg bg-cover bg-center"
+                                            style={{ backgroundImage: `url(${course.image || '/placeholder.jpg'})` }}
+                                        >
+                                            <button
+                                                onClick={() => handlePlay(course.videoid)}
+                                                className="bg-opacity-50 absolute inset-0 flex items-center justify-center bg-black text-4xl text-white"
+                                            >
+                                                ▶
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="relative">
+                                            <video
+                                                ref={(el) => {
+                                                    if (course.videoid) {
+                                                        videoRefs.current[course.videoid] = el;
+                                                    }
+                                                }}
+                                                controls
+                                                autoPlay
+                                                className="mb-4 w-full rounded-lg"
+                                            >
+                                                <source src={`/storage/${course.video_path}`} type="video/mp4" />
+                                                Your browser does not support the video tag.
+                                            </video>
+                                            <button
+                                                onClick={() => handlePause(course.videoid)}
+                                                className="bg-opacity-70 absolute top-2 right-2 rounded bg-black px-3 py-1 text-white"
+                                            >
+                                                ❚❚ Pause
+                                            </button>
+                                        </div>
+                                    )
+                                ) : course.embed_url ? (
+                                    // YouTube or Google Drive link
+                                    <div className="relative">
+                                        {/* <iframe
+                                            className="mb-4 w-full rounded-lg"
+                                            height="250"
+                                            src={
+                                                course.embed_url.includes('youtube.com') || course.embed_url.includes('youtu.be')
+                                                    ? // YouTube: convert to embed
+                                                      course.embed_url.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')
+                                                    : course.embed_url.includes('drive.google.com')
+                                                      ? // Google Drive: convert to direct preview
+                                                        course.embed_url.replace('/view', '/preview')
+                                                      : course.embed_url // Any other embed link
+                                            }
+                                            title={course.video_name || 'Course video'}
+                                            frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                        /> */}
+                                        <iframe
+                                            className="mb-4 w-full rounded-lg"
+                                            height="250"
+                                            src={(() => {
+                                                let url = course.embed_url || '';
+
+                                                // ✅ YouTube Short Link (youtu.be/xxxx)
+                                                if (url.includes('youtu.be/')) {
+                                                    const videoId = url.split('youtu.be/')[1].split('?')[0];
+                                                    return `https://www.youtube.com/embed/${videoId}`;
+                                                }
+
+                                                // ✅ YouTube Normal Link (youtube.com/watch?v=xxxx)
+                                                if (url.includes('youtube.com/watch?v=')) {
+                                                    const videoId = new URL(url).searchParams.get('v');
+                                                    return `https://www.youtube.com/embed/${videoId}`;
+                                                }
+
+                                                // ✅ Google Drive Link
+                                                if (url.includes('drive.google.com')) {
+                                                    return url.replace('/view', '/preview');
+                                                }
+
+                                                // ✅ Any other embed link
+                                                return url;
+                                            })()}
+                                            title={course.video_name || 'Course video'}
+                                            frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                        />
                                     </div>
                                 ) : (
-                                    <div className="relative">
-                                        <video
-                                            ref={(el) => {
-                                                if (course.videoid) {
-                                                    videoRefs.current[course.videoid] = el;
-                                                }
-                                            }}
-                                            controls
-                                            autoPlay
-                                            className="mb-4 w-full rounded-lg"
-                                        >
-                                            <source src={`/storage/${course.video_path}`} type="video/mp4" />
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <button
-                                            onClick={() => handlePause(course.videoid)}
-                                            className="bg-opacity-70 absolute top-2 right-2 rounded bg-black px-3 py-1 text-white"
-                                        >
-                                            ❚❚ Pause
-                                        </button>
-                                    </div>
+                                    // No video available
+                                    <div className="rounded-lg bg-gray-100 p-4 text-center text-gray-500">No video available for this course.</div>
                                 )}
+
+                                {/* Course Info */}
                                 <ul className="mt-4 space-y-2">
                                     <li>
                                         <span className="mb-0 text-xl font-bold">{course.name || 'N/A'}</span>
@@ -371,6 +482,8 @@ export default function CourseDetails({
                                         <span className="text-sm">Duration: {course.video_duration || 'N/A'}</span>
                                     </li>
                                 </ul>
+
+                                {/* Price & Enroll */}
                                 <div className="mt-4 flex items-center justify-between">
                                     <span className="text-lg font-bold text-gray-800 dark:text-gray-200">
                                         {course.price ? `$${course.price}` : 'Free'}
@@ -385,7 +498,7 @@ export default function CourseDetails({
                                             duration: course.duration,
                                             video_duration: course.video_duration,
                                         }}
-                                         enrollStatus={enroll_status}
+                                        enrollStatus={enroll_status ?? null}
                                     />
                                 </div>
                             </div>

@@ -29,6 +29,7 @@ use App\Http\Controllers\{
     userController,
     UserRolePermssionController,
     GoogleAuthController,
+    MyLearningController,
     PaymentController,
     PaymentsController
 };
@@ -126,19 +127,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:student'])->prefix('student')->group(function () {});
 });
 Route::middleware('guest:student')->group(function () {});
+Route::post('/student/update-profile-image', [StudentsController::class, 'updateprofile'])->name('student.update-profile-image');
 Route::get('/student/login', [StudentAuthController::class, 'showLoginForm'])->name('student.login');
 Route::post('/student/logins', [StudentAuthController::class, 'login']);
 Route::middleware('auth:student')->group(function () {
     Route::post('/student/logout', [StudentAuthController::class, 'logout'])->name('student.logout');
     Route::get('/student-dashboard', [StudentsController::class, 'studentDashboard'])->name('student.dashboard.index');
+    Route::resource('mylearning', MyLearningController::class);
+    Route::get('/courses-video/{slug}', [MyLearningController::class, 'coursevideo'])->name('courses-video.show');
 });
-// Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
-// Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('google.redirect');
-// Route::post('/enroll-submit', [PaymentsController::class, 'gatewayCredential'])->name('enroll.submit');
 Route::post('/student-logout', [StudentsController::class, 'studentlogout'])->name('student-logout');
-// Route::post('/payment/submit', [EnrollsController::class, 'submit'])->name('payment.submit');
-// Route::post('/payment/success', [EnrollsController::class, 'success'])->name('payment.success');
-// Route::post('/payment/failed', [EnrollsController::class, 'failed'])->name('payment.failed');
 Route::post('/payment/submit', [EnrollsController::class, 'submit'])->name('payment.submit');
 
 require __DIR__ . '/settings.php';

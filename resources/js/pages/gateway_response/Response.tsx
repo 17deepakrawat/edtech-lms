@@ -92,7 +92,6 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
   },
 });
-
 interface ResponsePageProps {
   success?: Record<string, any>;
   error?: Record<string, any>;

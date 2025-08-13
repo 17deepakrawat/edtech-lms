@@ -63,14 +63,15 @@ class CoursesController extends Controller
             'video_name' => $firstVideo->name ?? 'Course Introduction',
             'videoid' => $firstVideo->id ?? 'No Id',
             'video_type' => $firstVideo->video_type ?? 'normal',
-            'video_path' => $firstVideo->video_path ?? '/build/assets/web-assets/videoc.mp4',
-            'embed_url' => $firstVideo->embed_url ?? 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+            'video_path' => $firstVideo->video_path ?? null,
+            'embed_url' => $firstVideo->embed_url ?? null,
             'video_duration' => $firstVideo->duration ?? '1:00',
 
         ];
+        //  dd($data);
         $student = Auth::guard('student')->user();
         // dd($student->id);
-        $payment_status = Enrolls::where('student_id', $student)->where('status','paid')->count();
+        $payment_status = Enrolls::where('student_id', $student->id)->where('course_id',$course->id)->where('status','paid')->count();
         // dd($payment_status);
         return Inertia::render('web-pages/course/Details', [
             'course' => $data,

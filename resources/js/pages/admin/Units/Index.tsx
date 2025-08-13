@@ -4,14 +4,22 @@ import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
+import {
+    ColumnDef,
+    flexRender,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    useReactTable,
+} from '@tanstack/react-table';
 import { CheckCircle, Edit as EditIcon, Plus, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
 import Create from './Create';
 import Edit from './Edit';
-import { usePermission } from    '@/pages/admin/pagepermision';
+import { usePermission } from '@/pages/admin/pagepermision';
+
 interface Course {
     id: number;
     name: string;
@@ -25,6 +33,7 @@ interface Unit {
     status: boolean;
     course: Course;
 }
+
 interface User {}
 
 interface Props extends PageProps {
@@ -33,14 +42,17 @@ interface Props extends PageProps {
         links: any[];
     };
     courses: Course[];
-    users: User[];    
+    users: User[];
 }
 
-export default function Index({ units, courses}: Props) {
+export default function Index({ units, courses }: Props) {
     const { hasPermission } = usePermission();
     const [globalFilter, setGlobalFilter] = useState('');
-    const [pageSize, setPageSize] = useState(10);
     const [data, setData] = useState<Unit[]>(units.data);
+    const [pagination, setPagination] = useState({
+        pageIndex: 0,
+        pageSize: 10,
+    });
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
@@ -57,13 +69,17 @@ export default function Index({ units, courses}: Props) {
             {
                 preserveState: true,
                 onSuccess: () => {
-                    setData((prev) => prev.map((item) => (item.id === id ? { ...item, status: !currentStatus } : item)));
+                    setData((prev) =>
+                        prev.map((item) =>
+                            item.id === id ? { ...item, status: !currentStatus } : item
+                        )
+                    );
                     toast.success('Course status updated');
                 },
                 onError: () => {
                     toast.error('Failed to update status.');
                 },
-            },
+            }
         );
     };
 
@@ -98,7 +114,9 @@ export default function Index({ units, courses}: Props) {
     };
 
     const handleEditSuccess = (updatedUnit: Unit) => {
-        setData((prev) => prev.map((item) => (item.id === updatedUnit.id ? updatedUnit : item)));
+        setData((prev) =>
+            prev.map((item) => (item.id === updatedUnit.id ? updatedUnit : item))
+        );
         setIsEditModalOpen(false);
         toast.success('Unit updated successfully');
     };
@@ -106,7 +124,8 @@ export default function Index({ units, courses}: Props) {
     const columns: ColumnDef<Unit>[] = [
         {
             header: 'S.No',
-            cell: (info) => info.row.index + 1,
+            cell: (info) =>
+                pagination.pageIndex * pagination.pageSize + info.row.index + 1,
         },
         {
             accessorKey: 'title',
@@ -126,10 +145,20 @@ export default function Index({ units, courses}: Props) {
             cell: ({ row }) => (
                 <Button
                     variant="outline"
-                    className={`${row.original.status ? 'bg-green-800 hover:bg-green-800' : 'bg-red-600 hover:bg-red-600'} text-white hover:text-white`}
-                    onClick={() => handleStatusToggle(row.original.id, row.original.status)}
+                    className={`${
+                        row.original.status
+                            ? 'bg-green-800 hover:bg-green-800'
+                            : 'bg-red-600 hover:bg-red-600'
+                    } text-white hover:text-white`}
+                    onClick={() =>
+                        handleStatusToggle(row.original.id, row.original.status)
+                    }
                 >
-                    {row.original.status ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+                    {row.original.status ? (
+                        <CheckCircle className="h-4 w-4" />
+                    ) : (
+                        <XCircle className="h-4 w-4" />
+                    )}
                 </Button>
             ),
         },
@@ -138,12 +167,20 @@ export default function Index({ units, courses}: Props) {
             cell: ({ row }) => (
                 <div className="flex space-x-2">
                     {hasPermission('edit unit') && (
-                        <Button variant="ghost" size="icon" onClick={() => openEditModal(row.original)}>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => openEditModal(row.original)}
+                        >
                             <EditIcon className="h-4 w-4" />
                         </Button>
                     )}
                     {hasPermission('delete unit') && (
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original.id)}>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(row.original.id)}
+                        >
                             <Trash2 className="h-4 w-4 text-red-600" />
                         </Button>
                     )}
@@ -153,23 +190,17 @@ export default function Index({ units, courses}: Props) {
     ];
 
     const table = useReactTable({
-        data: data,
+        data,
         columns,
         state: {
             globalFilter,
-            pagination: {
-                pageSize,
-                pageIndex: 0,
-            },
+            pagination,
         },
+        onGlobalFilterChange: setGlobalFilter,
+        onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
-        onGlobalFilterChange: setGlobalFilter,
-        onPaginationChange: (updater) => {
-            const newState = typeof updater === 'function' ? updater(table.getState().pagination) : updater;
-            table.setPageIndex(newState.pageIndex);
-        },
         manualPagination: false,
     });
 
@@ -177,7 +208,7 @@ export default function Index({ units, courses}: Props) {
         <AppLayout>
             <Head title="Units" />
 
-            <div className="container mx-auto p-4">
+            <div className="container mx-auto p-4 mt-20">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Units</h1>
                     {hasPermission('create unit') && (
@@ -188,7 +219,17 @@ export default function Index({ units, courses}: Props) {
                 </div>
 
                 <div className="mb-4 flex items-center justify-between">
-                    <select value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))} className="ml-2 rounded border px-2 py-1">
+                    <select
+                        value={pagination.pageSize}
+                        onChange={(e) =>
+                            setPagination({
+                                ...pagination,
+                                pageSize: Number(e.target.value),
+                                pageIndex: 0,
+                            })
+                        }
+                        className="ml-2 rounded border px-2 py-1"
+                    >
                         {[10, 20, 30, 50].map((size) => (
                             <option key={size} value={size}>
                                 Show {size}
@@ -206,10 +247,16 @@ export default function Index({ units, courses}: Props) {
                 <table className="w-full table-auto rounded border bg-white shadow dark:bg-neutral-800">
                     <thead>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <tr key={headerGroup.id} className="bg-neutral-100 dark:bg-neutral-700">
+                            <tr
+                                key={headerGroup.id}
+                                className="bg-neutral-100 dark:bg-neutral-700"
+                            >
                                 {headerGroup.headers.map((header) => (
                                     <th key={header.id} className="px-4 py-2 text-left">
-                                        {flexRender(header.column.columnDef.header, header.getContext())}
+                                        {flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext()
+                                        )}
                                     </th>
                                 ))}
                             </tr>
@@ -217,10 +264,16 @@ export default function Index({ units, courses}: Props) {
                     </thead>
                     <tbody>
                         {table.getRowModel().rows.map((row) => (
-                            <tr key={row.id} className="border-t dark:border-neutral-700">
+                            <tr
+                                key={row.id}
+                                className="border-t dark:border-neutral-700"
+                            >
                                 {row.getVisibleCells().map((cell) => (
                                     <td key={cell.id} className="px-4 py-2">
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        {flexRender(
+                                            cell.column.columnDef.cell,
+                                            cell.getContext()
+                                        )}
                                     </td>
                                 ))}
                             </tr>
@@ -229,13 +282,19 @@ export default function Index({ units, courses}: Props) {
                 </table>
 
                 <div className="mt-4 flex items-center justify-between">
-                    <Button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+                    <Button
+                        onClick={() => table.previousPage()}
+                        disabled={!table.getCanPreviousPage()}
+                    >
                         Previous
                     </Button>
                     <div>
-                        Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                        Page {pagination.pageIndex + 1} of {table.getPageCount()}
                     </div>
-                    <Button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+                    <Button
+                        onClick={() => table.nextPage()}
+                        disabled={!table.getCanNextPage()}
+                    >
                         Next
                     </Button>
                 </div>
@@ -247,7 +306,11 @@ export default function Index({ units, courses}: Props) {
                     <DialogHeader>
                         <DialogTitle>Create Unit</DialogTitle>
                     </DialogHeader>
-                    <Create courses={courses} onClose={() => setIsCreateModalOpen(false)} onSuccess={handleCreateSuccess} />
+                    <Create
+                        courses={courses}
+                        onClose={() => setIsCreateModalOpen(false)}
+                        onSuccess={handleCreateSuccess}
+                    />
                 </DialogContent>
             </Dialog>
 
@@ -258,7 +321,12 @@ export default function Index({ units, courses}: Props) {
                         <DialogTitle>Edit Unit</DialogTitle>
                     </DialogHeader>
                     {selectedUnit && (
-                        <Edit unit={selectedUnit} courses={courses} onClose={() => setIsEditModalOpen(false)} onSuccess={handleEditSuccess} />
+                        <Edit
+                            unit={selectedUnit}
+                            courses={courses}
+                            onClose={() => setIsEditModalOpen(false)}
+                            onSuccess={handleEditSuccess}
+                        />
                     )}
                 </DialogContent>
             </Dialog>

@@ -209,7 +209,7 @@ export default function Index({ mentor, courses }: Props) {
     return (
         <AppLayout>
             <Head title="Mentors" />
-            <div className="container mx-auto p-4">
+            <div className="container mx-auto p-4 mt-20">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-semibold">Mentors</h1>
                     {/* {hasPermission('create mentor') && (

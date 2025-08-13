@@ -230,7 +230,7 @@ const studentNavItems: NavItem[] = [
     },
     {
         title: 'My Learning',
-        href: '/my-learning',
+        href: 'mylearning',
         icon: GraduationCap,
         permissions: 'view my-learning',
     },

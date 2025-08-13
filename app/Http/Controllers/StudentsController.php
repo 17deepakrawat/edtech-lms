@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\StudentWelcomeMail;
+use App\Models\Course;
 use App\Models\Courses;
 use App\Models\Enrolls;
 use Illuminate\Support\Facades\Mail;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Carbon\Carbon;
 
 class StudentsController extends Controller
 {
@@ -189,45 +191,184 @@ class StudentsController extends Controller
             return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());
         }
     }
+    // public function studentDashboard()
+    // {
+    //     // Get authenticated student from 'student' guard
+    //     $student = Auth::guard('student')->user();
+
+    //     if (!$student) {
+    //         return redirect()->route('login');
+    //     }
+
+    //     // Eager load enrollments with related courses, filtering only paid enrollments
+    //     $enrolls = Enrolls::with('course')
+    //         ->where('student_id', $student->id)
+    //         ->where('status', 'paid')
+    //         ->get();
+
+    //     // Agar koi paid enrollments nahi hain toh redirect
+    //     if ($enrolls->isEmpty()) {
+    //         return redirect()->route('webHome');
+    //     }
+
+    //     // Prepare student info for dashboard
+    //     $studentDashboard = [
+    //         'name' => trim("{$student->first_name} {$student->middle_name} {$student->last_name}"),
+    //         'email' => $student->email,
+    //         'dob' => $student->dob,
+    //         'phone_no' => $student->mobile,
+    //         'address' => trim("{$student->city} {$student->state} {$student->country}"),
+    //         'user_profile_pic' => $student->photo ?? '',
+    //     ];
+
+    //     // Extract courses directly from enrollments to avoid extra query
+    //     $courses = $enrolls->pluck('course')->filter()->map(function ($course) {
+    //         return $course->getAttributes();
+    //     });
+    //     // dd($courses);
+    //     foreach ($courses as $course) {
+    //         $mycourse = [
+    //             'course_name' => $course['name'],
+    //             'rating' =>    $course['rating'],
+    //             'image' => $course['image'],
+    //             'duration' => $course['duration'],
+    //             'id' =>  $course['slug'],
+    //         ];
+    //     };
+
+    //     // $related_course= Course::where('program_id','!=',$courses['program_id'])->get();
+    //     // Return data to Inertia view
+    //     return Inertia::render('student/dashboard/Index', [
+    //         'studentDashboard' => $studentDashboard,
+    //         'courses' => $courses,
+    //     ]);
+    // }
+    // public function studentDashboard()
+    // {
+    //     $student = Auth::guard('student')->user();
+
+    //     if (!$student) {
+    //         return redirect()->route('login');
+    //     }
+
+    //     // Fetch all paid enrollments with course info
+    //     $enrolls = Enrolls::with(['course:id,name,rating,image,duration,slug,program_id'])
+    //         ->where('student_id', $student->id)
+    //         ->where('status', 'paid')
+    //         ->get();
+
+    //     if ($enrolls->isEmpty()) {
+    //         return redirect()->route('webHome');
+    //     }
+    //     $student_birth_date = Carbon::parse($student->dob)
+    //         ->timezone('Asia/Kolkata')
+    //         ->format('d M Y');
+    //     // Student profile data
+    //     $studentDashboard = [
+    //         'name'           => trim("{$student->first_name} {$student->middle_name} {$student->last_name}"),
+    //         'email'          => $student->email,
+    //         'dob'            => $student_birth_date,
+    //         'phone_no'       => $student->mobile,
+    //         'address'        => trim("{$student->city} {$student->state} {$student->country}"),
+    //         'user_profile_pic' => $student->photo ?? '',
+    //     ];
+
+    //     // Map enrolled courses
+    //     $courses = $enrolls->pluck('course')->filter()->map(function ($course) {
+    //         return [
+    //             'course_name' => $course->name,
+    //             'rating'      => $course->rating,
+    //             'image'       => $course->image,
+    //             'duration'    => $course->duration,
+    //             'slug'        => $course->slug,
+    //             'program_id'  => $course->program_id,
+    //         ];
+    //     })->values();
+
+    //     // Get related courses (same program but not already enrolled in)
+    //     $relatedCourses = collect();
+    //     if ($courses->isNotEmpty()) {
+    //         $programIds = $courses->pluck('program_id')->unique();
+    //         $enrolledCourseSlugs = $courses->pluck('slug');
+
+    //         $relatedCourses = Course::select('id', 'name', 'rating', 'image', 'duration', 'slug')
+    //             ->whereIn('program_id', $programIds)
+    //             ->whereNotIn('slug', $enrolledCourseSlugs)
+    //             ->limit(5)
+    //             ->get();
+    //     }
+    //     dd($relatedCourses);
+    //     return Inertia::render('student/dashboard/Index', [
+    //         'student_info'   => $studentDashboard,
+    //         'mycourses'      => $courses,
+    //         'relatedCourses' => $relatedCourses,
+    //     ]);
+    // }
     public function studentDashboard()
     {
-        // Get authenticated student from 'student' guard
         $student = Auth::guard('student')->user();
 
         if (!$student) {
             return redirect()->route('login');
         }
 
-        // Eager load enrollments with related courses, filtering only paid enrollments
-        $enrolls = Enrolls::with('course')
+        // Fetch paid enrollments with course info
+        $enrolls = Enrolls::with(['course:id,name,rating,image,duration,slug,program_id,department_id'])
             ->where('student_id', $student->id)
             ->where('status', 'paid')
             ->get();
 
-        // Agar koi paid enrollments nahi hain toh redirect
         if ($enrolls->isEmpty()) {
             return redirect()->route('webHome');
         }
 
-        // Prepare student info for dashboard
+        // Handle DOB safely
+        $student_birth_date = $student->dob
+            ? Carbon::parse($student->dob)->timezone('Asia/Kolkata')->format('d M Y')
+            : null;
+
+        // Student profile
         $studentDashboard = [
-            'name' => trim("{$student->first_name} {$student->middle_name} {$student->last_name}"),
-            'email' => $student->email,
-            'dob' => $student->dob,
-            'phone_no' => $student->mobile,
-            'address' => trim("{$student->city} {$student->state} {$student->country}"),
+            'name'             => trim("{$student->first_name} {$student->middle_name} {$student->last_name}"),
+            'email'            => $student->email,
+            'dob'              => $student_birth_date,
+            'phone_no'         => $student->mobile,
+            'address'          => trim("{$student->city} {$student->state} {$student->country}"),
             'user_profile_pic' => $student->photo ?? '',
         ];
 
-        // Extract courses directly from enrollments to avoid extra query
-        $courses = $enrolls->pluck('course');
+        // Map enrolled courses
+        $courses = $enrolls->pluck('course')->filter()->map(function ($course) {
+            return [
+                'course_name'  => $course->name,
+                'rating'       => $course->rating,
+                'image'        => $course->image,
+                'duration'     => $course->duration,
+                'slug'         => $course->slug,
+                'program_id'   => $course->program_id,
+                'department_id' => $course->department_id,
+            ];
+        })->values();
 
-        // Return data to Inertia view
+        // Related courses → All other programs and departments
+        $relatedCourses = collect();
+        if ($courses->isNotEmpty()) {
+            $enrolledCourseSlugs = $courses->pluck('slug');
+
+            $relatedCourses = Course::select('id', 'name', 'rating', 'image', 'duration', 'slug', 'short_description', 'price')
+                ->whereNotIn('slug', $enrolledCourseSlugs)
+                ->orderBy('rating', 'desc') // Optional: show top-rated first
+                ->get();
+        }
+        // dd($relatedCourses);
         return Inertia::render('student/dashboard/Index', [
-            'studentDashboard' => $studentDashboard,
-            'courses' => $courses,
+            'student_info'   => $studentDashboard,
+            'mycourses'      => $courses,
+            'relatedCourses' => $relatedCourses,
         ]);
     }
+
+
 
 
     public function studentlogout(Request $request)
@@ -239,5 +380,20 @@ class StudentsController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+    public function updateprofile(Request $request)
+    {
+        $request->validate([
+            'profile_img' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+        $student = Auth::guard('student')->user();
+        if ($request->hasFile('profile_img')) {
+            $imagePath = $request->file('profile_img')->store('student_profile', 'public');
+            students::where('id', $student->id)->update([
+                'photo' => $imagePath,
+            ]);
+        }
+
+        return back()->with('success', 'Profile picture updated successfully!');
     }
 }

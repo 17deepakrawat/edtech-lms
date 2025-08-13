@@ -45,6 +45,7 @@ interface AppHeaderProps {
 export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
     const page = usePage<SharedData>();
     const { auth } = page.props;
+    console.log(auth);return false;
     const getInitials = useInitials();
     return (
         <>

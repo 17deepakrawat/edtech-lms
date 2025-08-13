@@ -32,6 +32,7 @@ interface Props extends PageProps {
 
 export default function BannerIndex({ banners, }: Props) { 
     const { hasPermission } = usePermission(); 
+    console.log(hasPermission('create banner'));
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
     const [data, setData] = useState<Banner[]>(banners);
@@ -185,7 +186,7 @@ export default function BannerIndex({ banners, }: Props) {
     return (
         <AppLayout>
             <Head title="Home Banner" />
-            <div className="container mx-auto p-4">
+            <div className="container mx-auto p-4 mt-20">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-semibold">Home Banner</h1>
                     {hasPermission('create banner') && (

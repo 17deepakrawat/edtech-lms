@@ -142,7 +142,7 @@ export default function UniversityPartnerIndex({ universitypartners}: Props) {
         <AppLayout>
             <Head title="University Partner" />
 
-            <div className="container mx-auto p-4">
+            <div className="container mx-auto p-4 mt-20">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">University Partner</h1>
                    {hasPermission('create university partner') && (

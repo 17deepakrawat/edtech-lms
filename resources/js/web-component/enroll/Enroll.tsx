@@ -18,7 +18,6 @@ interface EnrollProps {
 }
 
 export default function Enroll({ enrollCourse, enrollStatus }: EnrollProps) {
-    console.log(enrollStatus);
     const [paymentLink, setPaymentLink] = useState<string | null>(null);
     const [showRedirectModal, setShowRedirectModal] = useState(false);
     const { student_data } = usePage().props;

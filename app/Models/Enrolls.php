@@ -5,9 +5,10 @@ namespace App\Models;
 use Faker\Provider\ar_EG\Payment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class Enrolls extends Model
 {
-   use HasFactory;
+    use HasFactory;
 
     protected $fillable = [
         'student_id',
@@ -35,5 +36,10 @@ class Enrolls extends Model
     public function logs()
     {
         return $this->hasMany(PaymentLog::class);
+    }
+    public function relatedCourses()
+    {
+        return $this->hasMany(Course::class, 'program_id', 'program_id')
+            ->whereColumn('id', '!=', 'courses.id'); // Exclude current course
     }
 }

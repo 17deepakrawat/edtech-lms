@@ -114,7 +114,7 @@ export default function RoleIndex({ roles: initialRoles }: { roles: Role[] }) {
     return (
         <AppLayout>
             <Head title="Roles" />
-            <div className="container mx-auto p-4">
+            <div className="container mx-auto p-4 mt-20">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Roles</h1>
                     <Button onClick={() => setIsCreateModalOpen(true)}>

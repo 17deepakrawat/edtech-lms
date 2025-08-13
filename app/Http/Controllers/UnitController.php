@@ -24,7 +24,7 @@ class UnitController extends Controller
                 'data' => $units
             ],
             'courses' => $courses,
-           
+
 
         ]);
     }
@@ -49,7 +49,7 @@ class UnitController extends Controller
             'order' => 'required|integer|min:0',
         ]);
 
-        $unit = Unit::create($validated);
+        Unit::create($validated);
 
         return redirect()->route('units.index')->with('success', 'Unit created successfully.');
     }

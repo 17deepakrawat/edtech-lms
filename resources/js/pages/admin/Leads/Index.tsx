@@ -143,7 +143,7 @@ export default function LeadIndex({ leads}: Props) {
         <AppLayout>
             <Head title="Leads" />
 
-            <div className="container mx-auto p-4">
+            <div className="container mx-auto p-4 mt-20">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Leads</h1>
                     <div className="flex gap-2">
